@@ -38,21 +38,7 @@ const Vehicle = () => {
   }, []);
 
 
-  const showDeleteConfirm = () => {
-    Swal.fire({
-      title: "Ingin Menghapus Data ini?",
-      text: "",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Terhapus!", "Data Telah Terhapus", "success");
-      }
-    });
-  };
+  
 
   const columns = [
     {
@@ -84,15 +70,7 @@ const Vehicle = () => {
     
    
   ];
-  // const data = [];
-  // for (let i = 0; i < 100; i++) {
-  //   data.push({
-  //     key: i,
-  //     name: `Edward King ${i}`,
-  //     age: 32,
-  //     address: `London, Park Lane no. ${i}`,
-  //   });
-  // }
+
   return (
     <div>
       <div className="gx-d-flex justify-content-start">

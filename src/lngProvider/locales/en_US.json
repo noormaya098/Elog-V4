@@ -1,9 +1,11 @@
 {
   "app.announced": "A new version will be released on December 25th. Stay tuned!",
-  "sidebar.main": "Main Navigation",
+  "sidebar.main": "Main Dashboard",
+  "sidebar.master": "Master Menu",
   "sidebar.samplePage": "Dashboard",
   "sidebar.driver": "Driver",
   "sidebar.vehicle": "Vehicle",
+  "sidebar.detailsp": "Detail SP",
   "sidebar.byunit": "By Unit",
   "sidebar.bysm": "By Sm",
   "sidebar.dashboard": "Dashboard",

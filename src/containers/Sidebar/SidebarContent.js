@@ -59,12 +59,16 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             >
                <Menu.Item key="sample">
               <Link to="/sample">
-                <i class="icon bi-speedometer"></i>
+                <i className="icon bi-speedometer"></i>
                 <span>
                   <IntlMessages id="sidebar.samplePage" />
                 </span>
               </Link>
             </Menu.Item>
+            <MenuItemGroup
+            key='master'
+            title={<IntlMessages id="sidebar.master" />}
+            >
             <Menu.Item key="driver">
               <Link to="/masterdata/driver">
                 <i className="icon icon-widgets" />
@@ -81,6 +85,15 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                 </span>
               </Link>
             </Menu.Item>
+            <Menu.Item key="detailsp">
+              <Link to="/masterdata/detailsp">
+                <i className="icon icon-widgets" />
+                <span>
+                  <IntlMessages id="sidebar.detailsp" />
+                </span>
+              </Link>
+            </Menu.Item>
+            </MenuItemGroup>
             <Menu.Item key="byunit">
               <Link to="/monitoring/byunit">
                 <i className="icon icon-widgets" />

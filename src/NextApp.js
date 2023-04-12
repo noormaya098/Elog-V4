@@ -5,6 +5,7 @@ import {Route, Switch} from "react-router-dom";
 import "assets/vendors/style";
 import "styles/wieldy.less";
 import configureStore, { history } from './appRedux/store';
+// import configureStore from './App/store'
 import "./firebase/firebase";
 import App from "./containers/App/index";
 import 'bootstrap/dist/css/bootstrap.min.css';

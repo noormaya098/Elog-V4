@@ -9,7 +9,9 @@ const App = ({match}) => (
       <Route path={`${match.url}sample`} component={asyncComponent(() => import('./SamplePage'))}/>
       <Route path={`${match.url}masterdata/driver`} component={asyncComponent(() => import('./MasterData/Driver'))}/>
       <Route path={`${match.url}masterdata/vehicle`} component={asyncComponent(() => import('./MasterData/Vehicle'))}/>
+      <Route path={`${match.url}masterdata/detailsp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/>
       <Route path={`${match.url}monitoring/byunit`} component={asyncComponent(() => import('./Monitoring/By unit'))}/>
+      <Route path={`${match.url}monitoring/editdriver`} component={asyncComponent(() => import('./Monitoring/By unit/EditDriver'))}/>
       <Route path={`${match.url}monitoring/bysm`} component={asyncComponent(() => import('./Monitoring/By sm'))}/>
     </Switch>
   </div>
