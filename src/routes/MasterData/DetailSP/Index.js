@@ -1,7 +1,12 @@
 import React from "react";
-import { Col, Row, Image, Form, Button } from "react-bootstrap";
+import { Col, Row, Image, Form, Button, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Card from "antd/lib/card/Card";
+import fotos from "./gojo_satoru_19784.jpg";
+import DetailArmada from "./DetailArmada";
+import IsiItungan from "./IsiItungan";
+import DetailDelivery from "./DetailDelivery";
+
 function DetailSP() {
   const [noSPK, setNoSPK] = useState("");
   const [nama, setNama] = useState("");
@@ -76,12 +81,16 @@ function DetailSP() {
               </Form.Group>
               <Form.Group controlId="nama">
                 <Form.Label>Service</Form.Label>
-                <Form.Control
-                  type="text"
+                <Form.Select
                   value={nama}
                   onChange={(event) => setNama(event.target.value)}
-                />
+                >
+                  <option value="">Charter</option>
+                  <option value="mobil 1">Mobil 1</option>
+                  <option value="mobil 2">Mobil 2</option>
+                </Form.Select>
               </Form.Group>
+
               <Form.Group controlId="nama">
                 <Form.Label>Order Date</Form.Label>
                 <Form.Control
@@ -114,11 +123,9 @@ function DetailSP() {
             <Col sm={4}>
               <Form.Group controlId="foto">
                 <Form.Label>Driver</Form.Label>
-                <Form.Control
-                  type="file"
-                  value={foto}
-                  onChange={(event) => setFoto(event.target.value)}
-                />
+                <Card style={{ width: "250px" }}>
+                  <Image src={fotos} alt="Foto Driver" fluid width="250px" />
+                </Card>
               </Form.Group>
             </Col>
             <hr className="mt-4" />
@@ -134,6 +141,10 @@ function DetailSP() {
               </Form.Group>
             </Col>
             <hr className="mt-4" />
+            {/* isi itugnan */}
+            <IsiItungan />
+            <DetailArmada />
+            <DetailDelivery />
           </Row>
         </Form>
       </Card>

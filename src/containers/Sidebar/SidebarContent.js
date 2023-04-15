@@ -13,6 +13,7 @@ import {
 } from "../../constants/ThemeSetting";
 import IntlMessages from "../../util/IntlMessages";
 import { useSelector } from "react-redux";
+const { SubMenu } = Menu; 
 
 const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   const { navStyle, themeType } = useSelector(({ settings }) => settings);
@@ -52,65 +53,73 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             theme={themeType === THEME_TYPE_LITE ? "lite" : "dark"}
             mode="inline"
           >
-           
             <MenuItemGroup
-              key="main" 
+              key="main"
               title={<IntlMessages id="sidebar.main" />}
             >
-               <Menu.Item key="sample">
-              <Link to="/sample">
-                <i className="icon bi-speedometer"></i>
-                <span>
-                  <IntlMessages id="sidebar.samplePage" />
-                </span>
-              </Link>
-            </Menu.Item>
-            <MenuItemGroup
-            key='master'
-            title={<IntlMessages id="sidebar.master" />}
-            >
-            <Menu.Item key="driver">
-              <Link to="/masterdata/driver">
-                <i className="icon icon-widgets" />
-                <span>
-                  <IntlMessages id="sidebar.driver" />
-                </span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="vehicle">
-              <Link to="/masterdata/vehicle">
-                <i className="icon icon-widgets" />
-                <span>
-                  <IntlMessages id="sidebar.vehicle" />
-                </span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="detailsp">
-              <Link to="/masterdata/detailsp">
-                <i className="icon icon-widgets" />
-                <span>
-                  <IntlMessages id="sidebar.detailsp" />
-                </span>
-              </Link>
-            </Menu.Item>
-            </MenuItemGroup>
-            <Menu.Item key="byunit">
-              <Link to="/monitoring/byunit">
-                <i className="icon icon-widgets" />
-                <span>
-                  <IntlMessages id="sidebar.byunit" />
-                </span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="bysm">
-              <Link to="/monitoring/bysm">
-                <i className="icon icon-widgets" />
-                <span>
-                  <IntlMessages id="sidebar.bysm" />
-                </span>
-              </Link>
-            </Menu.Item>
-            </MenuItemGroup>
+              <Menu.Item key="sample">
+                <Link to="/sample">
+                  <i className="icon bi-speedometer"></i>
+                  <span>
+                    <IntlMessages id="sidebar.samplePage" />
+                  </span>
+                </Link>
+              </Menu.Item>
+             
+                <SubMenu
+                  key="master"
+                  title='Monitoring'
+                >
+                  <Menu.Item key="driver">
+                    <Link to="/masterdata/driver">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="sidebar.driver" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="vehicle">
+                    <Link to="/masterdata/vehicle">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="sidebar.vehicle" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="detailsp">
+                    <Link to="/masterdata/detailsp">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="sidebar.detailsp" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="SP List">
+                    <Link to="/masterdata/splist">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="SP List" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+              </MenuItemGroup>
+              <Menu.Item key="byunit">
+                <Link to="/monitoring/byunit">
+                  <i className="icon icon-widgets" />
+                  <span>
+                    <IntlMessages id="sidebar.byunit" />
+                  </span>
+                </Link>
+              </Menu.Item>
+              <Menu.Item key="bysm">
+                <Link to="/monitoring/bysm">
+                  <i className="icon icon-widgets" />
+                  <span>
+                    <IntlMessages id="sidebar.bysm" />
+                  </span>
+                </Link>
+              </Menu.Item>
           </Menu>
         </CustomScrollbars>
       </div>

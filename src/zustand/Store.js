@@ -17,21 +17,6 @@ const store = create((set) => ({
     );
     set({ posts: api.data.data.order });
   },
-  onDriver: [],
-  toggleDriver: async (driverId) => {
-    try {
-      const response = await axios.post(`${Baseurl}driver/ready-driver`, {
-        id: 717,
-      }, {
-        headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEwOTk5NTIsImV4cCI6MTY4MTcwNDc1Mn0.zSoGEIfPa_y0AntMy3NMacUzl5IE71Q505hMW4OaoQo',
-          'Content-Type': 'application/json',
-        },
-      });
-      set({ onDriver: response.status });
-    } catch (error) {
-      console.error(error);
-    }
-  },
+ 
 }));
 export default store;
