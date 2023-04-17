@@ -10,12 +10,12 @@ function SpList() {
   const fetchPosts = useSpStore((state) => state.fetchPosts);
   const [currentPage, setCurrentPage] = useState(1);
   const spDetails = useSpStore((state) => state.spDetails);
-  const fetchSpDetails = useSpStore((state) => state.fetchSpDetails);
+  // const fetchSpDetails = useSpStore((state) => state.fetchSpDetails);
 
   console.log(spDetails, `test`);
   useEffect(() => {
     fetchPosts();
-    fetchSpDetails();
+    // fetchSpDetails();
   }, [fetchPosts]);
 
   const itemsPerPage = 10;
@@ -57,10 +57,10 @@ function SpList() {
       name: "Service",
       selector: (spList) => spList.service,
     },
-    {
-      name: "Vehicle",
-      selector: (spList) => spList.year,
-    },
+    // {
+    //   name: "Vehicle",
+    //   selector: (spList) => spList.year,
+    // },
     {
       name: "Pickup Date",
       selector: (spList) => spList.pickupDate,
@@ -80,10 +80,10 @@ function SpList() {
         }
       },
     },
-    {
-      name: "Act",
-      selector: (spList) => spList.year,
-    },
+    // {
+    //   name: "Act",
+    //   selector: (spList) => spList.year,
+    // },
     
     {
       name: "OPS",
@@ -98,10 +98,10 @@ function SpList() {
           <Tag color="red">Waiting</Tag>
         ),
     },
-    {
-      name: "Purch",
-      selector: (spList) => spList.year,
-    },
+    // {
+    //   name: "Purch",
+    //   selector: (spList) => spList.year,
+    // },
   ];
 
   return (

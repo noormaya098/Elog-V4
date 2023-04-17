@@ -14,7 +14,6 @@ function DetailSP() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(`No SPK: ${noSPK}, Nama: ${nama}, Foto: ${foto}`);
   };
   return (
     <div>

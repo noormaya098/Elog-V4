@@ -20,14 +20,14 @@ const useSpStore = create((set) => ({
     set({ nama: namaArr });
     set({ posts: api.data.data.order });
   },
-  fetchSpDetails: async (idmp) => {
-    const getidmp = await axios.get(`${baseUrl}sp/get-SP-detail?idmp=${idmp}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    set((state) => ({ spDetails: [...state.spDetails, getidmp.data.data] }));
-  },
+  // fetchSpDetails: async (idmp) => {
+  //   const getidmp = await axios.get(`${baseUrl}sp/get-SP-detail?idmp=${idmp}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+  //   set((state) => ({ spDetails: [...state.spDetails, getidmp.data.data] }));
+  // },
 }));
 
 export default useSpStore;
