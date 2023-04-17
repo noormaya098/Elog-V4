@@ -16,10 +16,10 @@ import useVehicleStore from "../../Monitoring/By sm/api/GetIdDriver";
 const Vehicle = () => {
   const posts  = Gettype((state) => state.posts);
   const fetchPosts = Gettype((state) => state.fetchPosts);
-  const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
-  const vehicles = useVehicleStore((state) => state.vehicles);
+  // const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
+  // const vehicles = useVehicleStore((state) => state.vehicles);
 
-console.log(`ini id`,vehicles);
+// console.log(`ini id`,vehicles);
 
 
   const [getvehicle, setGetVehicle] = useState("");
@@ -44,9 +44,8 @@ console.log(`ini id`,vehicles);
   };
   useEffect(() => {
     getapivehicle();
-    fetchPosts();
-    fetchVehicles()
-  }, );
+    // fetchPosts();
+  },[] );
 
   const columns = [
     {
