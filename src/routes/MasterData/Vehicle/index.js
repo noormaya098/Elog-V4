@@ -1,8 +1,7 @@
 import React from "react";
-import { Container, Col, Row, Modal,  Image,Form } from "react-bootstrap/";
+import { Container, Col, Row, Modal, Form, Image } from "react-bootstrap/";
 import { Card } from "antd";
 import { Button } from "antd";
-import { Space, Table, Tag } from "antd";
 import Swal from "sweetalert2";
 import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
@@ -68,21 +67,30 @@ const Vehicle = () => {
       selector: (row) => row.driverName,
     },
   ];
-
-  const api = async (tipeid) => {
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [DriverId, setDriverId] = useState("");
+  const api = async (driverName) => {
     try {
       const response = await axios.get(
-        `${Baseurl}vehicle/get-select?vehicleType=${tipeid}`,
+        `${Baseurl}vehicle/get-select?vehicleType=${driverName}`,
         {
           headers: {
             Authorization: `token ${Token}`,
           },
         }
       );
-      
+
       const { data } = response.data;
+      // const {iddriverapi} = response.data.driverName;
       if (Array.isArray(data.driverType)) {
         setTipe(data.driverType);
+        setDriverId(
+          data.driverName.map((driver) => ({
+            driverId: driver.driverId,
+            driverName: driver.driverName,
+          }))
+        );
+        console.log(DriverId);
       } else {
         console.error("Invalid data structure received");
       }
@@ -90,15 +98,6 @@ const Vehicle = () => {
       console.error(error);
     }
   };
-
-  
-  const handleChange = (e) => {
-    setjenis_kendaraan(e.target.value);
-    console.log("Menu dipilih:", e.target.value);
-  };
-
-
-  console.log(`ini tipe`, Tipe);
 
   ///state create vehicle
   const [imgUpload, setImgUpload] = useState(null);
@@ -108,6 +107,7 @@ const Vehicle = () => {
   const [jenis_kendaraan, setjenis_kendaraan] = useState("");
   const [merk_mobil, setmerk_mobil] = useState("");
   const [tahun_mobil, settahun_mobil] = useState("");
+  const [id_driver, setid_driver] = useState("");
   const [warna_plat, setwarna_plat] = useState("");
   const [tgl_beli, settgl_beli] = useState("");
   const [panjang, setpanjang] = useState("");
@@ -132,6 +132,7 @@ const Vehicle = () => {
         body: JSON.stringify({
           imgUpload,
           kode_kendaraan,
+          id_driver,
           mitraName,
           no_polisi,
           jenis_kendaraan,
@@ -170,7 +171,6 @@ const Vehicle = () => {
     } catch (errors) {}
   };
 
-  
   return (
     <div>
       <div className="gx-d-flex justify-content-start">
@@ -183,7 +183,6 @@ const Vehicle = () => {
             Add Vehicle
           </Button>
           <DataTable columns={columns} data={getvehicle} pagination />
-          {/* Tambahkan data table di sini */}
         </Card>
         {/* Modal */}
         <Modal show={show} size="lg" onHide={handleClose}>
@@ -193,6 +192,7 @@ const Vehicle = () => {
           <Modal.Body>
             <Form>
               <Row>
+                {/* Kolom 1 */}
                 <Col>
                   <Form.Group controlId="imgUpload">
                     <Form.Label>Upload Image:</Form.Label>
@@ -208,14 +208,15 @@ const Vehicle = () => {
                     />
                   </Form.Group>
                 </Col>
+                {/* Kolom 2 */}
                 <Col>
-                  <Form.Group>
+                  {/* <Form.Group>
                     <Form.Label>Mitra:</Form.Label>
                     <Form.Control
                       value={mitraName}
                       onChange={(e) => setMitraName(e.target.value)}
                     />
-                  </Form.Group>
+                  </Form.Group> */}
 
                   <Form.Group controlId="kodeKendaraan">
                     <Form.Label>Kode Kendaraan:</Form.Label>
@@ -228,10 +229,16 @@ const Vehicle = () => {
                   </Form.Group>
                   <Form.Group controlId="namaSupir">
                     <Form.Label>Nama Supir:</Form.Label>
-                    <Form.Select>
-                      <option value="menu1">Adi Purnomo</option>
-                      <option value="menu2">Menu 2</option>
-                      <option value="menu3">Menu 3</option>
+                    <Form.Select
+                      value={id_driver}
+                      onChange={(e) => setid_driver(e.target.value)}
+                    >
+                      {DriverId &&
+                        DriverId.map((driver) => (
+                          <option key={driver.driverId} value={driver.driverId}>
+                            {driver.driverName}
+                          </option>
+                        ))}
                     </Form.Select>
                   </Form.Group>
                   <Form.Group controlId="tahun">
@@ -284,6 +291,7 @@ const Vehicle = () => {
                   </Form.Group>
                 </Col>
 
+                {/* Kolom 3 */}
                 <Col>
                   <Form.Group>
                     <Form.Label>No Polisi:</Form.Label>
@@ -298,15 +306,15 @@ const Vehicle = () => {
                     <Form.Label>Vehicle:</Form.Label>
                     <Form.Select
                       value={jenis_kendaraan}
-                      onChange={handleChange} // Tambahkan event handler di sini
+                      onChange={(e) => {
+                        setjenis_kendaraan(e.target.value);
+                        api(e.target.value);
+                      }}
                     >
                       {Array.isArray(Tipe) &&
                         Tipe.map((item) => (
-                          <option
-                            key={item.id}
-                            value={item.tipe}
-                            style={{ color: "red" }}
-                          >
+                          <option key={item.id} value={item.tipe}>
+                            {item.tipe}
                           </option>
                         ))}
                     </Form.Select>
