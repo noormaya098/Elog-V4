@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Card } from "antd";
 const Driver = () => {
-  const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEwOTgyMTcsImV4cCI6MTY4MTcwMzAxN30.JqwiPCZzsts9rkA-veeSNi8aRHjKoXkNyOpEMQtMTNQ`;
+  const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEzNjg2MjcsImV4cCI6MTY4MTk3MzQyN30.SkUfT87Cn1EtxbYVGWxX54dxRYd9r2n9rA1RvEGpsDo`;
   const url = `https://api.eurekalogistics.co.id/driver/update-driver/`;
   const buatuser = "https://api.eurekalogistics.co.id/driver/create-driver";
   const { posts, fetchPosts } = useStore();
@@ -56,8 +56,7 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEwOTgyMTcsImV4cCI6MTY4MTcwMzAxN30.JqwiPCZzsts9rkA-veeSNi8aRHjKoXkNyOpEMQtMTNQ",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           id: selectedDriver.driverId, // driver id yang dipilih
@@ -108,8 +107,7 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEwOTgyMTcsImV4cCI6MTY4MTcwMzAxN30.JqwiPCZzsts9rkA-veeSNi8aRHjKoXkNyOpEMQtMTNQ",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           nik,
@@ -168,8 +166,7 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEwOTgyMTcsImV4cCI6MTY4MTcwMzAxN30.JqwiPCZzsts9rkA-veeSNi8aRHjKoXkNyOpEMQtMTNQ",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           id: editedDriver.driverId,
@@ -199,7 +196,7 @@ const Driver = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEwOTgyMTcsImV4cCI6MTY4MTcwMzAxN30.JqwiPCZzsts9rkA-veeSNi8aRHjKoXkNyOpEMQtMTNQ",
+            `Bearer ${token}`,
         },
         body: JSON.stringify({
           id: editedDriver.driverId,

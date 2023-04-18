@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Col, Row, Modal, Form, Image } from "react-bootstrap/";
+import { Container, Col, Row, Modal,  Image,Form } from "react-bootstrap/";
 import { Card } from "antd";
 import { Button } from "antd";
 import { Space, Table, Tag } from "antd";
@@ -14,20 +14,14 @@ import Gettype from "../../Monitoring/By sm/api/GetIdDriver";
 import useVehicleStore from "../../Monitoring/By sm/api/GetIdDriver";
 
 const Vehicle = () => {
-  const posts  = Gettype((state) => state.posts);
+  const posts = Gettype((state) => state.posts);
   const fetchPosts = Gettype((state) => state.fetchPosts);
-  // const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
-  // const vehicles = useVehicleStore((state) => state.vehicles);
-
-// console.log(`ini id`,vehicles);
-
-
+  const [Tipe, setTipe] = useState("");
   const [getvehicle, setGetVehicle] = useState("");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  console.log(`ini postid`, posts);
   const getapivehicle = async () => {
     axios
       .get(`${Baseurl}vehicle/get-vehicle?limit=10&page=1&keyword=`, {
@@ -44,8 +38,8 @@ const Vehicle = () => {
   };
   useEffect(() => {
     getapivehicle();
-    // fetchPosts();
-  },[] );
+    api();
+  }, []);
 
   const columns = [
     {
@@ -75,23 +69,36 @@ const Vehicle = () => {
     },
   ];
 
-  const api = async () => {
+  const api = async (tipeid) => {
     try {
-      const response = await axios.get(`${Baseurl}vehicle/get-select?vehicleType=`, {
-        headers: {
-          'Authorization': `token ${Token}`,
+      const response = await axios.get(
+        `${Baseurl}vehicle/get-select?vehicleType=${tipeid}`,
+        {
+          headers: {
+            Authorization: `token ${Token}`,
+          },
         }
-      });
-      // console.log(response.data.data);
+      );
+      
+      const { data } = response.data;
+      if (Array.isArray(data.driverType)) {
+        setTipe(data.driverType);
+      } else {
+        console.error("Invalid data structure received");
+      }
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+
   
-  api();
-  
+  const handleChange = (e) => {
+    setjenis_kendaraan(e.target.value);
+    console.log("Menu dipilih:", e.target.value);
+  };
 
 
+  console.log(`ini tipe`, Tipe);
 
   ///state create vehicle
   const [imgUpload, setImgUpload] = useState(null);
@@ -163,6 +170,7 @@ const Vehicle = () => {
     } catch (errors) {}
   };
 
+  
   return (
     <div>
       <div className="gx-d-flex justify-content-start">
@@ -185,7 +193,6 @@ const Vehicle = () => {
           <Modal.Body>
             <Form>
               <Row>
-                {/* Kolom 1 */}
                 <Col>
                   <Form.Group controlId="imgUpload">
                     <Form.Label>Upload Image:</Form.Label>
@@ -201,7 +208,6 @@ const Vehicle = () => {
                     />
                   </Form.Group>
                 </Col>
-                {/* Kolom 2 */}
                 <Col>
                   <Form.Group>
                     <Form.Label>Mitra:</Form.Label>
@@ -278,7 +284,6 @@ const Vehicle = () => {
                   </Form.Group>
                 </Col>
 
-                {/* Kolom 3 */}
                 <Col>
                   <Form.Group>
                     <Form.Label>No Polisi:</Form.Label>
@@ -291,10 +296,20 @@ const Vehicle = () => {
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Vehicle:</Form.Label>
-                    <Form.Control
+                    <Form.Select
                       value={jenis_kendaraan}
-                      onChange={(e) => setjenis_kendaraan(e.target.value)}
-                    />
+                      onChange={handleChange} // Tambahkan event handler di sini
+                    >
+                      {Array.isArray(Tipe) &&
+                        Tipe.map((item) => (
+                          <option
+                            key={item.id}
+                            value={item.tipe}
+                            style={{ color: "red" }}
+                          >
+                          </option>
+                        ))}
+                    </Form.Select>
                   </Form.Group>
                   <Form.Group controlId="MerkMobil">
                     <Form.Label>Merk Mobil:</Form.Label>
@@ -314,33 +329,51 @@ const Vehicle = () => {
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>No BPKB:</Form.Label>
-                    <Form.Control type="text"   value={no_bpkb}
-                      onChange={(e) => setno_bpkb(e.target.value)} />
+                    <Form.Control
+                      type="text"
+                      value={no_bpkb}
+                      onChange={(e) => setno_bpkb(e.target.value)}
+                    />
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Tanggal Stnk:</Form.Label>
-                    <Form.Control type="date"   value={tgl_stnk}
-                      onChange={(e) => settgl_stnk(e.target.value)} />
+                    <Form.Control
+                      type="date"
+                      value={tgl_stnk}
+                      onChange={(e) => settgl_stnk(e.target.value)}
+                    />
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Lebar:</Form.Label>
-                    <Form.Control type="text"   value={lebar}
-                      onChange={(e) => setlebar(e.target.value)} />
+                    <Form.Control
+                      type="text"
+                      value={lebar}
+                      onChange={(e) => setlebar(e.target.value)}
+                    />
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Kapasitas:</Form.Label>
-                    <Form.Control type="text"   value={kapasitas}
-                      onChange={(e) => setkapasitas(e.target.value)} />
+                    <Form.Control
+                      type="text"
+                      value={kapasitas}
+                      onChange={(e) => setkapasitas(e.target.value)}
+                    />
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Kubikasi:</Form.Label>
-                    <Form.Control type="text"   value={kubikasi}
-                      onChange={(e) => setkubikasi(e.target.value)} />
+                    <Form.Control
+                      type="text"
+                      value={kubikasi}
+                      onChange={(e) => setkubikasi(e.target.value)}
+                    />
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Lokasi:</Form.Label>
-                    <Form.Control type="text"   value={location}
-                      onChange={(e) => setlocation(e.target.value)} />
+                    <Form.Control
+                      type="text"
+                      value={location}
+                      onChange={(e) => setlocation(e.target.value)}
+                    />
                   </Form.Group>
                 </Col>
               </Row>

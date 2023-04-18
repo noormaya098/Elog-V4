@@ -1,7 +1,6 @@
 import React from "react";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
-
 import CustomScrollbars from "util/CustomScrollbars";
 import SidebarLogo from "./SidebarLogo";
 import UserProfile from "./UserProfile";
