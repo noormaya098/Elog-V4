@@ -1,9 +1,10 @@
 import axios from "axios";
 import create from "zustand";
+import Token from "../../../../Api/Token";
 
 const baseUrl = `http://api.eurekalogistics.co.id/`;
-const urlGetSP = "sp/get-SP?limit=100&page=1&keyword=";
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEzNjg2MjcsImV4cCI6MTY4MTk3MzQyN30.SkUfT87Cn1EtxbYVGWxX54dxRYd9r2n9rA1RvEGpsDo";
+const urlGetSP = "sp/get-SP?limit=10&page=1&keyword=";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJqb2JkZXNrIjoib3BlcmFzaW9uYWwiLCJpYXQiOjE2ODI0Nzk3MzgsImV4cCI6MTY4MjU2NjEzOH0.O5EHTzaDAGKPo3F9EwP79GrOGH3qFG5fKCddB4k-oCk";
 
 const useSpStore = create((set) => ({
   posts: [],
@@ -12,7 +13,7 @@ const useSpStore = create((set) => ({
   fetchPosts: async () => {
     const api = await axios.get(baseUrl + urlGetSP, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${Token}`,
       },
     });
     const namaArr = api.data.data.order.map((item) => item.salesName);
@@ -20,14 +21,7 @@ const useSpStore = create((set) => ({
     set({ nama: namaArr });
     set({ posts: api.data.data.order });
   },
-  // fetchSpDetails: async (idmp) => {
-  //   const getidmp = await axios.get(`${baseUrl}sp/get-SP-detail?idmp=${idmp}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   });
-  //   set((state) => ({ spDetails: [...state.spDetails, getidmp.data.data] }));
-  // },
 }));
 
 export default useSpStore;
+

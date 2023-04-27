@@ -1,108 +1,105 @@
 import { Card, Pagination } from "antd";
 import React, { useEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import useSpStore from "./Api Get/GetSPList";
 import { Tag } from "antd";
-
+import Token from "../../../Api/Token";
+import Baseurl from "../../../Api/BaseUrl";
+import axios from "axios";
 function SpList() {
-  const posts = useSpStore((state) => state.posts);
-  const fetchPosts = useSpStore((state) => state.fetchPosts);
+  // const posts = useSpStore((state) => state.posts);
+  // const fetchPosts = useSpStore((state) => state.fetchPosts);
+  const [DataTable, setDataTable] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const spDetails = useSpStore((state) => state.spDetails);
-  // const fetchSpDetails = useSpStore((state) => state.fetchSpDetails);
+  const [idmpData, setIdmpData] = useState([]);
 
-  console.log(spDetails, `test`);
-  useEffect(() => {
-    fetchPosts();
-    // fetchSpDetails();
-  }, [fetchPosts]);
+  const DataSp = async () => {
+    const urlData = await axios.get(
+      `${Baseurl}sp/get-SP?limit=10&page=1&keyword=`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    const idmpArr = urlData.data.data.order.map((item) => item.idmp);
+    setIdmpData(idmpArr);
 
-  const itemsPerPage = 10;
-  const totalItems = posts.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+    setDataTable(urlData.data.data.order);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentPosts = posts.slice(startIndex, endIndex);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+    console.log(`setdata`, DataTable);
+    console.log(`inissmsp`, idmpData);
   };
 
-  // const handleButtonClick = (index) => {
-  //   const actualIndex = (currentPage - 1) * itemsPerPage + index;
-  //   const idmp = posts[actualIndex].idmp;
-  //   fetchSpDetails(idmp);
-  // };
+  useEffect(() => {
+    DataSp();
+  }, []);
 
-  const JudulTable = [
-    {
-      name: "No.",
-      selector: (spList) => spList.no,
-    },
-    {
-      name: "SP ID",
-      selector: (spList) => spList.sp,
-    },
-    {
-      name: "Perusahaan",
-      selector: (spList) => spList.perusahaan,
-    },
-    {
-      name: "Marketing",
-      selector: (posts) => posts.salesName,
-    },
-    {
-      name: "Service",
-      selector: (spList) => spList.service,
-    },
-    // {
-    //   name: "Vehicle",
-    //   selector: (spList) => spList.year,
-    // },
-    {
-      name: "Pickup Date",
-      selector: (spList) => spList.pickupDate,
-    },
-    {
-      name: "Destination",
-      selector: (spList) => {
-        // Find the matching spDetail object in spDetails based on spList.idmp
-        const spDetail = spDetails.find((detail) => detail.idmp == spList.destination);
-    
-        // If a matching spDetail is found, return its value (assuming it has a 'value' property)
-        if (spDetail) {
-          return spDetail.destination;
-        } else {
-          // If there's no match, you can return a default value or leave it empty
-          return "No matching data";
+  const getIdmpDetails = async (idmp) => {
+    try {
+      const response = await axios.get(
+        `${Baseurl}sp/get-SP-detail?idmp=${idmp}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
         }
-      },
-    },
-    // {
-    //   name: "Act",
-    //   selector: (spList) => spList.year,
-    // },
-    
-    {
-      name: "OPS",
-      selector: (spList) =>
-        spList.approveOps == "Y" ? (
-          <Tag color="green">Approved</Tag>
-        ) : spList.dateApproveOps == "Invalid date" ? (
-          <Tag color="red">Waiting</Tag>
-        ) : spList.dateApproveOps != "Invalid  date" ? (
-          <Tag color="orange">Reject</Tag>
-        ) : (
-          <Tag color="red">Waiting</Tag>
-        ),
-    },
-    // {
-    //   name: "Purch",
-    //   selector: (spList) => spList.year,
-    // },
-  ];
+      );
+      const dataKendaraan = response.data.data.map((items) => ({
+        kendaraan: items.kendaraan,
+        destination: items.pickupAddress,
+      }));
+      return dataKendaraan;
+    } catch (error) {
+      console.error("There was a problem with the axios request:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await DataSp();
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (idmpData && idmpData) {
+      idmpData.forEach((idmp) => {
+        getIdmpDetails(idmp);
+      });
+    }
+  }, [idmpData]);
+
+  const [combinedData, setCombinedData] = useState([]);
+
+  useEffect(() => {
+    const updateDataWithKendaraan = async () => {
+      if (idmpData && idmpData.length > 0) {
+        const updatedData = await Promise.all(
+          DataTable.map(async (item) => {
+            const result = await getIdmpDetails(item.idmp);
+            return {
+              ...item,
+              kendaraan: result[0].kendaraan,
+              destination: result[0].destination,
+            };
+          })
+        );
+        setCombinedData(updatedData);
+      }
+    };
+
+    updateDataWithKendaraan();
+  }, [idmpData, DataTable]);
+
+  useEffect(() => {
+    setCombinedData(DataTable);
+  }, [DataTable]);
 
   return (
     <div>
@@ -111,13 +108,48 @@ function SpList() {
           <Col sm={3}>
             <h4>SP List</h4>
           </Col>
-          <DataTable columns={JudulTable} data={currentPosts} />
-          <Pagination
-            current={currentPage}
-            total={totalItems}
-            pageSize={itemsPerPage}
-            onChange={handlePageChange}
-          />
+          <Table bordered responsive>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>SP ID</th>
+                <th>Perusahaan</th>
+                <th>Marketing</th>
+                <th>Service</th>
+                <th>Vehicle</th>
+                <th>Pickup Date</th>
+                <th>Destination</th>
+                <th>Act</th>
+                <th>OPS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {combinedData.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.no}</td>
+                  <td>{item.sp}</td>
+                  <td>{item.perusahaan}</td>
+                  <td>{item.salesName}</td>
+                  <td>{item.service}</td>
+                  <td>{item.kendaraan || "N/A"}</td>
+                  <td>{item.pickupDate}</td>
+                  <td>{item.destination}</td>
+                  <td>{item.act}</td>
+                  <td>
+                    {item.approveOps == "Y" ? (
+                      <Tag color="green">Approved</Tag>
+                    ) : item.dateApproveOps == "Invalid date" ? (
+                      <Tag color="red">Waiting</Tag>
+                    ) : item.dateApproveOps != "Invalid date" ? (
+                      <Tag color="orange">Reject</Tag>
+                    ) : (
+                      <Tag color="red">Waiting</Tag>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </Row>
       </Card>
     </div>

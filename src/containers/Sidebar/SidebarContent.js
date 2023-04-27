@@ -65,7 +65,10 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                 </Link>
               </Menu.Item>
              
-                
+                <SubMenu
+                  key="master"
+                  title='Monitoring'
+                >
                   <Menu.Item key="driver">
                     <Link to="/masterdata/driver">
                       <i className="icon icon-widgets" />
@@ -98,6 +101,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
+                </SubMenu>
               </MenuItemGroup>
               <Menu.Item key="byunit">
                 <Link to="/monitoring/byunit">
