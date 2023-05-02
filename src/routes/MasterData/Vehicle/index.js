@@ -113,6 +113,7 @@ const Vehicle = () => {
   const [panjang, setpanjang] = useState("");
   const [lebar, setlebar] = useState("");
   const [tinggi, settinggi] = useState("");
+  const [vendor, setVendor] = useState("");
   const [no_bpkb, setno_bpkb] = useState("");
   const [stnk, setstnk] = useState("");
   const [tgl_stnk, settgl_stnk] = useState("");
@@ -136,6 +137,7 @@ const Vehicle = () => {
           mitraName,
           no_polisi,
           jenis_kendaraan,
+          vendor,
           merk_mobil,
           tahun_mobil,
           warna_plat,
@@ -157,7 +159,7 @@ const Vehicle = () => {
         Swal.fire({
           icon: "success",
           title: "Success!",
-          text: "Driver Berhasil Di Buat!",
+          text: "Vehicle Berhasil Di Buat!",
           timer: 2000,
           timerProgressBar: true,
         });
@@ -210,13 +212,13 @@ const Vehicle = () => {
                 </Col>
                 {/* Kolom 2 */}
                 <Col>
-                  {/* <Form.Group>
+                  <Form.Group>
                     <Form.Label>Mitra:</Form.Label>
                     <Form.Control
-                      value={mitraName}
-                      onChange={(e) => setMitraName(e.target.value)}
+                      value={vendor}
+                      onChange={(e) => setVendor(e.target.value)}
                     />
-                  </Form.Group> */}
+                  </Form.Group>
 
                   <Form.Group controlId="kodeKendaraan">
                     <Form.Label>Kode Kendaraan:</Form.Label>
@@ -233,6 +235,7 @@ const Vehicle = () => {
                       value={id_driver}
                       onChange={(e) => setid_driver(e.target.value)}
                     >
+                      <option value="">Pilih Supir</option>
                       {DriverId &&
                         DriverId.map((driver) => (
                           <option key={driver.driverId} value={driver.driverId}>
@@ -303,7 +306,7 @@ const Vehicle = () => {
                     />
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Vehicle:</Form.Label>
+                    <Form.Label>Kendaraan:</Form.Label>
                     <Form.Select
                       value={jenis_kendaraan}
                       onChange={(e) => {
@@ -311,6 +314,7 @@ const Vehicle = () => {
                         api(e.target.value);
                       }}
                     >
+                      <option >Pilih Kendaraan</option>
                       {Array.isArray(Tipe) &&
                         Tipe.map((item) => (
                           <option key={item.id} value={item.tipe}>

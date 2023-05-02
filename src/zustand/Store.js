@@ -1,8 +1,7 @@
 import create from "zustand";
 import axios from "axios";
+import Token from "../Api/Token";
 const Baseurl = "https://api.eurekalogistics.co.id/";
-const Token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEzNjg2MjcsImV4cCI6MTY4MTk3MzQyN30.SkUfT87Cn1EtxbYVGWxX54dxRYd9r2n9rA1RvEGpsDo";
 
 const store = create((set) => ({
   posts: [],
@@ -17,6 +16,5 @@ const store = create((set) => ({
     );
     set({ posts: api.data.data.order });
   },
- 
 }));
 export default store;

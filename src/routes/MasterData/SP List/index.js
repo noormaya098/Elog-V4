@@ -1,4 +1,4 @@
-import { Card, Pagination } from "antd";
+import { Button, Card, Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { Col, Row, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -7,7 +7,10 @@ import { Tag } from "antd";
 import Token from "../../../Api/Token";
 import Baseurl from "../../../Api/BaseUrl";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 function SpList() {
+  // const navigate = useNavigate();
   // const posts = useSpStore((state) => state.posts);
   // const fetchPosts = useSpStore((state) => state.fetchPosts);
   const [DataTable, setDataTable] = useState([]);
@@ -83,24 +86,39 @@ function SpList() {
         const updatedData = await Promise.all(
           DataTable.map(async (item) => {
             const result = await getIdmpDetails(item.idmp);
-            return {
-              ...item,
-              kendaraan: result[0].kendaraan,
-              destination: result[0].destination,
-            };
+            if (result && result.length > 0) {
+              return {
+                ...item,
+                kendaraan: result[0].kendaraan || "N/A",
+                destination: result[0].destination || "N/A",
+              };
+            } else {
+              return {
+                ...item,
+                kendaraan: "N/A",
+                destination: "N/A",
+              };
+            }
           })
         );
         setCombinedData(updatedData);
       }
     };
 
+    
     updateDataWithKendaraan();
   }, [idmpData, DataTable]);
 
   useEffect(() => {
     setCombinedData(DataTable);
   }, [DataTable]);
+  
+ 
+  const history = useHistory();
 
+  const handleDetailClick = (idmp) => {
+    history.push(`/masterdata/detailsp/${idmp}`);
+  };
   return (
     <div>
       <Card>
@@ -108,7 +126,7 @@ function SpList() {
           <Col sm={3}>
             <h4>SP List</h4>
           </Col>
-          <Table bordered responsive>
+          <Table responsive="lg">
             <thead>
               <tr>
                 <th>No</th>
@@ -119,8 +137,9 @@ function SpList() {
                 <th>Vehicle</th>
                 <th>Pickup Date</th>
                 <th>Destination</th>
-                <th>Act</th>
+                <th>Tanggal Approved / Decline</th>
                 <th>OPS</th>
+                <th>Opsi</th>
               </tr>
             </thead>
             <tbody>
@@ -134,7 +153,7 @@ function SpList() {
                   <td>{item.kendaraan || "N/A"}</td>
                   <td>{item.pickupDate}</td>
                   <td>{item.destination}</td>
-                  <td>{item.act}</td>
+                  <td>{item.dateApproveOps}</td>
                   <td>
                     {item.approveOps == "Y" ? (
                       <Tag color="green">Approved</Tag>
@@ -145,6 +164,15 @@ function SpList() {
                     ) : (
                       <Tag color="red">Waiting</Tag>
                     )}
+                  </td>
+                  <td>
+                    <Button
+                      size="lg"
+                      type="primary"
+                      onClick={() => handleDetailClick(item.idmp)}
+                    >
+                      Detail
+                    </Button>
                   </td>
                 </tr>
               ))}

@@ -1,39 +1,34 @@
-import React from 'react'
-import { Table } from 'react-bootstrap'
+import React from "react";
+import { Table } from "react-bootstrap";
 
 function IsiItungan() {
   return (
     <div>
-        <Table responsive>
-              <thead>
-                <tr style={{ fontWeight: 'bold' }}>
-                  <th>No</th>
-                  <th>Destination</th>
-                  <th>Shipment</th>
-                  <th>Item</th>
-                  <th>Berat</th>
-                  <th>Exp</th>
-                  <th>Koli</th>
-                  <th>Biaya Bongkar</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>-</td>
-                  <td>-</td>
-                </tr>
-              </tbody>
-            </Table>
+      <Table responsive>
+        <thead>
+          <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
+            <td>No</td>
+            <td>Destination 1</td>
+            <td>Via</td>
+            <td>Item</td>
+            <td>Berat</td>
+            <td>Qyt</td>
+            <td>Exp</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </Table>
     </div>
-  )
+  );
 }
 
-export default IsiItungan
+export default IsiItungan;

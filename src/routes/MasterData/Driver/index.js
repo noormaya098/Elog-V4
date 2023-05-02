@@ -13,23 +13,34 @@ import useStore from "../../../zustand/Store";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Card } from "antd";
+import Token from "../../../Api/Token";
 const Driver = () => {
-  const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJpYXQiOjE2ODEzNjg2MjcsImV4cCI6MTY4MTk3MzQyN30.SkUfT87Cn1EtxbYVGWxX54dxRYd9r2n9rA1RvEGpsDo`;
   const url = `https://api.eurekalogistics.co.id/driver/update-driver/`;
   const buatuser = "https://api.eurekalogistics.co.id/driver/create-driver";
   const { posts, fetchPosts } = useStore();
   const { onDriver, toggleDriver } = useStore();
-
   const [showModal, setShowModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState({});
   const [editedDriver, setEditedDriver] = useState({
     nama: "",
-    driverId: "",
+    driverKtp: "",
     driverName: "",
     simType: "",
     division: "",
-    no_ktp: "",
+    driverId: "", // Ganti driverKtp dengan driverId
+    no_sim: "",
+    tgl_lahir:"",
+    vehicle: "",
+    placeOfBirth: "",
+    driverAddress: "",
+    driverReligion: "",
+    noTelp1: "",
+    noTelp2: "",
+    driverNote: "",
+    dateBirth: "", // Tambahkan dateBirth
+    dateIn: "", // Tambahkan dateIn
   });
+  
   // const handleClose = () => setShowModal(false);
   const handleClosed = () => setShowModal(false);
 
@@ -56,17 +67,25 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${Token}`,
         },
         body: JSON.stringify({
           id: selectedDriver.driverId, // driver id yang dipilih
           nama: editedDriver.driverName, // value dari form nama
-          jenis_sim: editedDriver.simType, // nik dari driver yang dipilih
-          no_ktp: editedDriver.driverKtp, // nik dari driver yang dipilih
+          jenis_sim: editedDriver.simType, // jenis SIM dari driver yang dipilih
+          no_ktp: editedDriver.driverKtp, // no KTP dari driver yang dipilih
           divisi: editedDriver.division, // value dari form divisi
+          no_sim: editedDriver.no_sim,
+          tgl_lahir:editedDriver.tgl_lahir,
+          vehicle: editedDriver.vehicle,
+          placeOfBirth: editedDriver.placeOfBirth,
+          driverAddress: editedDriver.driverAddress,
+          driverReligion: editedDriver.driverReligion,
+          noTelp1: editedDriver.noTelp1,
+          noTelp2: editedDriver.noTelp2,
+          driverNote: editedDriver.driverNote,
         }),
       });
-      handleClose();
       if (response.ok) {
         fetchPosts();
         Swal.fire({
@@ -76,6 +95,7 @@ const Driver = () => {
           timer: 2000,
           timerProgressBar: true,
         });
+        handleClose();
       }
     } catch (error) {
       console.log(error);
@@ -107,7 +127,7 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${Token}`,
         },
         body: JSON.stringify({
           nik,
@@ -166,7 +186,7 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${Token}`,
         },
         body: JSON.stringify({
           id: editedDriver.driverId,
@@ -195,8 +215,7 @@ const Driver = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            `Bearer ${token}`,
+          Authorization: `Bearer ${Token}`,
         },
         body: JSON.stringify({
           id: editedDriver.driverId,
@@ -276,8 +295,9 @@ const Driver = () => {
                       <Form.Control
                         type="text"
                         placeholder="Masukkan Nomor SIM"
-                        value={no_sim}
-                        onChange={(e) => setNoSim(e.target.value)}
+                        name="no_sim"
+                        value={editedDriver.no_sim}
+                        onChange={(e)=>setNoSim(e.target.value)}
                       />
                     </Form.Group>
 
@@ -305,7 +325,7 @@ const Driver = () => {
                     <Form.Group controlId="nama">
                       <Form.Label>Tanggal Lahir :</Form.Label>
                       <Form.Control
-                        type="text"
+                        type="date"
                         placeholder="Masukkan Nama"
                         value={tgl_lahir}
                         onChange={(e) => setTglLahir(e.target.value)}
@@ -340,22 +360,26 @@ const Driver = () => {
                         onChange={(e) => setNoTelp2(e.target.value)}
                       />
                     </Form.Group>
-                    <Form.Group controlId="nama">
+                    <Form.Group>
                       <Form.Label>Email :</Form.Label>
                       <Form.Control
                         type="email"
-                        placeholder="Masukkan Nama"
+                        placeholder="Masukkan Email"
                         value={email}
                         required
+                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
                         onChange={(e) => setEmail(e.target.value)}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        Harap masukkan email yang valid.
+                      </Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group controlId="nama">
                       <Form.Label>Tanggal Masuk :</Form.Label>
                       <Form.Control
-                        type="text"
-                        placeholder="Masukkan Nama"
+                        type="date"
+                        placeholder="Masukkan Tanggal Masuk"
                         value={tgl_masuk}
                         onChange={(e) => setTglMasuk(e.target.value)}
                       />
@@ -389,7 +413,7 @@ const Driver = () => {
           </Modal>
 
           {/* end addd driver */}
-          <Table striped bordered hover responsive className="text-center">
+          <Table   responsive className="text-center">
             <thead>
               <tr>
                 <th>No</th>
@@ -490,8 +514,8 @@ const Driver = () => {
                       <Form.Label>Tanggal Lahir :</Form.Label>
                       <Form.Control
                         type="date"
-                        name="driverKtp"
-                        value={editedDriver.dateBirth}
+                        name="tgl_lahir"
+                        value={editedDriver.tgl_lahir}
                         onChange={handleEditInputChange}
                         required
                       />
@@ -535,23 +559,31 @@ const Driver = () => {
                       <Form.Label>No SIM :</Form.Label>
                       <Form.Control
                         type="text"
-                        name="driverName"
-                        value={editedDriver.jenis_sim}
+                        name="no_sim" // Ubah dari driverName menjadi no_sim
+                        value={editedDriver.no_sim}
+                        onChange={handleEditInputChange}
+                        required
+                      />
+                      <Form.Label>Vehicle Type :</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="vehicle" // Ubah dari driverName menjadi vehicle
+                        value={editedDriver.vehicle}
                         onChange={handleEditInputChange}
                         required
                       />
                       <Form.Label>Tempat Lahir :</Form.Label>
                       <Form.Control
                         type="text"
-                        name="driverName"
-                        value={editedDriver.vehicle}
+                        name="placeOfBirth" // Tambahkan atribut name baru
+                        value={editedDriver.placeOfBirth}
                         onChange={handleEditInputChange}
                         required
                       />
                       <Form.Label>Alamat :</Form.Label>
                       <Form.Control
                         type="text"
-                        name="driverName"
+                        name="driverAddress" // Ubah dari driverName menjadi driverAddress
                         value={editedDriver.driverAddress}
                         onChange={handleEditInputChange}
                         required
@@ -559,7 +591,7 @@ const Driver = () => {
                       <Form.Label>Agama :</Form.Label>
                       <Form.Control
                         type="text"
-                        name="driverName"
+                        name="driverReligion" // Ubah dari driverName menjadi driverReligion
                         value={editedDriver.driverReligion}
                         onChange={handleEditInputChange}
                         required
@@ -567,7 +599,7 @@ const Driver = () => {
                       <Form.Label>No Telp 2 :</Form.Label>
                       <Form.Control
                         type="text"
-                        name="driverName"
+                        name="noTelp2" // Ubah dari driverName menjadi noTelp2
                         value={editedDriver.noTelp2}
                         onChange={handleEditInputChange}
                         required
@@ -575,8 +607,8 @@ const Driver = () => {
                       <Form.Label>Keterangan :</Form.Label>
                       <Form.Control
                         type="text"
-                        name="driverName"
-                        value={editedDriver.driverAddress}
+                        name="driverNote" // Tambahkan atribut name baru
+                        value={editedDriver.driverNote}
                         onChange={handleEditInputChange}
                         required
                       />
@@ -593,9 +625,9 @@ const Driver = () => {
               >
                 Save
               </Button>
-              <Button variant="secondary" onClick={handleClose}>
-                Close
-              </Button>
+              {/* <Button variant="secondary" onClick={handleClose}>
+                  Close
+                </Button> */}
               {/* End edit driver */}
             </Modal.Footer>
           </Modal>

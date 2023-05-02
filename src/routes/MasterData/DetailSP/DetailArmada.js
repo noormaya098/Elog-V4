@@ -12,11 +12,12 @@ const DetailArmada = () =>{
         </thead>
         <tbody>
           <tr style={{ fontWeight: 'bold' }}>
-            <td>No.</td>
-            <td>Armada</td>
-            <td>Vehicle</td>
-            <td>Driver</td>
-            <td>Tujuan</td>
+            <td>No Destination 1</td>
+            <td>Via</td>
+            <td>Item</td>
+            <td>Berat</td>
+            <td>Qyt</td>
+            <td>Exp</td>
           </tr>
         </tbody>
         </Table>
