@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 
-function IsiItungan() {
+function IsiItungan({destination , via , item , berat ,qty ,exp}) {
   return (
     <div>
       <Table responsive>
@@ -19,10 +19,11 @@ function IsiItungan() {
         <tbody>
           <tr>
             <td>1</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td>{destination}</td>
+            <td>{via}</td>
+            <td>{item}</td>
+            <td>{berat}</td>
+            <td>{qty}</td>
             <td>-</td>
           </tr>
         </tbody>

@@ -4,20 +4,14 @@ const DetailArmada = () =>{
     return(
         <div>
         <Table responsive border={1}>
-        <thead>
-          <tr style={{ fontWeight: 'bold' }}>
-            <th colSpan={5}> Detail Armada</th>
-            
-          </tr>
-        </thead>
         <tbody>
-          <tr style={{ fontWeight: 'bold' }}>
-            <td>No Destination 1</td>
-            <td>Via</td>
-            <td>Item</td>
-            <td>Berat</td>
-            <td>Qyt</td>
-            <td>Exp</td>
+          <tr style={{ fontWeight: 'bold'  , backgroundColor: '#f2dede'}}>
+            <td>Kode Kendaraan</td>
+            <td>Nama Mitra</td>
+            <td>Kendaraan</td>
+            <td>Supir</td>
+            <td>No Polisi</td>
+            <td>telp Supir</td>
           </tr>
         </tbody>
         </Table>

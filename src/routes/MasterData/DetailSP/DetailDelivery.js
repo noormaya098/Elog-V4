@@ -1,23 +1,29 @@
-import React from 'react'
-import { Table } from 'react-bootstrap'
+import React from "react";
+import { Table } from "react-bootstrap";
 
 function DetailDelivery() {
   return (
     <div>
-         <Table responsive border={1}>
-              <thead>
-                <tr style={{ fontWeight: 'bold' }}>
-                  <th colSpan={5}>Detail Delivery</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                </tr>
-              </tbody>
-            </Table>
+      <Table responsive hover striped bordered>
+        <thead>
+          <tr style={{ fontWeight: "bold" }}>
+            <th>No.</th>
+            <th>Coment</th>
+            <th>User</th>
+            <th>Tgl Coment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </Table>
     </div>
-  )
+  );
 }
 
-export default DetailDelivery
+export default DetailDelivery;
