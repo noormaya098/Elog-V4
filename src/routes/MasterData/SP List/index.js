@@ -33,8 +33,8 @@ function SpList() {
 
     setDataTable(urlData.data.data.order);
 
-    console.log(`setdata`, DataTable);
-    console.log(`inissmsp`, idmpData);
+    // console.log(`setdata`, DataTable);
+    // console.log(`inissmsp`, idmpData);
   };
 
   useEffect(() => {

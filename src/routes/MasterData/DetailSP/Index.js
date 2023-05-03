@@ -57,21 +57,25 @@ function DetailSP() {
 
       console.log(`ini adlaah apa ya`, data);
     } catch (error) {
-      console.error("There was a problem with the axios request:", error);
+      console.error(error);
     }
   };
   const [mappedData, setMappedData] = useState([]);
 
-  const postDataIDMP = ()=>{
-    handleClose()
-  }
-
+  const postDataIDMP = () => {
+    handleClose();
+  };
 
   useEffect(() => {
     if (data && Array.isArray(data)) {
       const newData = data.map((item) => ({
         sp: item.sp,
         berat: item.berat,
+        item: item.item,
+        destination: item.destination,
+        qyt: item.qyt,
+        exp: item.exp,
+        via: item.via,
       }));
 
       setMappedData(newData);
@@ -91,11 +95,10 @@ function DetailSP() {
       }
     }
   }, [data]);
-
+  console.log(`ini isian service`, destination);
   useEffect(() => {
     fetchSpDetail();
   }, [idmp]);
-
   return (
     <div>
       <Card>
@@ -131,7 +134,7 @@ function DetailSP() {
               <Button variant="secondary" onClick={handleClose}>
                 Close
               </Button>
-              <Button variant="primary" onClick={()=>postDataIDMP()}>
+              <Button variant="primary" onClick={() => postDataIDMP()}>
                 Approve
               </Button>
             </Modal.Footer>
@@ -201,13 +204,13 @@ function DetailSP() {
               </Form.Group>
             </Col>
             <div className="mt-4" />
-            <p style={{ fontWeight: "bold" }}>Destination 1 :</p>
             <IsiItungan
               destination={destination}
               via={via}
               berat={berat}
               item={item}
               qty={qty}
+              data={mappedData}
             />
             <DetailArmada />
             <DetailDelivery />

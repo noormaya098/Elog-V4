@@ -1,33 +1,36 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 
-function IsiItungan({destination , via , item , berat ,qty ,exp}) {
+function IsiItungan({ data}) {
   return (
     <div>
-      <Table responsive>
-        <thead>
-          <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
-            <td>No</td>
-            <td>Destination 1</td>
-            <td>Via</td>
-            <td>Item</td>
-            <td>Berat</td>
-            <td>Qyt</td>
-            <td>Exp</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>{destination}</td>
-            <td>{via}</td>
-            <td>{item}</td>
-            <td>{berat}</td>
-            <td>{qty}</td>
-            <td>-</td>
-          </tr>
-        </tbody>
-      </Table>
+      {data &&
+        data.map((isi, index) => (
+          <Table key={index} responsive>
+            <thead>
+              <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
+                <td>No</td>
+                <td>Destination {index + 1}</td>
+                <td>Via</td>
+                <td>Item</td>
+                <td>Berat</td>
+                <td>Qyt</td>
+                <td>Exp</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{index + 1}</td>
+                <td>{isi.destination}</td>
+                <td>{isi.via}</td>
+                <td>{isi.item}</td>
+                <td>{isi.berat}</td>
+                <td>{isi.qty}</td>
+                <td>{isi.exp}</td>
+              </tr>
+            </tbody>
+          </Table>
+        ))}
     </div>
   );
 }
