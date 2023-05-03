@@ -70,11 +70,11 @@ function DetailSP() {
     if (data && Array.isArray(data)) {
       const newData = data.map((item) => ({
         sp: item.sp,
-        berat: item.berat,
+        berat: item.berat === 0 ? "0" : item.berat,
         item: item.item,
         destination: item.destination,
-        qyt: item.qyt,
-        exp: item.exp,
+        qyt: item.qty === 0 ? "0" : item.qty,
+        exp: item.exp === 0 ? "0" : item.exp,
         via: item.via,
       }));
 
@@ -211,6 +211,7 @@ function DetailSP() {
               item={item}
               qty={qty}
               data={mappedData}
+              exp={exp}
             />
             <DetailArmada />
             <DetailDelivery />

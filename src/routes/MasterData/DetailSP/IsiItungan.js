@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 
-function IsiItungan({ data}) {
+function IsiItungan({ data }) {
   return (
     <div>
       {data &&
@@ -25,8 +25,8 @@ function IsiItungan({ data}) {
                 <td>{isi.via}</td>
                 <td>{isi.item}</td>
                 <td>{isi.berat}</td>
-                <td>{isi.qty}</td>
-                <td>{isi.exp}</td>
+                <td>{isi.qyt}</td>
+                <td>0</td>
               </tr>
             </tbody>
           </Table>
