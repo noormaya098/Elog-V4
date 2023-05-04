@@ -10,6 +10,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
+import Base from "antd/lib/typography/Base";
+import Swal from "sweetalert2";
 
 function DetailSP() {
   const [noSPK, setNoSPK] = useState("");
@@ -35,12 +37,44 @@ function DetailSP() {
   const [pickupDate, setpickupDate] = useState("");
   const [qty, setQty] = useState("");
   const [exp, setExp] = useState("");
+  const [typeMobiles, setTypeMobiles] = useState([]);
+  const [namaDriver, setNamaDriver] = useState([]);
+  const [idVehicleType, setIdVehicleType] = useState("");
+  const [idnamadriver, setidnamadriver] = useState("");
+  const [idType, setIdType] = useState("");
+  const [NamanamaDriver, setNamanamaDriver] = useState("");
+  const [id, setId] = useState("");
+  const [SupirCadangan, setSupirCadangan] = useState("");
 
   console.log(`idmp`, idmp);
   const handleSubmit = (event) => {
     event.preventDefault();
   };
 
+  const AmbilDriver = async (idType, id) => {
+    try {
+      handleShow();
+      const res = await axios.get(
+        `${Baseurl}sp/get-SP-select-2?vehicleType=${idType}&id=${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      const typeMobiless = res.data.data.type;
+      const driverData = res.data.data.vehicle;
+      const namanamaDriver = res.data.data.Driver;
+      setTypeMobiles(typeMobiless);
+      setNamaDriver(driverData);
+      setNamanamaDriver(namanamaDriver);
+      console.log(`ini log driverdata`, typeMobiles);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  console.log(`nama driver`, namaDriver);
   const fetchSpDetail = async () => {
     try {
       const response = await axios.get(
@@ -62,8 +96,21 @@ function DetailSP() {
   };
   const [mappedData, setMappedData] = useState([]);
 
-  const postDataIDMP = () => {
-    handleClose();
+  const supirCadangan = async () => {
+    try {
+      const response = await axios.get(`${Baseurl}sp/another-driver`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Token}`,
+        },
+      });
+      const SupirCadangan = response.data.data;
+      setSupirCadangan(SupirCadangan);
+
+      console.log(`ini adlaah apa ya`, data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -71,11 +118,11 @@ function DetailSP() {
       const newData = data.map((item) => ({
         sp: item.sp,
         berat: item.berat === 0 ? "0" : item.berat,
-        item: item.item,
+        item: item.item === "" ? "-" : item.item,
         destination: item.destination,
         qyt: item.qty === 0 ? "0" : item.qty,
         exp: item.exp === 0 ? "0" : item.exp,
-        via: item.via,
+        via: item.via === "" ? "-" : item.via,
       }));
 
       setMappedData(newData);
@@ -98,7 +145,50 @@ function DetailSP() {
   console.log(`ini isian service`, destination);
   useEffect(() => {
     fetchSpDetail();
+    approve();
+    supirCadangan();
   }, [idmp]);
+
+  const approve = async () => {
+    try {
+      const response = await axios.post(
+        `${Baseurl}sp/approve-SP`,
+        {
+          id_mp: idmp,
+          id_supir: idType,
+          id_unit: idnamadriver,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      handleClose();
+      const dataApprove = response.data.data.message;
+      console.log(`ini adlaah apa ya`, dataApprove);
+
+      // Display SweetAlert2 success alert
+      Swal.fire({
+        title: "Success!",
+        text: dataApprove,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      console.error(error);
+
+      // Display SweetAlert2 error alert
+      // Swal.fire({
+      //   title: "Error!",
+      //   text: "Something went wrong.",
+      //   icon: "error",
+      //   confirmButtonText: "OK",
+      // });
+    }
+  };
+
   return (
     <div>
       <Card>
@@ -108,7 +198,7 @@ function DetailSP() {
             style={{}}
             variant="primary"
             size="sm"
-            onClick={handleShow}
+            onClick={AmbilDriver}
           >
             Approve
           </Button>
@@ -120,13 +210,56 @@ function DetailSP() {
             </Modal.Header>
             <Modal.Body>
               <Form.Group className="mb-3">
-                <Form.Label>Select Driver</Form.Label>
-                <Form.Select>
-                  <option>-</option>
+                <Form.Label>Vehicle Type</Form.Label>
+                <Form.Select
+                  onChange={(e) => {
+                    setIdType(e.target.value);
+                    AmbilDriver(e.target.value);
+                  }}
+                >
+                  <option>Select Vehicle Type</option>
+                  {typeMobiles &&
+                    typeMobiles.map((item) => {
+                      return (
+                        <option key={item.id} value={item.id}>
+                          {item.tipe}
+                        </option>
+                      );
+                    })}
                 </Form.Select>
-                <Form.Label>Select Supir</Form.Label>
-                <Form.Select>
-                  <option>-</option>
+                <Form.Label>vehicle</Form.Label>
+                <Form.Select
+                  onChange={(e) => {
+                    setId(e.target.value);
+                    AmbilDriver(idType, e.target.value);
+                  }}
+                >
+                  <option>Select vehicle</option>
+                  {namaDriver &&
+                    namaDriver.map((items) => {
+                      return (
+                        <option key={items.id} value={items.id}>
+                          {items.no_polisi}
+                        </option>
+                      );
+                    })}
+                </Form.Select>
+                <Form.Label>Select Driver</Form.Label>
+                <Form.Select onChange={(e) => setidnamadriver(e.target.value)}>
+                  <option>Select Driver</option>
+                  {NamanamaDriver &&
+                    NamanamaDriver.map((items) => {
+                      return <option key={items.id} value={items.id}>{items.name}</option>;
+                    })}
+                </Form.Select>
+                <hr />
+                <Form.Label>Driver Cadangan</Form.Label>
+                <Form.Select onChange={(e) => setidnamadriver(e.target.value)}>
+                  <option>Pilih Driver Cadangan</option>
+                  {SupirCadangan &&
+                    SupirCadangan.map((items) => {
+                      return <option key={items.id} value={items.id}>{items.name}</option>;
+                    })}
                 </Form.Select>
               </Form.Group>
             </Modal.Body>
@@ -134,7 +267,7 @@ function DetailSP() {
               <Button variant="secondary" onClick={handleClose}>
                 Close
               </Button>
-              <Button variant="primary" onClick={() => postDataIDMP()}>
+              <Button variant="primary" onClick={() => approve()}>
                 Approve
               </Button>
             </Modal.Footer>
@@ -144,43 +277,23 @@ function DetailSP() {
             <Col sm={6}>
               <Form.Group controlId="noSPK">
                 <Form.Label>No.SPK</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={sp}
-                  disabled
-                  onChange={(event) => setNoSPK(event.target.value)}
-                />
+                <Form.Control type="text" value={sp} disabled />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Service</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={service}
-                  disabled
-                  onChange={(event) => setNoSPK(event.target.value)}
-                />
+                <Form.Control type="text" value={service} disabled />
               </Form.Group>
             </Col>
 
             <Col sm={6}>
               <Form.Group>
                 <Form.Label>Via</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={via}
-                  disabled
-                  onChange={(event) => setNama(event.target.value)}
-                />
+                <Form.Control type="text" value={via} disabled />
               </Form.Group>
 
               <Form.Group>
                 <Form.Label>Pickup Date</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={pickupDate}
-                  disabled
-                  onChange={(event) => setNoSPK(event.target.value)}
-                />
+                <Form.Control type="text" value={pickupDate} disabled />
               </Form.Group>
             </Col>
 
