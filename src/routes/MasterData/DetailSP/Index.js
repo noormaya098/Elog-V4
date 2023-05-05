@@ -186,14 +186,42 @@ function DetailSP() {
     }
   };
 
-  const RejectBtn = () =>{
-    Swal.fire({
-      title: "Success!",
-      text: "Berhasil Reject!",
-      icon: "success",
-      confirmButtonText: "OK",
-    });
-  }
+  const RejectBtn = async () =>{
+    try {
+      const response = await axios.post(
+        `${Baseurl}sp/decline-SP`,
+        {
+          id_mp: idmp,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      handleClose();
+      const dataApprove = response.status.message;
+      console.log(`ini adlaah apa ya`, dataApprove);
+
+      Swal.fire({
+        title: "Success!",
+        text: "Berhasil Reject!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        title: "Error!",
+        text: "Error Data!",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      
+    }
+  };
+  
   return (
     <div>
       <Card>

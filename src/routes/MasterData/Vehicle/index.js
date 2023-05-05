@@ -23,7 +23,7 @@ const Vehicle = () => {
 
   const getapivehicle = async () => {
     axios
-      .get(`${Baseurl}vehicle/get-vehicle?limit=10&page=1&keyword=`, {
+      .get(`${Baseurl}vehicle/get-vehicle?limit=10&page=15&keyword=`, {
         headers: {
           Authorization: `token ${Token}`,
         },

@@ -296,7 +296,7 @@ const Driver = () => {
                         type="text"
                         placeholder="Masukkan Nomor SIM"
                         name="no_sim"
-                        value={editedDriver.no_sim}
+                        value={no_sim}
                         onChange={(e)=>setNoSim(e.target.value)}
                       />
                     </Form.Group>
@@ -433,7 +433,7 @@ const Driver = () => {
                   <td>
                     <img src={post.driverImage} alt="" width={50} />
                   </td>
-                  <td>{post.totalPenjualan}</td>
+                  <td>-</td>
                   <td>{post.totalPenjualan}</td>
                   <td>{status(post.driverStatus)}</td>
                   <td>

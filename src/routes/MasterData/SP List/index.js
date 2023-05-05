@@ -9,6 +9,7 @@ import Baseurl from "../../../Api/BaseUrl";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
+import DetailSP from "../DetailSP/Index";
 function SpList() {
   // const navigate = useNavigate();
   // const posts = useSpStore((state) => state.posts);
@@ -173,6 +174,9 @@ function SpList() {
                     >
                       Detail
                     </Button>
+                    {/* <DetailSP u
+                    kendaraan={item.kendaraan}
+                    /> */}
                   </td>
                 </tr>
               ))}

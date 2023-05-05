@@ -20,7 +20,7 @@ function IsiItungan({ data }) {
             </thead>
             <tbody>
               <tr>
-                <td>{index + 1}</td>
+                <td>{index + 1}</td> 
                 <td>{isi.destination}</td>
                 <td>{isi.via}</td>
                 <td>{isi.item}</td>
