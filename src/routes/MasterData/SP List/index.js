@@ -1,6 +1,6 @@
-import { Button, Card, Pagination } from "antd";
+import { Button, Card, Row,Pagination } from "antd";
 import React, { useEffect, useState } from "react";
-import { Col, Row, Table } from "react-bootstrap";
+import { Col, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import useSpStore from "./Api Get/GetSPList";
 import { Tag } from "antd";
@@ -126,7 +126,7 @@ function SpList() {
           <Col sm={3}>
             <h4>SP List</h4>
           </Col>
-          <Table responsive="lg">
+          <Table responsive>
             <thead>
               <tr>
                 <th>No</th>

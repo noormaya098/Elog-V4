@@ -100,7 +100,7 @@ const Vehicle = () => {
   };
 
   ///state create vehicle
-  const [imgUpload, setImgUpload] = useState(null);
+  const [imgUpload, setImgUpload] = useState('');
   const [mitraName, setMitraName] = useState("");
   const [kode_kendaraan, setKode_kendaraan] = useState("");
   const [no_polisi, setNo_Polisi] = useState("");
@@ -167,11 +167,13 @@ const Vehicle = () => {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "ADA KESALAHAN DI FORM INPUT",
+          text: "Ada Kesalahan di Form Input",
         });
       }
     } catch (errors) {}
   };
+  console.log('ini file upload: ', imgUpload);
+
 
   return (
     <div>
@@ -196,19 +198,23 @@ const Vehicle = () => {
               <Row>
                 {/* Kolom 1 */}
                 <Col>
-                  <Form.Group controlId="imgUpload">
-                    <Form.Label>Upload Image:</Form.Label>
-                    <Image
-                      className="py-3"
-                      src={imgUpload}
-                      width="150px"
-                      fluid
-                    />
-                    <Form.Control
-                      type="file"
-                      onChange={(e) => setImgUpload(e.target.files[0])}
-                    />
-                  </Form.Group>
+                    <Form.Group controlId="imgUpload">
+                      <Form.Label>Gambar Vehicle</Form.Label>
+                     
+                      <Image
+                        className="py-3"
+                        src={imgUpload}
+                        width="300px"
+                        fluid
+                      />
+                      <Form.Control
+                        type="file"
+                        name="name"
+                        onChange={(e) => {
+                          setImgUpload(e.target.files[0].name.name);
+                        }}
+                      />
+                    </Form.Group>
                 </Col>
                 {/* Kolom 2 */}
                 <Col>
@@ -314,7 +320,7 @@ const Vehicle = () => {
                         api(e.target.value);
                       }}
                     >
-                      <option >Pilih Kendaraan</option>
+                      <option>Pilih Kendaraan</option>
                       {Array.isArray(Tipe) &&
                         Tipe.map((item) => (
                           <option key={item.id} value={item.tipe}>

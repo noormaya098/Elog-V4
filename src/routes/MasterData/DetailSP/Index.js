@@ -145,7 +145,7 @@ function DetailSP() {
   console.log(`ini isian service`, destination);
   useEffect(() => {
     fetchSpDetail();
-    approve();
+    // approve();
     supirCadangan();
   }, [idmp]);
 
@@ -166,41 +166,48 @@ function DetailSP() {
         }
       );
       handleClose();
-      const dataApprove = response.data.data.message;
+      const dataApprove = response.status.message;
       console.log(`ini adlaah apa ya`, dataApprove);
 
-      // Display SweetAlert2 success alert
       Swal.fire({
         title: "Success!",
-        text: dataApprove,
+        text: "Berhasil Approve!",
         icon: "success",
         confirmButtonText: "OK",
       });
     } catch (error) {
       console.error(error);
-
-      // Display SweetAlert2 error alert
-      // Swal.fire({
-      //   title: "Error!",
-      //   text: "Something went wrong.",
-      //   icon: "error",
-      //   confirmButtonText: "OK",
-      // });
+      Swal.fire({
+        title: "Error!",
+        text: "Lengkapi Data!",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
+  const RejectBtn = () =>{
+    Swal.fire({
+      title: "Success!",
+      text: "Berhasil Reject!",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+  }
   return (
     <div>
       <Card>
         <div className="d-flex justify-content-end">
           <Button
             className="end-0"
-            style={{}}
             variant="primary"
             size="sm"
             onClick={AmbilDriver}
           >
             Approve
+          </Button>
+          <Button size="sm" variant="danger" onClick={()=>RejectBtn()}>
+            Reject Driver
           </Button>
         </div>
         <Form onSubmit={handleSubmit}>
@@ -249,7 +256,11 @@ function DetailSP() {
                   <option>Select Driver</option>
                   {NamanamaDriver &&
                     NamanamaDriver.map((items) => {
-                      return <option key={items.id} value={items.id}>{items.name}</option>;
+                      return (
+                        <option key={items.id} value={items.id}>
+                          {items.name}
+                        </option>
+                      );
                     })}
                 </Form.Select>
                 <hr />
@@ -258,7 +269,11 @@ function DetailSP() {
                   <option>Pilih Driver Cadangan</option>
                   {SupirCadangan &&
                     SupirCadangan.map((items) => {
-                      return <option key={items.id} value={items.id}>{items.name}</option>;
+                      return (
+                        <option key={items.id} value={items.id}>
+                          {items.name}
+                        </option>
+                      );
                     })}
                 </Form.Select>
               </Form.Group>
@@ -297,14 +312,6 @@ function DetailSP() {
               </Form.Group>
             </Col>
 
-            {/* <Col sm={4}>
-              <Form.Group controlId="foto">
-                <Form.Label>Driver</Form.Label>
-                <Card style={{ width: "250px" }}>
-                  <Image src={fotos} alt="Foto Driver" fluid width="250px" />
-                </Card>
-              </Form.Group>
-            </Col> */}
             <Col sm={12}>
               <Form.Group>
                 <Form.Label>Pickup Address</Form.Label>

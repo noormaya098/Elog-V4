@@ -438,7 +438,7 @@ const Driver = () => {
                   <td>{status(post.driverStatus)}</td>
                   <td>
                     <Button
-                      variant="warning"
+                      variant="danger"
                       size="sm"
                       onClick={() => handleRowClick(post)}
                     >
