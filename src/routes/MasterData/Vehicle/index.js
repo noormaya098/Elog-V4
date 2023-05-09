@@ -1,45 +1,65 @@
-import React from "react";
-import { Container, Col, Row, Modal, Form, Image } from "react-bootstrap/";
 import { Card } from "antd";
-import { Button } from "antd";
-import Swal from "sweetalert2";
+import { Row, Col, Button, Modal, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
-import foto from "../DetailSP/gojo_satoru_19784.jpg";
-import Gettype from "../../Monitoring/By sm/api/GetIdDriver";
-import useVehicleStore from "../../Monitoring/By sm/api/GetIdDriver";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
-const Vehicle = () => {
-  const posts = Gettype((state) => state.posts);
-  const fetchPosts = Gettype((state) => state.fetchPosts);
-  const [Tipe, setTipe] = useState("");
-  const [getvehicle, setGetVehicle] = useState("");
+function Index() {
+  const [dataapigetvehicle, setDataapigetvehicle] = useState("");
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [pagination, setPagination] = useState({
+    totalData: 0,
+    totalPage: 0,
+    currentPage: 1,
+    limit: 10,
+  });
 
-  const getapivehicle = async () => {
-    axios
-      .get(`${Baseurl}vehicle/get-vehicle?limit=10&page=15&keyword=`, {
+  const getvehicleapi = async (page = 1) => {
+    const getvehiCle = await axios.get(
+      `${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=`,
+      {
         headers: {
-          Authorization: `token ${Token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Token}`,
         },
-      })
-      .then((res) => {
-        setGetVehicle(res.data.data.order);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+      }
+    );
+
+    // const page = getvehiCle.data.data.limit;
+    const currentPage = getvehiCle.data.data.currentPage;
+    setPagination({
+      ...pagination,
+      totalData: getvehiCle.data.data.totalData,
+      totalPage: getvehiCle.data.data.totalPage,
+      currentPage: getvehiCle.data.data.currentPage,
+    });
+    const dataapivehicle = getvehiCle.data.data.order.map((item) => ({
+      no: item.no,
+      vehicleId: item.vehicleId,
+      driverId: item.driverId,
+      vehicleCode: item.vehicleCode,
+      policeNumber: item.policeNumber,
+      vehicleType: item.vehicleType,
+      driverName: item.driverName,
+      vehicleImage: item.vehicleImage,
+      vendor: item.vendor,
+    }));
+    console.log(dataapigetvehicle);
+    setDataapigetvehicle(dataapivehicle);
   };
   useEffect(() => {
-    getapivehicle();
-    api();
+    getvehicleapi();
+    selectdriver();
   }, []);
-
+  const handlePageChange = async (page) => {
+    setPagination({ ...pagination, currentPage: page });
+    await getvehicleapi(page);
+  };
   const columns = [
     {
       name: "No",
@@ -49,10 +69,9 @@ const Vehicle = () => {
       name: "No Polisi",
       selector: (row) => row.policeNumber,
     },
-
     {
       name: "Kode Kendaraan",
-      selector: (row) => row.driverName,
+      selector: (row) => row.vehicleCode,
     },
     {
       name: "Pemilik Armada",
@@ -67,53 +86,20 @@ const Vehicle = () => {
       selector: (row) => row.driverName,
     },
   ];
-  const [selectedDriver, setSelectedDriver] = useState(null);
-  const [DriverId, setDriverId] = useState("");
-  const api = async (driverName) => {
-    try {
-      const response = await axios.get(
-        `${Baseurl}vehicle/get-select?vehicleType=${driverName}`,
-        {
-          headers: {
-            Authorization: `token ${Token}`,
-          },
-        }
-      );
 
-      const { data } = response.data;
-      // const {iddriverapi} = response.data.driverName;
-      if (Array.isArray(data.driverType)) {
-        setTipe(data.driverType);
-        setDriverId(
-          data.driverName.map((driver) => ({
-            driverId: driver.driverId,
-            driverName: driver.driverName,
-          }))
-        );
-        console.log(DriverId);
-      } else {
-        console.error("Invalid data structure received");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  ///state create vehicle
-  const [imgUpload, setImgUpload] = useState('');
-  const [mitraName, setMitraName] = useState("");
-  const [kode_kendaraan, setKode_kendaraan] = useState("");
-  const [no_polisi, setNo_Polisi] = useState("");
+  /// Create Vehicle
+  const [namaDriver, setNamaDriver] = useState("");
+  const [kode_kendaraan, setkode_kendaraan] = useState("");
+  const [no_polisi, setno_polisi] = useState("");
+  const [vendor, setvendor] = useState("");
   const [jenis_kendaraan, setjenis_kendaraan] = useState("");
   const [merk_mobil, setmerk_mobil] = useState("");
   const [tahun_mobil, settahun_mobil] = useState("");
-  const [id_driver, setid_driver] = useState("");
   const [warna_plat, setwarna_plat] = useState("");
   const [tgl_beli, settgl_beli] = useState("");
   const [panjang, setpanjang] = useState("");
   const [lebar, setlebar] = useState("");
   const [tinggi, settinggi] = useState("");
-  const [vendor, setVendor] = useState("");
   const [no_bpkb, setno_bpkb] = useState("");
   const [stnk, setstnk] = useState("");
   const [tgl_stnk, settgl_stnk] = useState("");
@@ -121,294 +107,302 @@ const Vehicle = () => {
   const [kapasitas_maks, setkapasitas_maks] = useState("");
   const [kubikasi, setkubikasi] = useState("");
   const [location, setlocation] = useState("");
-
-  const handleSave = async () => {
-    try {
-      const response = await fetch(`${Baseurl}vehicle/create-vehicle`, {
-        method: "POST",
+  const [sebelumpilih, setsebelumpilih] = useState([]);
+  const [pilihdrivers, setpilihdrivers] = useState([]);
+  const createvehicle = async () => {
+    const buatmobil = await axios.post(
+      `${Baseurl}vehicle/create-vehicle`,
+      {
+        kode_kendaraan: kode_kendaraan,
+        no_polisi: no_polisi,
+        vendor: vendor,
+        jenis_kendaraan: jenis_kendaraan,
+        merk_mobil: merk_mobil,
+        tahun_mobil: tahun_mobil,
+        warna_plat: warna_plat,
+        tgl_beli: tgl_beli,
+        panjang: panjang,
+        lebar: lebar,
+        tinggi: tinggi,
+        no_bpkb: no_bpkb,
+        stnk: stnk,
+        tgl_stnk: tgl_stnk,
+        kapasitas: kapasitas,
+        kapasitas_maks: kapasitas_maks,
+        kubikasi: kubikasi,
+        location: location,
+        id_driver: namaDriver,
+      },
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Token}`,
         },
-        body: JSON.stringify({
-          imgUpload,
-          kode_kendaraan,
-          id_driver,
-          mitraName,
-          no_polisi,
-          jenis_kendaraan,
-          vendor,
-          merk_mobil,
-          tahun_mobil,
-          warna_plat,
-          tgl_beli,
-          panjang,
-          lebar,
-          tinggi,
-          no_bpkb,
-          stnk,
-          tgl_stnk,
-          kapasitas,
-          kapasitas_maks,
-          kubikasi,
-          location,
-        }),
-      });
-      handleClose();
-      if (response.ok) {
+      }
+    );
+  };
+  //// select driver
+
+  const selectdriver = async (tipe) => {
+    try {
+      const selectdriver = await axios.get(
+        `${Baseurl}vehicle/get-select?vehicleType=${tipe}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+
+      const pilih = selectdriver.data.data.driverType.map((item) => ({
+        tipe: item.tipe,
+      }));
+      const pilihdriver = selectdriver.data.data.driverName.map((item) => ({
+        driverName: item.driverName,
+        driverId: item.driverId,
+      }));
+
+      console.log("ini log", pilih);
+      setsebelumpilih(pilih);
+      setpilihdrivers(pilihdriver);
+    } catch (error) {
+      console.log(error.message);
+      if (error.response && error.response.status === 400) {
         Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Vehicle Berhasil Di Buat!",
-          timer: 2000,
-          timerProgressBar: true,
+          icon: "error",
+          title: "Oops...",
+          text: error.response.data.message,
         });
       } else {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Ada Kesalahan di Form Input",
+          text: "Sukses",
         });
       }
-    } catch (errors) {}
+    }
   };
-  console.log('ini file upload: ', imgUpload);
-
 
   return (
     <div>
-      <div className="gx-d-flex justify-content-start">
-        <h5>List Vehicle</h5>
-        <p> &nbsp;Operasional</p>
-      </div>
-      <Container>
-        <Card>
-          <Button type="primary" onClick={handleShow}>
-            Add Vehicle
-          </Button>
-          <DataTable columns={columns} data={getvehicle} pagination />
-        </Card>
-        {/* Modal */}
-        <Modal show={show} size="lg" onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add Vehicle</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Row>
-                {/* Kolom 1 */}
-                <Col>
-                    <Form.Group controlId="imgUpload">
-                      <Form.Label>Gambar Vehicle</Form.Label>
-                     
-                      <Image
-                        className="py-3"
-                        src={imgUpload}
-                        width="300px"
-                        fluid
-                      />
+      <Row>
+        <Col>
+          <Card>
+            <Button variant="primary" size="sm" onClick={handleShow}>
+              Add Vehicle
+            </Button>
+            {/* Modal Driver Add */}
+            <Modal show={show} size="lg" onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Create vehicle</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Row>
+                  <Col sm={6}>
+                    <Form.Group>
+                      <Form.Label>Kode Kendaraan</Form.Label>
                       <Form.Control
-                        type="file"
-                        name="name"
+                        type="text"
+                        placeholder="Masukkan Kode Kendaran"
+                        value={kode_kendaraan}
+                        onChange={(e) => setkode_kendaraan(e.target.value)}
+                        required
+                      />
+                      <Form.Label>No Polisi</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan No Polisi"
+                        value={no_polisi}
+                        onChange={(e) => setno_polisi(e.target.value)}
+                        required
+                      />
+                      <Form.Label>Vendor</Form.Label>
+                      <Form.Select
+                        type="text"
+                        placeholder="Masukkan Vendor"
+                        value={vendor}
+                        onChange={(e) => setvendor(e.target.value)}
+                        required
+                      >
+                        <option>Pilih Mitra</option>
+                        <option>Mitra</option>
+                        <option>Eureka Logistik</option>
+                      </Form.Select>
+                      <Form.Label>Jenis Kendaraan</Form.Label>
+                      <Form.Select
+                        type="text"
+                        placeholder="Masukkan Jenis Kendaraan"
+                        value={jenis_kendaraan}
                         onChange={(e) => {
-                          setImgUpload(e.target.files[0].name.name);
+                          setjenis_kendaraan(e.target.value);
+                          selectdriver(e.target.value);
                         }}
+                        required
+                      >
+                        <option>Pilih Jenis Kendaraan</option>
+                        {sebelumpilih.map((item, index) => (
+                          <option key={index}>{item.tipe}</option>
+                        ))}
+                      </Form.Select>
+
+                      <Form.Label>Merk Mobil</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Merk Mobil"
+                        value={merk_mobil}
+                        onChange={(e) => setmerk_mobil(e.target.value)}
+                        required
+                      />
+                      <Form.Label>Tahun Mobil</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Tahun Mobil"
+                        value={tahun_mobil}
+                        onChange={(e) => settahun_mobil(e.target.value)}
+                        required
+                      />
+                      <Form.Label>Warna Plat</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Warna Plat"
+                        value={warna_plat}
+                        onChange={(e) => setwarna_plat(e.target.value)}
+                        required
+                      />
+                      <Form.Label>Tanggal Beli</Form.Label>
+                      <Form.Control
+                        type="date"
+                        placeholder="Masukkan Tanggal Beli"
+                        value={tgl_beli}
+                        onChange={(e) => settgl_beli(e.target.value)}
+                        required
+                      />
+                      <Form.Label>Panjang</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Panjang"
+                        value={panjang}
+                        onChange={(e) => setpanjang(e.target.value)}
+                        required
                       />
                     </Form.Group>
-                </Col>
-                {/* Kolom 2 */}
-                <Col>
-                  <Form.Group>
-                    <Form.Label>Mitra:</Form.Label>
-                    <Form.Control
-                      value={vendor}
-                      onChange={(e) => setVendor(e.target.value)}
-                    />
-                  </Form.Group>
-
-                  <Form.Group controlId="kodeKendaraan">
-                    <Form.Label>Kode Kendaraan:</Form.Label>
+                  </Col>
+                  <Col sm={6}>
+                    <Form.Label>Lebar</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Enter Kode Kendaraan"
-                      value={kode_kendaraan}
-                      onChange={(e) => setKode_kendaraan(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="namaSupir">
-                    <Form.Label>Nama Supir:</Form.Label>
-                    <Form.Select
-                      value={id_driver}
-                      onChange={(e) => setid_driver(e.target.value)}
-                    >
-                      <option value="">Pilih Supir</option>
-                      {DriverId &&
-                        DriverId.map((driver) => (
-                          <option key={driver.driverId} value={driver.driverId}>
-                            {driver.driverName}
-                          </option>
-                        ))}
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group controlId="tahun">
-                    <Form.Label>Tahun:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={tahun_mobil}
-                      onChange={(e) => settahun_mobil(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>No STNK:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={stnk}
-                      onChange={(e) => setstnk(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Tanggal Beli:</Form.Label>
-                    <Form.Control
-                      type="date"
-                      value={tgl_beli}
-                      onChange={(e) => settgl_beli(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Panjang:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={panjang}
-                      onChange={(e) => setpanjang(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Tinggi:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={tinggi}
-                      onChange={(e) => settinggi(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Kapasitas MAX:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={kapasitas_maks}
-                      onChange={(e) => setkapasitas_maks(e.target.value)}
-                    />
-                  </Form.Group>
-                </Col>
-
-                {/* Kolom 3 */}
-                <Col>
-                  <Form.Group>
-                    <Form.Label>No Polisi:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter No Polisi"
-                      value={no_polisi}
-                      onChange={(e) => setNo_Polisi(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Kendaraan:</Form.Label>
-                    <Form.Select
-                      value={jenis_kendaraan}
-                      onChange={(e) => {
-                        setjenis_kendaraan(e.target.value);
-                        api(e.target.value);
-                      }}
-                    >
-                      <option>Pilih Kendaraan</option>
-                      {Array.isArray(Tipe) &&
-                        Tipe.map((item) => (
-                          <option key={item.id} value={item.tipe}>
-                            {item.tipe}
-                          </option>
-                        ))}
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group controlId="MerkMobil">
-                    <Form.Label>Merk Mobil:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={merk_mobil}
-                      onChange={(e) => setmerk_mobil(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Warna Plat:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={warna_plat}
-                      onChange={(e) => setwarna_plat(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>No BPKB:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={no_bpkb}
-                      onChange={(e) => setno_bpkb(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Tanggal Stnk:</Form.Label>
-                    <Form.Control
-                      type="date"
-                      value={tgl_stnk}
-                      onChange={(e) => settgl_stnk(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Lebar:</Form.Label>
-                    <Form.Control
-                      type="text"
+                      placeholder="Masukkan Kode Kendaran"
                       value={lebar}
                       onChange={(e) => setlebar(e.target.value)}
+                      required
                     />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Kapasitas:</Form.Label>
+                    <Form.Label>Tinggi</Form.Label>
                     <Form.Control
                       type="text"
+                      placeholder="Masukkan Tinggi"
+                      value={tinggi}
+                      onChange={(e) => settinggi(e.target.value)}
+                      required
+                    />
+                    <Form.Label>No BPKB</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Masukkan No BPKB"
+                      value={no_bpkb}
+                      onChange={(e) => setno_bpkb(e.target.value)}
+                      required
+                    />
+                    <Form.Label>Nama Driver</Form.Label>
+                    <Form.Select
+                      type="text"
+                      placeholder="Masukkan STNK"
+                      value={namaDriver}
+                      onChange={(e) => setNamaDriver(e.target.value)}
+                      required
+                    >
+                      <option>Pilih Driver</option>
+                      {pilihdrivers.map((item, index) => (
+                        <option key={index} value={item.driverId}>
+                          {item.driverName}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Label>STNK</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Masukkan STNK"
+                      value={stnk}
+                      onChange={(e) => setstnk(e.target.value)}
+                      required
+                    />
+                    <Form.Label>Tanggal STNK</Form.Label>
+                    <Form.Control
+                      type="date"
+                      placeholder="Masukkan Tanggal STNK"
+                      value={tgl_stnk}
+                      onChange={(e) => settgl_stnk(e.target.value)}
+                      required
+                    />
+                    <Form.Label>Kapasitas</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Masukkan Kapasitas"
                       value={kapasitas}
                       onChange={(e) => setkapasitas(e.target.value)}
+                      required
                     />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Kubikasi:</Form.Label>
+                    <Form.Label>Kapasitas Max</Form.Label>
                     <Form.Control
                       type="text"
+                      placeholder="Masukkan Kapasitas Max"
+                      value={kapasitas_maks}
+                      onChange={(e) => setkapasitas_maks(e.target.value)}
+                      required
+                    />
+                    <Form.Label>Kubikasi</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Masukkan Kubikasi"
                       value={kubikasi}
                       onChange={(e) => setkubikasi(e.target.value)}
+                      required
                     />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Lokasi:</Form.Label>
+                    <Form.Label>Location</Form.Label>
                     <Form.Control
                       type="text"
+                      placeholder="Masukkan Location"
                       value={location}
                       onChange={(e) => setlocation(e.target.value)}
+                      required
                     />
-                  </Form.Group>
-                </Col>
-              </Row>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={handleSave}>
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        {/* end */}
-      </Container>
+                  </Col>
+                </Row>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={() => createvehicle()}>
+                  Save Changes
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            <DataTable
+              columns={columns}
+              data={dataapigetvehicle}
+              pagination
+              paginationServer
+              paginationPerPage={pagination.limit}
+              paginationTotalRows={pagination.totalData}
+              onChangePage={handlePageChange}
+            />
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
-};
-export default Vehicle;
+}
+
+export default Index;

@@ -93,6 +93,14 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item> */}
+                  <Menu.Item key="New SP">
+                    <Link to="/masterdata/splist">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="New SP" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
                   <Menu.Item key="SP List">
                     <Link to="/masterdata/splist">
                       <i className="icon icon-widgets" />

@@ -18,10 +18,11 @@ function SpList() {
   const [currentPage, setCurrentPage] = useState(1);
   const spDetails = useSpStore((state) => state.spDetails);
   const [idmpData, setIdmpData] = useState([]);
+  const [Kendaraan , setKendaraanData] = useState([]); //
 
   const DataSp = async () => {
     const urlData = await axios.get(
-      `${Baseurl}sp/get-SP?limit=10&page=1&keyword=`,
+      `${Baseurl}sp/get-SP?limit=10&page=3&keyword=`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +50,7 @@ function SpList() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
+            Authorization: `Bearer ${Token}`
           },
         }
       );
@@ -57,11 +58,15 @@ function SpList() {
         kendaraan: items.kendaraan,
         destination: items.pickupAddress,
       }));
+  
+      console.log(`ini test isi kendaraan `, combinedData);
+      setKendaraanData(dataKendaraan); // set state here instead
       return dataKendaraan;
     } catch (error) {
       console.error("There was a problem with the axios request:", error);
     }
   };
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,9 +122,13 @@ function SpList() {
  
   const history = useHistory();
 
-  const handleDetailClick = (idmp) => {
-    history.push(`/masterdata/detailsp/${idmp}`);
+  const handleDetailClick = (idmp, kendaraan) => {
+    history.push({
+      pathname: `/masterdata/detailsplama/${idmp}`,
+      state: { kendaraanyu: kendaraan }
+    });
   };
+  
   return (
     <div>
       <Card>
@@ -170,7 +179,7 @@ function SpList() {
                     <Button
                       size="lg"
                       type="primary"
-                      onClick={() => handleDetailClick(item.idmp)}
+                      onClick={() => handleDetailClick(item.idmp , item.kendaraan)}
                     >
                       Detail
                     </Button>

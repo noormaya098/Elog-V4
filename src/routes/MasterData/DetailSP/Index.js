@@ -12,18 +12,20 @@ import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import Base from "antd/lib/typography/Base";
 import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 
 function DetailSP() {
+  const location = useLocation();
+  const kendaraanyu = location.state ? location.state.kendaraan : null;
   const [noSPK, setNoSPK] = useState("");
   const [nama, setNama] = useState("");
   const [foto, setFoto] = useState("");
-  const { idmp } = useParams();
+  const { idmp , kendaraansatu } = useParams();
   const [data, setdata] = useState([]);
   const [show, setShow] = useState(false);
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
+console.log(`kendaraan satu test`,kendaraanyu);
   ///data api
   const [sp, setSP] = useState("");
   const [via, setVia] = useState("");
@@ -251,8 +253,8 @@ function DetailSP() {
                     setIdType(e.target.value);
                     AmbilDriver(e.target.value);
                   }}
+                  disabled
                 >
-                  <option>Select Vehicle Type</option>
                   {typeMobiles &&
                     typeMobiles.map((item) => {
                       return (
