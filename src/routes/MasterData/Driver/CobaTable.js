@@ -12,8 +12,8 @@ function CobaTable() {
   const [driverDetails, setDriverDetails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({
-    currentPage: ``,
-    totalData: 2,
+    currentPage: 1,
+    totalData: 0,
     totalPage: 0,
   });
 
@@ -43,7 +43,7 @@ function CobaTable() {
       }
     );
     const dataApiDriver = urlDataDriver.data.data.order.map((item, index) => ({
-      no: item.no + 1,
+      no: item.no,
       id: item.driverId,
       nama: item.driverName,
       gambar: item.driverImage,

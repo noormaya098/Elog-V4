@@ -2,7 +2,6 @@ import { Button, Card, Row,Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { Col, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import useSpStore from "./Api Get/GetSPList";
 import { Tag } from "antd";
 import Token from "../../../Api/Token";
 import Baseurl from "../../../Api/BaseUrl";
@@ -16,7 +15,6 @@ function SpList() {
   // const fetchPosts = useSpStore((state) => state.fetchPosts);
   const [DataTable, setDataTable] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const spDetails = useSpStore((state) => state.spDetails);
   const [idmpData, setIdmpData] = useState([]);
   const [Kendaraan , setKendaraanData] = useState([]); //
 

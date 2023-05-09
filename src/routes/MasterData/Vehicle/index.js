@@ -394,7 +394,6 @@ function Index() {
               data={dataapigetvehicle}
               pagination
               paginationServer
-              paginationPerPage={pagination.limit}
               paginationTotalRows={pagination.totalData}
               onChangePage={handlePageChange}
             />
