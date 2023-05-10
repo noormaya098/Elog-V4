@@ -17,7 +17,7 @@ function SPList() {
 
   const dataapi = async (page) => {
     const isi = await axios.get(
-      `${Baseurl}sp/get-SP?limit=10&page=${page}&keyword=`,
+      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=`,
       {
         headers: {
           "Content-Type": "application/json",

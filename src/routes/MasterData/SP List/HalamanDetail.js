@@ -6,6 +6,7 @@ import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import axios from "axios";
 import FormTable from "./FormTable";
+
 function HalamanDetail() {
   const { idmp } = useParams();
   const [isidata, setIsidata] = useState([]);
@@ -19,7 +20,6 @@ function HalamanDetail() {
         Authorization: `Bearer ${Token}`,
       },
     });
-
     const semua = isi.data.data
     const totalPrices = isi.data.Totalprice
     setTotalPrice(totalPrices)
