@@ -1,11 +1,16 @@
 import React from "react";
-
+import mobil from "../redux toolkit/store/ZustandStore";
 import IntlMessages from "util/IntlMessages";
-
+import { useEffect } from "react";
 const SamplePage = () => {
+  const jobdesk = mobil((state) => state.jobdesk);
+  useEffect(() => {
+    console.log(jobdesk);
+  }, [jobdesk]);
+  
   return (
     <div>
-      <h2 className="title gx-mb-4"><IntlMessages id="sidebar.samplePage"/></h2>
+      <h2>Halo {jobdesk}</h2>
 
       <div className="gx-d-flex justify-content-center">
         {/* <h4>Start building your app. Happy Coding!</h4> */}

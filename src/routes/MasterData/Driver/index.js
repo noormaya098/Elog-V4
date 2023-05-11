@@ -1,153 +1,319 @@
-import React from "react";
-import { Tag } from "antd";
-import {
-  Table,
-  Modal,
-  Button,
-  Form,
-  Row,
-  Col,
-  Pagination,
-} from "react-bootstrap";
-import useStore from "../../../zustand/Store";
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-import { Card } from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, Tag } from "antd";
+import { Row, Col, Button, Modal, Form } from "react-bootstrap";
+import DataTable from "react-data-table-component";
+import axios from "axios";
+import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
-const Driver = () => {
-  const url = `https://api.eurekalogistics.co.id/driver/update-driver/`;
-  const buatuser = "https://api.eurekalogistics.co.id/driver/create-driver";
-  const { posts, fetchPosts } = useStore();
-  const { onDriver, toggleDriver } = useStore();
-  const [showModal, setShowModal] = useState(false);
-  const [selectedDriver, setSelectedDriver] = useState({});
-  const [editedDriver, setEditedDriver] = useState({
-    nama: "",
-    driverKtp: "",
-    driverName: "",
-    simType: "",
-    division: "",
-    driverId: "", // Ganti driverKtp dengan driverId
-    no_sim: "",
-    tgl_lahir:"",
-    vehicle: "",
-    placeOfBirth: "",
-    driverAddress: "",
-    driverReligion: "",
-    noTelp1: "",
-    noTelp2: "",
-    driverNote: "",
-    dateBirth: "", // Tambahkan dateBirth
-    dateIn: "", // Tambahkan dateIn
-  });
-  
-  // const handleClose = () => setShowModal(false);
-  const handleClosed = () => setShowModal(false);
+import Swal from "sweetalert2";
 
-  const handleRowClick = (driver) => {
-    setSelectedDriver(driver);
-    setEditedDriver({ ...driver });
-    setShowModal(true);
+function CobaTables() {
+  const [DataDalamApi, setDataDalamApi] = useState([]);
+  const [driverDetails, setDriverDetails] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalData: 1,
+    totalPage: 1,
+  });
+
+  ///Modal Bootstrap
+  const [show, setShow] = useState(false);
+  const [editShow, setEditShow] = useState(false);
+  const handleClose = () => {
+    setShow(false);
+    setEditShow(false);
   };
 
-  const handleEditInputChange = (event) => {
-    const { name, value } = event.target;
-    setEditedDriver({ ...editedDriver, [name]: value });
+  const handleShow = () => {
+    setShow(true);
+    // setEditShow(true);
+  };
+
+  ///
+
+  const ApiDriver = async (page) => {
+    const urlDataDriver = await axios.get(
+      `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+    );
+    const dataApiDriver = urlDataDriver.data.data.order.map((item, index) => ({
+      no: item.no,
+      id: item.driverId,
+      nama: item.driverName,
+      gambar: item.driverImage,
+      kiriman: `-`,
+      penjualan: item.totalPenjualan,
+    }));
+
+    // Update pagination state
+    setPagination({
+      currentPage: urlDataDriver.data.data.currentPage,
+      totalData: urlDataDriver.data.data.totalData,
+      totalPage: urlDataDriver.data.data.totalPage,
+      totallimit: urlDataDriver.data.data.limit,
+    });
+
+    setDataDalamApi(dataApiDriver);
+
+    // Panggil GetdataDetail untuk setiap item dalam dataApiDriver
+    dataApiDriver.forEach(async (item) => {
+      await GetdataDetail(item.id);
+    });
+  };
+
+
+
+  const handlePageChange = (page) => {
+    ApiDriver(page);
   };
 
   useEffect(() => {
-    fetchPosts();
-    // toggleDriver();
+    ApiDriver();
   }, []);
 
-  ////edit driver api
-  const handleEditSubmit = async (event) => {
-    try {
-      const response = await fetch(`${url}`, {
-        method: "POST",
+  useEffect(() => {
+    ApiDriver(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (driverDetails.length > 0) {
+      const updatedDataDalamApi = DataDalamApi.map((data) => {
+        const detail = driverDetails.find((detail) => detail.id === data.id);
+        return {
+          ...data,
+          status: detail ? detail.dataDriver : "",
+        };
+      });
+      setDataDalamApi(updatedDataDalamApi);
+    }
+  }, [driverDetails]);
+
+  const GetdataDetail = async (id) => {
+    const urlDataDetailDriver = await axios.get(
+      `${Baseurl}driver/get-driver-detail?id=${id}`,
+      
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Token}`,
         },
-        body: JSON.stringify({
-          id: selectedDriver.driverId, // driver id yang dipilih
-          nama: editedDriver.driverName, // value dari form nama
-          jenis_sim: editedDriver.simType, // jenis SIM dari driver yang dipilih
-          no_ktp: editedDriver.driverKtp, // no KTP dari driver yang dipilih
-          divisi: editedDriver.division, // value dari form divisi
-          no_sim: editedDriver.no_sim,
-          tgl_lahir:editedDriver.tgl_lahir,
-          vehicle: editedDriver.vehicle,
-          placeOfBirth: editedDriver.placeOfBirth,
-          driverAddress: editedDriver.driverAddress,
-          driverReligion: editedDriver.driverReligion,
-          noTelp1: editedDriver.noTelp1,
-          noTelp2: editedDriver.noTelp2,
-          driverNote: editedDriver.driverNote,
-        }),
-      });
-      if (response.ok) {
-        fetchPosts();
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Driver Berhasil Di Update!",
-          timer: 2000,
-          timerProgressBar: true,
-        });
-        handleClose();
       }
+    );
+    const dataDriver = urlDataDetailDriver.data.data.status;
+
+    setDriverDetails((prevDetails) => [...prevDetails, { id, dataDriver }]);
+
+    // console.log(`ini id`, id);
+    // console.log("Data detail:", driverDetails);
+  };
+
+  // useEffect(() => {
+  //   console.log("Data detail:", driverDetails);
+  // }, [driverDetails]);
+
+  useEffect(() => {
+    // ApiDriver();
+    // driveradd();
+  }, []);
+
+
+
+  ///on off driver
+  const ondriver = async (id) => {
+    try {
+      const onDriver = await axios.post(
+        `${Baseurl}driver/ready-driver`,
+        {
+          id: id,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+  
+      // Tampilkan sweet alert ketika driver berhasil dijalankan
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Driver berhasil diaktifkan!',
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      handleClose();
+      ApiDriver();
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
-  /////Buat user
-  const [nik, setNik] = useState("");
-  const [divisi, setDivisi] = useState("");
-  const [nama, setNama] = useState("");
-  const [no_ktp, setNoKtp] = useState("");
-  const [no_sim, setNoSim] = useState("");
-  const [jenis_sim, setJenisSim] = useState("");
-  const [alamat, setAlamat] = useState("");
-  const [tgl_lahir, setTglLahir] = useState("");
-  const [agama, setAgama] = useState("");
-  const [no_telp, setNoTelp] = useState("");
-  const [no_telp2, setNoTelp2] = useState("");
-  const [email, setEmail] = useState("");
-  const [tgl_masuk, setTglMasuk] = useState("");
-  const [vehicle_type, setVehicleType] = useState("");
-  const [show, setShow] = useState(false);
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
-
-  const handleBuatUser = async (e) => {
+  const droffiver = async (id) => {
     try {
-      const response = await fetch(`${buatuser}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+      const offDriver = await axios.post(
+        `${Baseurl}driver/off-driver`,
+        {
+          id: id,
         },
-        body: JSON.stringify({
-          nik,
-          divisi,
-          nama,
-          no_ktp,
-          no_sim,
-          jenis_sim,
-          alamat,
-          tgl_lahir,
-          agama,
-          no_telp,
-          no_telp2,
-          email,
-          tgl_masuk,
-          vehicle_type,
-        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Driver berhasil dinonaktifkan!',
+        timer: 2000,
+        timerProgressBar: true,
       });
       handleClose();
-      if (response.ok) {
+      ApiDriver()
+      
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+
+
+
+
+
+  ///Edit Driver APi
+  const editdrivapier = async (id) => {
+    try {
+      const urleditdrivapier = await axios.post(
+        `${Baseurl}driver/update-driver`,
+        {
+          id: id,
+          nama: nama,
+          tgl: tgl_lahir,
+          jenis_sim: jenis_sim,
+          no_ktp: no_ktp,
+          email: email,
+          tgl_masuk: tgl_masuk,
+          no_sim: no_sim,
+          agama: agama,
+          alamat: alamat,
+          agama: agama,
+          notelp1: notelp1,
+          notelp2: notelp2,
+          email: email,
+          notelp1: notelp1,
+          notelp2: notelp2,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+      // Tangani respons dari API sesuai kebutuhan
+      DataDalamApi();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const [selectedId, setSelectedId] = useState(null);
+
+  const editDriver = (id) => {
+    setEditShow(true);
+    setSelectedId(id);
+  };
+
+  const columns = [
+    {
+      name: "No",
+      selector: (row) => row.no,
+    },
+    {
+      name: "Nama",
+      selector: (row) => row.nama,
+    },
+    {
+      name: "Image",
+      selector: (row) => (
+        <img src={row.gambar} width="50px" alt="Foto Driver" />
+      ),
+    },
+    {
+      name: "Kiriman (SM)",
+      selector: (row) => row.kiriman,
+    },
+    {
+      name: "Penjualan",
+      selector: (row) => row.penjualan,
+    },
+    {
+      name: "Status",
+      cell: (row) => (
+        <Tag color={row.status === 1 ? "green" : "red"}>
+          {row.status === 1 ? "Tersedia" : "Tidak tersedia"}
+        </Tag>
+      ),
+    },
+    {
+      name: "Edit",
+      cell: (row) => (
+        <Button variant="danger" size="sm" onClick={() => editDriver(row.id)}>
+          Edit
+        </Button>
+      ),
+    },
+  ];
+
+  ///// Create Driver
+  const [nik, setNik] = useState("");
+  const [nama, setNama] = useState("");
+  const [no_ktp, setNo_ktp] = useState("");
+  const [no_sim, setNo_sim] = useState("");
+  const [divisi, setDivisi] = useState("");
+  const [jenis_sim, setJenisSim] = useState("");
+  const [tgl_lahir, setTgl_lahir] = useState("");
+  const [agama, setAgama] = useState("");
+  const [tgl_masuk, setTgl_masuk] = useState("");
+  const [email, setEmail] = useState("");
+  const [alamat, setalamat] = useState("");
+  const [notelp1, setNotelp1] = useState("");
+  const [notelp2, setNotelp2] = useState("");
+  const driveradd = async () => {
+    try {
+      const driverAdD = await axios.post(
+        `${Baseurl}driver/create-driver`,
+        {
+          nik,
+          nama,
+          no_ktp,
+          divisi,
+          no_sim,
+          jenis_sim,
+          tgl_lahir,
+          agama,
+          tgl_masuk,
+          email,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Token}`,
+          },
+        }
+      );
+
+      if (driverAdD.status === 200) {
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -155,486 +321,384 @@ const Driver = () => {
           timer: 2000,
           timerProgressBar: true,
         });
+        handleClose();
+        DataDalamApi();
       } else {
+        const belumImput = driverAdD.data.status.message;
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Semua data harus diisi! / Email sudah Terdaftar",
+          text: belumImput,
         });
       }
     } catch (errors) {
       console.log(errors.message);
-    }
-  };
-
-  ///function untuk merubah status driver
-  function status(driverStatus) {
-    // fetchPosts()
-    if (driverStatus == "0") {
-      return <Tag color="error">OFF</Tag>;
-    } else {
-      return <Tag color="processing">ON</Tag>;
-    }
-  }
-  //// end
-
-  ///function untuk on driver
-  const UbahOn = async () => {
-    const response = await fetch(
-      `https://api.eurekalogistics.co.id/driver/ready-driver`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
-        },
-        body: JSON.stringify({
-          id: editedDriver.driverId,
-        }),
-      }
-    );
-    if (response.ok) {
-      fetchPosts();
-      handleClose();
+      const belumImput = errors.response.data.status.message;
       Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Driver Berhasil Di Update!",
-        timer: 2000,
-        timerProgressBar: true,
+        icon: "error",
+        title: "Oops...",
+        text: belumImput,
       });
     }
   };
-  //end
-
-  ///function untuk off driver
-  const UbahOff = async () => {
-    const response = await fetch(
-      `https://api.eurekalogistics.co.id/driver/off-driver`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
-        },
-        body: JSON.stringify({
-          id: editedDriver.driverId,
-        }),
-      }
-    );
-    if (response.ok) {
-      fetchPosts();
-      handleClose();
-      Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Driver Berhasil Di Update!",
-        timer: 2000,
-        timerProgressBar: true,
-      });
-    }
-  };
-  ///end
 
   return (
     <>
-      {/* <BootstrapTable bootstrap4 keyField='id' data={ posts } columns={ Table }  pagination={ paginationFactory() }/> */}
-      <Col>
-        <Card>
-          <Button size="sm" variant="primary" onClick={() => handleShow()}>
-            Add Driver
-          </Button>
-          {/* add driver */}
-          <Modal show={show} size="lg" onHide={handleClose}>
-            <Modal.Header>
-              <Modal.Title>Tambah Data</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form onSubmit={handleBuatUser}>
-                <div className="row">
-                  <div className="col-md-6">
-                    <Form.Group controlId="nik">
+      <Card>
+        <Row>
+          <Col>
+            <Button size="sm" variant="primary" onClick={() => handleShow()}>
+              Add Driver
+            </Button>
+            <Modal show={show} size="lg" onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Tambah Driver</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Row>
+                  <Col sm={6}>
+                    <Form.Group>
                       <Form.Label>NIK</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan NIK"
                         value={nik}
                         onChange={(e) => setNik(e.target.value)}
+                        required
                       />
                     </Form.Group>
-                    <Form.Group controlId="nama">
+                    <Form.Group>
                       <Form.Label>Nama</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan Nama"
                         value={nama}
                         onChange={(e) => setNama(e.target.value)}
+                        required
                       />
                     </Form.Group>
-                    <Form.Group controlId="no_ktp">
-                      <Form.Label>No KTP :</Form.Label>
+                    <Form.Group>
+                      <Form.Label>No KTP</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Nomor KTP"
+                        placeholder="Masukkan Divisi"
                         value={no_ktp}
-                        onChange={(e) => setNoKtp(e.target.value)}
+                        onChange={(e) => setNo_ktp(e.target.value)}
+                        required
                       />
                     </Form.Group>
-
-                    <Form.Group controlId="divisi">
+                    <Form.Group>
                       <Form.Label>Divisi</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan Divisi"
                         value={divisi}
                         onChange={(e) => setDivisi(e.target.value)}
+                        required
                       />
                     </Form.Group>
-                    <Form.Group controlId="no_sim">
-                      <Form.Label>No SIM :</Form.Label>
+                    <Form.Group>
+                      <Form.Label>No SIM</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Nomor SIM"
-                        name="no_sim"
+                        placeholder="Masukkan Divisi"
                         value={no_sim}
-                        onChange={(e)=>setNoSim(e.target.value)}
+                        onChange={(e) => setNo_sim(e.target.value)}
+                        required
                       />
                     </Form.Group>
-
-                    <Form.Group controlId="jenis_sim">
-                      <Form.Label>Jenis SIM :</Form.Label>
+                    <Form.Group>
+                      <Form.Label>Jenis SIM</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan Jenis SIM"
                         value={jenis_sim}
                         onChange={(e) => setJenisSim(e.target.value)}
+                        required
                       />
                     </Form.Group>
-
-                    <Form.Group controlId="nama">
-                      <Form.Label>Alamat :</Form.Label>
+                    <Form.Group>
+                      <Form.Label>Alamat</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Nama"
-                        value={alamat}
-                        onChange={(e) => setAlamat(e.target.value)}
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        required
                       />
                     </Form.Group>
-                  </div>
-                  <div className="col-md-6">
-                    <Form.Group controlId="nama">
-                      <Form.Label>Tanggal Lahir :</Form.Label>
+                  </Col>
+                  <Col sm={6}>
+                    <Form.Group>
+                      <Form.Label>Tanggal Lahir</Form.Label>
                       <Form.Control
                         type="date"
-                        placeholder="Masukkan Nama"
+                        placeholder="Masukkan Divisi"
                         value={tgl_lahir}
-                        onChange={(e) => setTglLahir(e.target.value)}
+                        onChange={(e) => setTgl_lahir(e.target.value)}
+                        required
                       />
                     </Form.Group>
-
-                    <Form.Group controlId="nama">
-                      <Form.Label>Agama :</Form.Label>
+                    <Form.Group>
+                      <Form.Label>Agama</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Nama"
+                        placeholder="Masukkan Divisi"
                         value={agama}
                         onChange={(e) => setAgama(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="nama">
-                      <Form.Label>No Telp :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Nama"
-                        value={no_telp}
-                        onChange={(e) => setNoTelp(e.target.value)}
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="nama">
-                      <Form.Label>No Telp 2 :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Nama"
-                        value={no_telp2}
-                        onChange={(e) => setNoTelp2(e.target.value)}
+                        required
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>Email :</Form.Label>
+                      <Form.Label>No Telp</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={tgl_masuk}
+                        onChange={(e) => setTgl_masuk(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>No Telp 2</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Email</Form.Label>
                       <Form.Control
                         type="email"
-                        placeholder="Masukkan Email"
+                        placeholder="Masukkan Divisi"
                         value={email}
-                        required
-                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
                         onChange={(e) => setEmail(e.target.value)}
+                        required
                       />
-                      <Form.Control.Feedback type="invalid">
-                        Harap masukkan email yang valid.
-                      </Form.Control.Feedback>
                     </Form.Group>
-
-                    <Form.Group controlId="nama">
-                      <Form.Label>Tanggal Masuk :</Form.Label>
+                    <Form.Group>
+                      <Form.Label>Tanggal Masuk</Form.Label>
                       <Form.Control
                         type="date"
-                        placeholder="Masukkan Tanggal Masuk"
-                        value={tgl_masuk}
-                        onChange={(e) => setTglMasuk(e.target.value)}
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        required
                       />
                     </Form.Group>
-
-                    <Form.Group controlId="nama">
-                      <Form.Label>Vehicle Type :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Nama"
-                        value={vehicle_type}
-                        onChange={(e) => setVehicleType(e.target.value)}
-                      />
-                    </Form.Group>
-                  </div>
-                </div>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={() => handleBuatUser()}
-              >
-                Simpan
-              </Button>
-              <Button variant="secondary" onClick={handleClose}>
-                Tutup
-              </Button>
-            </Modal.Footer>
-          </Modal>
-
-          {/* end addd driver */}
-          <Table   responsive className="text-center">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Image</th>
-                <th>Kiriman (SM)</th>
-                <th>Penjualan</th>
-                <th>Status</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {posts.map((post, index) => (
-                <tr key={post.no}>
-                  <td>{index + 1}</td>
-                  <td>{post.driverName}</td>
-                  <td>
-                    <img src={post.driverImage} alt="" width={50} />
-                  </td>
-                  <td>-</td>
-                  <td>{post.totalPenjualan}</td>
-                  <td>{status(post.driverStatus)}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleRowClick(post)}
-                    >
-                      Edit
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
-          {/* Edit driver */}
-          <Modal show={showModal} size="lg" onHide={handleClosed}>
-            <Modal.Header closeButton>
-              <Modal.Title>Edit Driver</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form onSubmit={handleEditSubmit}>
-                <Row>
-                  <Col>
                     <Form.Group>
-                      <img src={editedDriver.driverImage} alt="Foto Driver" />
-                      <Form.Label>Foto Driver :</Form.Label>
-                      <Form.Control type="file" name="driverPhoto" />
-                    </Form.Group>
-                  </Col>
-                  <Col>
-                    <Form.Group>
-                      <Form.Label>Nama Driver :</Form.Label>
+                      <Form.Label>Vehicle Type</Form.Label>
                       <Form.Control
-                        type="text"
-                        name="driverName"
-                        value={editedDriver.driverName}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Ubah Status Driver:</Form.Label>
-                      <br />
-                      <Button size="sm" variant="primary" onClick={UbahOn}>
-                        On
-                      </Button>
-                      <Button size="sm" variant="danger" onClick={UbahOff}>
-                        Off
-                      </Button>
-
-                      <br />
-                      <Form.Label>Jenis Sim :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="simType"
-                        value={editedDriver.simType}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>No KTP :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverKtp"
-                        value={editedDriver.driverKtp}
-                        onChange={handleEditInputChange}
-                        required
-                        onKeyPress={(event) => {
-                          const keyCode = event.keyCode || event.which;
-                          const keyValue = String.fromCharCode(keyCode);
-                          const regex = /^[0-9]+$/;
-
-                          if (!regex.test(keyValue)) {
-                            event.preventDefault();
-                            alert("Input hanya diizinkan angka!");
-                          }
-                        }}
-                      />
-                      <Form.Label>Tanggal Lahir :</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="tgl_lahir"
-                        value={editedDriver.tgl_lahir}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Email :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverKtp"
-                        value={editedDriver.driverEmail}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>No Telp 1 :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverKtp"
-                        value={editedDriver.noTelp1}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-
-                      <Form.Label>Tanggal Masuk :</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="driverKtp"
-                        value={editedDriver.dateIn}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col>
-                    <Form.Group>
-                      <Form.Label>Vehicle Type :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverName"
-                        value={editedDriver.vehicle}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>No SIM :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="no_sim" // Ubah dari driverName menjadi no_sim
-                        value={editedDriver.no_sim}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Vehicle Type :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="vehicle" // Ubah dari driverName menjadi vehicle
-                        value={editedDriver.vehicle}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Tempat Lahir :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="placeOfBirth" // Tambahkan atribut name baru
-                        value={editedDriver.placeOfBirth}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Alamat :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverAddress" // Ubah dari driverName menjadi driverAddress
-                        value={editedDriver.driverAddress}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Agama :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverReligion" // Ubah dari driverName menjadi driverReligion
-                        value={editedDriver.driverReligion}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>No Telp 2 :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="noTelp2" // Ubah dari driverName menjadi noTelp2
-                        value={editedDriver.noTelp2}
-                        onChange={handleEditInputChange}
-                        required
-                      />
-                      <Form.Label>Keterangan :</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="driverNote" // Tambahkan atribut name baru
-                        value={editedDriver.driverNote}
-                        onChange={handleEditInputChange}
+                        type="text  "
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
                         required
                       />
                     </Form.Group>
                   </Col>
                 </Row>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={handleEditSubmit}
-              >
-                Save
-              </Button>
-              {/* <Button variant="secondary" onClick={handleClose}>
+              </Modal.Body>
+
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
                   Close
-                </Button> */}
-              {/* End edit driver */}
-            </Modal.Footer>
-          </Modal>
-        </Card>
-      </Col>
+                </Button>
+                <Button variant="primary" onClick={() => driveradd()}>
+                  Save Changes
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            {/* Edit Button */}
+            <Modal show={editShow} size="lg" onHide={handleClose}>
+              <Modal.Body>
+                <Modal.Header closeButton>
+                  <Modal.Title>
+                    Edit Driver{" "}
+                    <span>
+                      <Button size="sm" onClick={()=>ondriver(selectedId)}>ON</Button>
+                      <Button size="sm" variant="danger" onClick={()=>droffiver(selectedId)}>
+                        OFF
+                      </Button>
+                    </span>
+                  </Modal.Title>
+                </Modal.Header>
+                <Row>
+                  <Col sm={6}>
+                    <Form.Group>
+                      <Form.Label>Nama Driver</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Nama"
+                        value={nama}
+                        onChange={(e) => setNama(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Jenis Sim</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Nama"
+                        value={jenis_sim}
+                        onChange={(e) => setJenisSim(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>No KTP</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={no_ktp}
+                        onChange={(e) => setNo_ktp(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Tanggal Lahir</Form.Label>
+                      <Form.Control
+                        type="date"
+                        placeholder="Masukkan Divisi"
+                        value={tgl_lahir}
+                        onChange={(e) => setTgl_lahir(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder="Masukkan Divisi"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>No Telp 1</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Jenis SIM"
+                        value={notelp1}
+                        onChange={(e) => setNotelp1(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Tanggal Masuk</Form.Label>
+                      <Form.Control
+                        type="date"
+                        placeholder="Masukkan Divisi"
+                        value={tgl_masuk}
+                        onChange={(e) => setTgl_masuk(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col sm={6}>
+                    <Form.Group>
+                      <Form.Label>No SIM</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={no_sim}
+                        onChange={(e) => setNo_sim(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    {/* <Form.Group>
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={tgl_masuk}
+                        onChange={(e) => setTgl_masuk(e.target.value)}
+                        required
+                      />
+                    </Form.Group> */}
+                    {/* <Form.Group>
+                      <Form.Label>Tempat Lahir</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        required
+                      />
+                    </Form.Group> */}
+                    <Form.Group>
+                      <Form.Label>Alamat</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={alamat}
+                        onChange={(e) => setalamat(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Agama</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={agama}
+                        onChange={(e) => setAgama(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>No Telp 2</Form.Label>
+                      <Form.Control
+                        type="text  "
+                        placeholder="Masukkan Divisi"
+                        value={notelp2}
+                        onChange={(e) => setNotelp2(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Keterangan</Form.Label>
+                      <Form.Control
+                        type="text  "
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        required
+                      />
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={() => editdrivapier(selectedId)}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </Modal.Body>
+            </Modal>
+            <DataTable
+              columns={columns}
+              data={DataDalamApi}
+              pagination
+              paginationServer
+              paginationTotalRows={pagination.totalData}
+              onChangePage={handlePageChange}
+            />
+          </Col>
+        </Row>
+      </Card>
     </>
   );
-};
+}
 
-export default Driver;
+export default CobaTables;

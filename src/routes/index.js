@@ -8,6 +8,7 @@ const App = ({match}) => (
     <Switch>
       <Route path={`${match.url}sample`} component={asyncComponent(() => import('./SamplePage'))}/>
       <Route path={`${match.url}masterdata/drivers`} component={asyncComponent(() => import('./MasterData/Driver'))}/>
+      <Route path={`${match.url}masterdata/purchasing/driver`} component={asyncComponent(() => import('./MasterData/Purchasing/Driver/Index'))}/>
       <Route path={`${match.url}masterdata/vehicle`} component={asyncComponent(() => import('./MasterData/Vehicle'))}/>
       {/* <Route path={`${match.url}masterdata/detailsp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/> */}
       <Route path={`${match.url}masterdata/detailsplama/:idmp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/>
@@ -15,9 +16,9 @@ const App = ({match}) => (
       <Route path={`${match.url}masterdata/splistlama`} component={asyncComponent(() => import('./MasterData/SP List/index'))}/>
       <Route path={`${match.url}masterdata/splist`} component={asyncComponent(() => import('./MasterData/SP List/SPList'))}/>
       <Route path={`${match.url}masterdata/driver`} component={asyncComponent(() => import('./MasterData/Driver/CobaTable'))}/>
-      <Route path={`${match.url}monitoring/byunit`} component={asyncComponent(() => import('./Monitoring/By unit'))}/>
-      <Route path={`${match.url}monitoring/editdriver`} component={asyncComponent(() => import('./Monitoring/By unit/EditDriver'))}/>
-      <Route path={`${match.url}monitoring/bysm`} component={asyncComponent(() => import('./Monitoring/By sm'))}/>
+      <Route path={`${match.url}masterdata/splistakunting`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/SPListAkunting'))}/> 
+      <Route path={`${match.url}masterdata/splistdetailakunting/:idmp`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/DetailsAkunting'))}/> 
+
     </Switch>
   </div>
 );

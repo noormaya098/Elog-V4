@@ -1,3 +1,5 @@
+import axios from "axios";
+import Baseurl from "../../Api/BaseUrl";
 import {
   HIDE_MESSAGE,
   INIT_URL,
@@ -27,12 +29,34 @@ export const userSignUp = (user) => {
   };
 };
 export const userSignIn = (user) => {
-  return {
-    type: SIGNIN_USER,
-    payload: user
+  return async dispatch => {
+    dispatch(showAuthLoader());
+
+    try {
+      const response = await axios.post(`${Baseurl}auth/login`, user);
+      
+      // asumsikan response.data.data berisi token dan jobdesk
+      const { token, jobdesk } = response.data.data;
+
+      // simpan token ke dalam local storage
+      localStorage.setItem('token', token);
+      localStorage.setItem('jobdesk', jobdesk);
+
+      dispatch(userSignInSuccess({ token, jobdesk }));
+      
+      // set token to axios header
+      axios.defaults.headers.common['Authorization'] = token;
+
+    } catch (error) {
+      // handle error, misalnya dengan menampilkan pesan kesalahan
+      dispatch(showAuthMessage(error.toString()));
+    }
   };
 };
+
 export const userSignOut = () => {
+  localStorage.removeItem('token');
+
   return {
     type: SIGNOUT_USER
   };
@@ -47,9 +71,15 @@ export const userSignUpSuccess = (authUser) => {
 export const userSignInSuccess = (authUser) => {
   return {
     type: SIGNIN_USER_SUCCESS,
-    payload: authUser
+    payload: {
+      token: authUser.token,
+      jobdesk: authUser.jobdesk,
+      // simpan data lain yang Anda butuhkan di sini
+    }
   }
 };
+
+
 export const userSignOutSuccess = () => {
   return {
     type: SIGNOUT_USER_SUCCESS,

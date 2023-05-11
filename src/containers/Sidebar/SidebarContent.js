@@ -12,7 +12,7 @@ import {
 } from "../../constants/ThemeSetting";
 import IntlMessages from "../../util/IntlMessages";
 import { useSelector } from "react-redux";
-const { SubMenu } = Menu; 
+const { SubMenu } = Menu;
 
 const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   const { navStyle, themeType } = useSelector(({ settings }) => settings);
@@ -31,6 +31,8 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
 
   const selectedKeys = pathname.substr(1);
   const defaultOpenKeys = selectedKeys.split("/")[1];
+  const jobdesk = localStorage.getItem("jobdesk");
+  console.log(`jobdeks`, jobdesk);
 
   return (
     <>
@@ -52,23 +54,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             theme={themeType === THEME_TYPE_LITE ? "lite" : "dark"}
             mode="inline"
           >
-            <MenuItemGroup
-              key="main"
-              title={<IntlMessages id="sidebar.main" />}
-            >
-              <Menu.Item key="sample">
-                <Link to="/sample">
-                  <i className="icon bi-speedometer"></i>
-                  <span>
-                    <IntlMessages id="sidebar.samplePage" />
-                  </span>
-                </Link>
-              </Menu.Item>
-             
-                <SubMenu
-                  key="master"
-                  title='Monitoring'
-                >
+            <MenuItemGroup key="main">
+              {jobdesk == "operasional" && (
+                <SubMenu key="master" title="Operasional">
                   <Menu.Item key="driver">
                     <Link to="/masterdata/driver">
                       <i className="icon icon-widgets" />
@@ -85,14 +73,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
-                  {/* <Menu.Item key="detailsp">
-                    <Link to="/masterdata/detailsp">
-                      <i className="icon icon-widgets" />
-                      <span>
-                        <IntlMessages id="sidebar.detailsp" />
-                      </span>
-                    </Link>
-                  </Menu.Item> */}
                   <Menu.Item key="New SP">
                     <Link to="/masterdata/splist">
                       <i className="icon icon-widgets" />
@@ -110,23 +90,40 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Link>
                   </Menu.Item>
                 </SubMenu>
-              </MenuItemGroup>
-              <Menu.Item key="byunit">
-                <Link to="/monitoring/byunit">
-                  <i className="icon icon-widgets" />
-                  <span>
-                    <IntlMessages id="sidebar.byunit" />
-                  </span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="bysm">
-                <Link to="/monitoring/bysm">
-                  <i className="icon icon-widgets" />
-                  <span>
-                    <IntlMessages id="sidebar.bysm" />
-                  </span>
-                </Link>
-              </Menu.Item>
+              )}
+             {jobdesk === "operasional" || jobdesk === "akunting" ? (
+                <SubMenu key="monitoring" title="Akunting">
+                  <Menu.Item key="SP Lists">
+                    <Link to="/masterdata/splistakunting">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="SP List Akunting" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+              ): null}
+             {jobdesk === "operasional" || jobdesk === "purchasing" ?  (
+                <SubMenu key="monitorings" title="Purchasing">
+                  <Menu.Item key="Purchasing">
+                    <Link to="/masterdata/purchasing/driver">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Master Driver" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="Purchasing">
+                    <Link to="/masterdata/splist">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Master Vehicle" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+             ): null}
+            </MenuItemGroup>
           </Menu>
         </CustomScrollbars>
       </div>

@@ -6,51 +6,53 @@ import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
 import axios from "axios";
 import Token from "../../../Api/Token";
-
+import mobil from "../../redux toolkit/store/ZustandStore";
 function FormTable({ isidata, totalPrice }) {
-  const [show, setShow] = useState(false);
-  const [kendaraan, setKendaraanData] = useState([]); /// ini isi kendaraaan dari api idmp detail
-  const [nampungno_poliiis, setnampungNopolice] = useState([]);
-  const [valuenopolice, setvaluenopolice] = useState([]);
-  const [driver, setDriverData] = useState([]);
+  const [types, setType] = useState([]);
+  const [nomorpolisi, setNomorPolisi] = useState([]);
+  const [selectnomor, setSelectnomor] = useState([]);
+  const [selectDriver, setselectDriver] = useState([]);
+  const { isidetail, setSpDetail } = mobil((state) => ({
+    isidetail: state.isidetail,
+    setSpDetail: state.setSpDetail,
+  }));
+  const {isiduit, setDuit} = mobil ((state) => ({
+    isiduit : state.isiduit,
+    setDuit : state.setDuit
+  }))
+  
 
+  useEffect(() => {
+    setType(isidetail.map((item) => item?.kendaraan));
+  }, [isidetail]);
+  console.log(`ini duit`, isiduit);
+  const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  useEffect(() => {
-    if (isidata && isidata.length > 0) {
-      const kendaraanList = isidata.map((item) => item.kendaraan);
-      setKendaraanData(kendaraanList);
-    }
-  }, [isidata]);
-
-  console.log(`value no police`,valuenopolice);
   ///select driver
-  const vehicle = async (type) => {
-    const sleet = await axios.get(
-      `${Baseurl}sp/get-SP-select?vehicleType=${type}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
-        },
-      }
-    );
-    const namadriver = sleet.data.data.Driver
-    console.log (`nama driver`,namadriver )
-    if (Array.isArray(sleet.data.data.vehicle)) {
-      const no_police = sleet.data.data.vehicle.map((item) => item.no_polisi);
-      console.log(`ini nopolice`, no_police);
-      setnampungNopolice(no_police);
-    } else {
-      console.error("Error: sleet.data.data.vehicle is not an array");
-    }
-  };
-
   useEffect(() => {
-    if (kendaraan) {
-      vehicle(kendaraan);
-    }
-  }, [kendaraan]);
+    const vehicle = async () => {
+      if (types.length > 0) {
+        const sleet = await axios.get(
+          `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&id=${selectnomor}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${Token}`,
+            },
+          }
+        );
+        const nomorpolisis = sleet.data.data.vehicle;
+        const drivernya = sleet.data.data.Driver;
+        console.log(`test drivernya`, drivernya);
+        setselectDriver(drivernya);
+        setNomorPolisi(nomorpolisis);
+      }
+    };
+    vehicle();
+  }, [types, selectnomor]);
+console.log(`isi duit` , totalPrice);
+  useState(() => {}, []);
   return (
     <Card>
       <Row>
@@ -69,29 +71,41 @@ function FormTable({ isidata, totalPrice }) {
           </Modal.Header>
           <Modal.Body>
             <Form.Label>Vehicle Type</Form.Label>
-            <Form.Control
+            <Form.Select
               type="text"
               disabled
-              value={kendaraan || "tidak tersedia"}
-            />
-            <Form.Label>Kode Kendaraan</Form.Label>
-            <Form.Select
+              value={types[0] || ""}
               onChange={(e) => {
-                setvaluenopolice(e.target.value);
-                vehicle(e.target.setvaluenopolice)
+                console.log(e.target.value);
               }}
             >
-              <option>Select Kode Kendaraan</option>
-              {nampungno_poliiis.map((no_polisi, index) => (
-                <option key={index} value={no_polisi}>
-                  {no_polisi}
+              {types.map((type, index) => (
+                <option key={index} value={type}>
+                  {type}
                 </option>
               ))}
             </Form.Select>
 
+            <Form.Label>Kode Kendaraan</Form.Label>
+            <Form.Select
+              onChange={(e) => {
+                console.log(e.target.value);
+                setSelectnomor(e.target.value);
+              }}
+            >
+              <option>Select Kode Kendaraan</option>
+              {Array.isArray(nomorpolisi)
+                ? nomorpolisi.map((item, index) => (
+                    <option key={index} value={item.driverId}>
+                      {item.no_polisi}
+                    </option>
+                  ))
+                : null}
+            </Form.Select>
+
             <Form.Label>Select Driver</Form.Label>
-            <Form.Select >
-              <option>Select Driver</option>
+            <Form.Select disabled value={selectDriver[0]?.id}>
+              <option value={selectDriver[0]?.id}>{selectDriver[0]?.name}</option>
             </Form.Select>
           </Modal.Body>
           <Modal.Footer>
@@ -196,7 +210,7 @@ function FormTable({ isidata, totalPrice }) {
             className="d-flex justify-content-end"
             style={{ fontWeight: "bold" }}
           >
-            Total Price : {totalPrice}
+            Total Price : {isiduit}
           </p>
         </Col>
       </Row>

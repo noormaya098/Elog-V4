@@ -3,13 +3,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {Redirect, Route, Switch, useHistory, useLocation, useRouteMatch} from "react-router-dom";
 import {ConfigProvider} from 'antd';
 import {IntlProvider} from "react-intl";
-
+import { userSignInSuccess } from "../../appRedux/actions";
 import AppLocale from "../../lngProvider";
 import MainApp from "./MainApp";
 import SignIn from "../SignIn";
 import SignUp from "../SignUp";
 import {setInitUrl} from "../../appRedux/actions";
-
 import {
   LAYOUT_TYPE_BOXED,
   LAYOUT_TYPE_FRAMED,
@@ -34,6 +33,7 @@ const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
           }}
         />}
   />;
+  
 
 const setLayoutType = (layoutType) => {
   if (layoutType === LAYOUT_TYPE_FULL) {
@@ -78,6 +78,13 @@ const App = () => {
   const location = useLocation();
   const history = useHistory();
   const match = useRouteMatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(userSignInSuccess({ token }));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     if (isDirectionRTL) {
