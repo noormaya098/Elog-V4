@@ -1,21 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import mobil from "../redux toolkit/store/ZustandStore";
 import IntlMessages from "util/IntlMessages";
-import { useEffect } from "react";
+
 const SamplePage = () => {
-  const jobdesk = mobil((state) => state.jobdesk);
+  const [nama, setNama] = useState('');
+
   useEffect(() => {
-    console.log(jobdesk);
-  }, [jobdesk]);
-  
+    const jobdesk = localStorage.getItem('jobdesk');
+    setNama(jobdesk);
+  }, []);
+
   return (
     <div>
-      <h2>Halo {jobdesk}</h2>
+      <h2>Halo {nama}</h2>
 
       <div className="gx-d-flex justify-content-center">
         {/* <h4>Start building your app. Happy Coding!</h4> */}
       </div>
-
     </div>
   );
 };

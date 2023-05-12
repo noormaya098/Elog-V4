@@ -74,7 +74,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="New SP">
-                    <Link to="/masterdata/splist">
+                    <Link to="/masterdata/newsplist">
                       <i className="icon icon-widgets" />
                       <span>
                         <IntlMessages id="New SP" />
@@ -91,7 +91,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                   </Menu.Item>
                 </SubMenu>
               )}
-             {jobdesk === "operasional" || jobdesk === "akunting" ? (
+             {jobdesk === "Akunting" ? (
                 <SubMenu key="monitoring" title="Akunting">
                   <Menu.Item key="SP Lists">
                     <Link to="/masterdata/splistakunting">
@@ -103,7 +103,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                   </Menu.Item>
                 </SubMenu>
               ): null}
-             {jobdesk === "operasional" || jobdesk === "purchasing" ?  (
+             {jobdesk === "purchasing" ?  (
                 <SubMenu key="monitorings" title="Purchasing">
                   <Menu.Item key="driverpurch">
                     <Link to="/masterdata/purchasing/driver">
