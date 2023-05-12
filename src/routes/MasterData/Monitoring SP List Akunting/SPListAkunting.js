@@ -142,12 +142,22 @@ function SPList() {
 
     {
       name: "Tgl Approved/Decline Ops",
-      selector: (row) => row.dateApproveOps,
+      selector: (row) => {
+        const dateApproveOps = row.dateApproveOps;
+        const isValidDate = !isNaN(new Date(dateApproveOps));
+    
+        return isValidDate ? dateApproveOps : "-";
+      },
       width: "200px",
     },
     {
       name: "Tgl Approved/Decline Act",
-      selector: (row) => row.dateApproveAct,
+      selector: (row) => {
+      const dateApproveAct = row.dateApproveAct;
+        const isValidDate = !isNaN(new Date(dateApproveAct));
+    
+        return isValidDate ? dateApproveAct : "-";
+      },
       width: "200px",
     },
     {
@@ -155,23 +165,24 @@ function SPList() {
       selector: (row) => {
         return row.approveOps === "Y" ? (
           <Tag color="green">Approved</Tag>
-        ) : row.approveOps === "Invalid date" ? (
-          <Tag color="red">Reject</Tag>
-        ) : (
+        ) : row.approveOps === "N" ? (
           <Tag color="yellow">Waiting</Tag>
+        ) : (
+          <Tag color="red">Reject</Tag>
         );
       },
       width: "150px",
     },
+    
     {
       name: "Approve by Akunting",
       selector: (row) => {
         return row.approveAct === "Y" ? (
           <Tag color="green">Approved</Tag>
         ) : row.approveAct === "Invalid date" ? (
-          <Tag color="red">Reject</Tag>
-        ) : (
           <Tag color="yellow">Waiting</Tag>
+        ) : (
+          <Tag color="red">Reject</Tag>
         );
       },
       width: "150px",

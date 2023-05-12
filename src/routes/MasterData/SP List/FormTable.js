@@ -1,7 +1,7 @@
 // FormTable.js
 import React from "react";
 import { Col, Row, Form, Button, Table, Modal } from "react-bootstrap";
-import { Card } from "antd";
+import { Card, Checkbox } from "antd";
 import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
@@ -18,6 +18,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
   const [idUnit, setIdunit] = useState([]);
   const [bukaanother, setBukaanother] = useState(false);
   const [driveranother, setDriveranother] = useState([]);
+  const [selectanotherrvalue, setSelectanotherrvalue] = useState([]);
   const { isidetail, setSpDetail } = mobil((state) => ({
     isidetail: state.isidetail,
     setSpDetail: state.setSpDetail,
@@ -64,6 +65,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
   // console.log(`isi duit`, totalPrice);
   useState(() => {}, []);
 
+  useEffect(() => {
   const anotherdriver = async () => {
     const another = await axios.get(`${Baseurl}sp/another-driver`, {
       headers: {
@@ -75,7 +77,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
     setDriveranother(driveranotders);
     console.log(`test`, driveranother);
   };
-  useEffect(() => {
+
     anotherdriver();
   }, []);
 
@@ -84,7 +86,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
     const body = {
       id_mp: idmp,
       id_unit: selectDriver[0]?.idUnit,
-      id_supir: selectnomor,
+      id_supir: selectnomor ,
       id_mitra: ``,
       id_mitra_pickup: ``,
       id_mitra_2: ``,
@@ -208,6 +210,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 {selectDriver[0] && selectDriver[0]?.name}
               </option>
             </Form.Select>
+            <Checkbox className="justify-content-end d-flex">Multi</Checkbox>
             <br />
             <hr />
             <Button size="sm" onClick={() => handleAnotherDriverClick()}>
@@ -217,11 +220,11 @@ function FormTable({ isidata, totalPrice, idmp }) {
             {bukaanother && (
               <>
                 <Form.Label>Select Driver</Form.Label>
-                <Form.Select>
+                <Form.Select onChange={(e)=>setIdunit()}>
                   {driveranother &&
                     driveranother.map((item, index) => (
-                      <option key={index} value={selectDriver.id}>
-                        {selectDriver.name}
+                      <option key={index} value={item.id}>
+                        {item?.name}
                       </option>
                     ))}
                 </Form.Select>
