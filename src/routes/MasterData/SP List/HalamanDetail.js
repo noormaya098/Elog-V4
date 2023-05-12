@@ -36,7 +36,7 @@ function HalamanDetail() {
     const isi = await axios.get(`${Baseurl}sp/get-SP-detail?idmp=${idmp}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${Token}`,
+        Authorization: localStorage.getItem("token"),
       },
     });
     const semua = isi.data.data;
@@ -82,7 +82,7 @@ function HalamanDetail() {
 
   return (
     <div>
-      <FormTable isidata={isidata}></FormTable>
+      <FormTable isidata={isidata} idmp={idmp}></FormTable>
       {/* <DetailsAkunting isidata={isidata}></DetailsAkunting> */}
     </div>
   );

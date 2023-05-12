@@ -105,7 +105,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               ): null}
              {jobdesk === "operasional" || jobdesk === "purchasing" ?  (
                 <SubMenu key="monitorings" title="Purchasing">
-                  <Menu.Item key="Purchasing">
+                  <Menu.Item key="driverpurch">
                     <Link to="/masterdata/purchasing/driver">
                       <i className="icon icon-widgets" />
                       <span>
@@ -113,8 +113,8 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
-                  <Menu.Item key="Purchasing">
-                    <Link to="/masterdata/splist">
+                  <Menu.Item key="vehiclepurch">
+                    <Link to="/masterdata/purchasing/vehicle">
                       <i className="icon icon-widgets" />
                       <span>
                         <IntlMessages id="Master Vehicle" />
