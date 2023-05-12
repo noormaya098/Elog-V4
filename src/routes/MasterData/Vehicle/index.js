@@ -281,7 +281,7 @@ function Index() {
                       <Form.Label>Panjang</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Panjang"
+                        placeholder="Contoh 12 (harus angka)"
                         value={panjang}
                         onChange={(e) => setpanjang(e.target.value)}
                         required
@@ -300,7 +300,7 @@ function Index() {
                     <Form.Label>Tinggi</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Masukkan Tinggi"
+                      placeholder="Contoh 12 (harus angka)"
                       value={tinggi}
                       onChange={(e) => settinggi(e.target.value)}
                       required

@@ -112,14 +112,11 @@ function SPList() {
     },
     {
       name: "Perusahaan",
-      selector: (row) => row.perusahaan,
+      selector: (row) => {  
+       return  <> <strong>{row.perusahaan} </strong><br/> {row.salesName}</>
+      },
       width: "230px",
-    },
-    {
-      name: "Marketing",
-      selector: (row) => row.salesName,
-      width: "150px",
-    },
+    }, 
     {
       name: "Service",
       selector: (row) => row.service,
@@ -139,54 +136,58 @@ function SPList() {
       selector: (row) => row.destination,
       width: "600px",
     },
-
-    {
-      name: "Tgl Approved/Decline Ops",
-      selector: (row) => {
-        const dateApproveOps = row.dateApproveOps;
-        const isValidDate = !isNaN(new Date(dateApproveOps));
+    // {
+    //   name: "Tgl Approved/Decline Act",
+    //   selector: (row) => {
+    //   const dateApproveAct = row.dateApproveAct;
+    //     const isValidDate = !isNaN(new Date(dateApproveAct));
     
-        return isValidDate ? dateApproveOps : "-";
-      },
-      width: "200px",
-    },
-    {
-      name: "Tgl Approved/Decline Act",
-      selector: (row) => {
-      const dateApproveAct = row.dateApproveAct;
-        const isValidDate = !isNaN(new Date(dateApproveAct));
+    //     return isValidDate ? dateApproveAct : "-";
+    //   },
+    //   width: "200px",
+    // },
+    // {
+    //   name: "Tgl Approved/Decline Ops",
+    //   selector: (row) => {
+    //     const dateApproveOps = row.dateApproveOps;
+    //     const isValidDate = !isNaN(new Date(dateApproveOps));
     
-        return isValidDate ? dateApproveAct : "-";
-      },
-      width: "200px",
-    },
-    {
-      name: "Approve by OPS",
-      selector: (row) => {
-        return row.approveOps === "Y" ? (
-          <Tag color="green">Approved</Tag>
-        ) : row.approveOps === "N" ? (
-          <Tag color="yellow">Waiting</Tag>
-        ) : (
-          <Tag color="red">Reject</Tag>
-        );
-      },
-      width: "150px",
-    },
-    
+    //     return isValidDate ? dateApproveOps : "-";
+    //   },
+    //   width: "200px",
+    // },
+   
     {
       name: "Approve by Akunting",
       selector: (row) => {
+        const dateApproveAct = row.dateApproveAct;
         return row.approveAct === "Y" ? (
-          <Tag color="green">Approved</Tag>
+         <><Tag color="green">Approved <br/> <small>{dateApproveAct}</small> </Tag> </> 
         ) : row.approveAct === "Invalid date" ? (
-          <Tag color="yellow">Waiting</Tag>
+          <>  <Tag color="yellow">Waiting <br/> <small>{dateApproveAct}</small> </Tag> </> 
         ) : (
-          <Tag color="red">Reject</Tag>
-        );
+          <> <Tag color="red">Reject  <br/> <small>{dateApproveAct}</small> </Tag> </> 
+          );
+        },
+        
+        width: "150px",
+      },
+    {
+      name: "Approve by OPS",
+      selector: (row) => {
+        const dateApproveOps = row.dateApproveOps;
+        return row.approveOps === "Y" ? (
+          <><Tag color="green">Approved  <br/> <small>{dateApproveOps}</small>  </Tag></> 
+         ) : row.approveAct === "Invalid date" ? (
+           <>  <Tag color="yellow">Waiting  <br/> <small>{dateApproveOps}</small> </Tag> </> 
+         ) : (
+           <> <Tag color="red">Reject  <br/> <small>{dateApproveOps}</small> </Tag> </> 
+           );
       },
       width: "150px",
     },
+    
+    
     {
       name: "Approve by Purchasing",
       selector: (row) => {

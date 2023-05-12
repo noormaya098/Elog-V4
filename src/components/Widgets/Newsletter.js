@@ -14,7 +14,7 @@ const Newsletter = () => {
       <h2 className="gx-mb-3 gx-mb-xxl-4 gx-font-weight-light">Dont's miss our weekly news and updates</h2>
       <Form className="gx-signup-form gx-form-row0 gx-mb-0">
         <div className="gx-mb-3">
-          <Input placeholder="Username"/>
+          <Input placeholder=""/>
         </div>
         <Button type="primary" className="gx-mb-0" htmlType="submit">
           Subscribe

@@ -103,6 +103,7 @@ function SPListlama() {
     {
       name: "No",
       selector: (row) => row.no,
+      width : '50px'
     },
     {
       name: "SP ID",

@@ -103,6 +103,7 @@ function SPList() {
     {
       name: "No",
       selector: (row) => row.no,
+      width:'50px'
     },
     {
       name: "SP ID",
@@ -173,7 +174,7 @@ function SPList() {
       <Card>
         <Row>
           <Col>
-            <h1>SP List</h1>
+            <h1>New SP List</h1>
             <DataTable
             columns={columns}
             data={combinedData}
