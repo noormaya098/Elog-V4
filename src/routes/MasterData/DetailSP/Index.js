@@ -61,7 +61,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
+            Authorization: localStorage.getItem("token")
           },
         }
       );
@@ -84,7 +84,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
+            Authorization: localStorage.getItem("token")
           },
         }
       );
@@ -103,7 +103,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
       const response = await axios.get(`${Baseurl}sp/another-driver`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: localStorage.getItem("token")
         },
       });
       const SupirCadangan = response.data.data;
@@ -163,7 +163,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
+            Authorization: localStorage.getItem("token")
           },
         }
       );
@@ -198,7 +198,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
+            Authorization: localStorage.getItem("token")
           },
         }
       );

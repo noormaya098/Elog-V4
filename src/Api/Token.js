@@ -1,2 +1,3 @@
+localStorage.getItem('token')
 const Token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJvcGVyYXNpb25hbCIsImZ1bGxuYW1lIjoiQWRpbmRhIFB1dHJpIFIiLCJqb2JkZXNrIjoib3BlcmFzaW9uYWwiLCJpYXQiOjE2ODM3ODA2MDgsImV4cCI6MTY4Mzg2NzAwOH0.17NLTdGZAFPpHmT4TgdWcmrQlitzOL-J2fUhWvZqavc`
 export default Token

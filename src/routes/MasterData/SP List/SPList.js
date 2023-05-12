@@ -23,7 +23,7 @@ function SPList() {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: localStorage.getItem("token")
         },
       }
     );
@@ -55,7 +55,7 @@ function SPList() {
     const isi = await axios.get(`${Baseurl}sp/get-SP-detail?idmp=${idmp}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${Token}`,
+        Authorization: localStorage.getItem("token")
       },
     });
 
@@ -143,7 +143,7 @@ function SPList() {
         return row.approveOps === "Y" ? (
           <Tag color="green">Approved</Tag>
         ) : row.dateApproveOps === "Invalid date" ? (
-          <Tag color="red">Waiting</Tag>
+          <Tag color="orange">Waiting</Tag>
         ) : (
           <Tag color="red">Reject</Tag>
         );

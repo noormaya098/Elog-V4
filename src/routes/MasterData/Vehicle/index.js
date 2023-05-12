@@ -25,7 +25,7 @@ function Index() {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: localStorage.getItem("token")
         },
       }
     );
@@ -136,7 +136,7 @@ function Index() {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: localStorage.getItem("token")
         },
       }
     );
@@ -150,7 +150,7 @@ function Index() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
+            Authorization: localStorage.getItem("token")
           },
         }
       );

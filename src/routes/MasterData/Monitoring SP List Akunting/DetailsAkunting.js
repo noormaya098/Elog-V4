@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import mobil from "../../redux toolkit/store/ZustandStore";
 import Baseurl from "../../../Api/BaseUrl";
-import Token from "../../../Api/Token";
+import Swal from "sweetalert2";
 function DetailsAkunting() {
   const [detailData, setDetailData] = useState([]);
   const { isicombinedData, setisiCombinedData } = mobil((item) => ({
@@ -17,20 +17,26 @@ function DetailsAkunting() {
   console.log(idmp);
   useEffect(() => {
     const getDetail = async () => {
-      const response = await axios.get(
-        `${Baseurl}sp/get-SP-all-detail?keyword=&idmp=${idmp}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Token}`,
-          },
-        }
-      );
-      setDetailData(response.data);
-      console.log(response.data);
+      try {
+        const response = await axios.get(
+          `${Baseurl}sp/get-SP-all-detail?keyword=&idmp=${idmp}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token")
+            },
+          }
+        );
+        setDetailData(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Failed to fetch detail data:", error);
+        // handle error appropriately
+      }
     };
     getDetail();
   }, [idmp]);
+  
 
   console.log(isicombinedData);
   const columns = [
@@ -43,14 +49,76 @@ function DetailsAkunting() {
       selector: (row) => row.year,
     },
   ];
-  const isiapi = () => {};
-  return (
+
+  const tombolApprove = async () => {
+    const body = {
+      id_mp: idmp,
+    };
+  
+    try {
+      const data = await axios.post(`${Baseurl}sp/approve-SP-akunting`, body, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+  
+      const approve = data.status;
+      console.log(`test approve`, approve);
+  
+      // Menampilkan SweetAlert berhasil
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Data telah disetujui.",
+      });
+  
+    } catch (error) {
+      // Menampilkan SweetAlert gagal
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Terjadi kesalahan dalam memproses data.",
+      });
+      console.error(error);
+    }
+  };
+  
+  const rejectbutton = async () => {
+    const body = {
+        "id_mp": idmp
+    }
+    try{
+    const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token")
+      },
+    })
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: "Telah di Reject",
+    });
+
+  } catch (error) {
+    // Menampilkan SweetAlert gagal
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: "Terjadi kesalahan dalam memproses data.",
+    });
+    console.error(error);
+  }
+  }
+
+    return (
     <div>
       <Card>
         <Row>
           <div className="d-flex justify-content-end">
-            <Button size="sm">Approve</Button>
-            <Button size="sm" variant="danger">
+            <Button size="sm" onClick={()=>tombolApprove()}>Approve</Button>
+            <Button size="sm" variant="danger" onClick={()=>rejectbutton()}>
               Reject Driver
             </Button>
           </div>
@@ -92,7 +160,7 @@ function DetailsAkunting() {
             <Form>
               <Form.Group>
                 <Form.Label>Via</Form.Label>
-                <Form.Control disabled value={detailData?.detail?.[0]?.via} />
+                <Form.Control disabled value={detailData?.detail?.[0].via} />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Pickup Date</Form.Label>

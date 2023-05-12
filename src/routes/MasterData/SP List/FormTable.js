@@ -4,19 +4,20 @@ import { Col, Row, Form, Button, Table, Modal } from "react-bootstrap";
 import { Card } from "antd";
 import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
+import Swal from "sweetalert2";
 import axios from "axios";
 import Token from "../../../Api/Token";
 import mobil from "../../redux toolkit/store/ZustandStore";
-function FormTable({ isidata, totalPrice , idmp}) {
+function FormTable({ isidata, totalPrice, idmp }) {
   const [types, setType] = useState([]);
   const [nomorpolisi, setNomorPolisi] = useState([]);
   const [selectnomor, setSelectnomor] = useState([]);
-  const [ approved , setApproved] = useState([]);
+  const [approved, setApproved] = useState([]);
   const [selectDriver, setselectDriver] = useState([]);
-  const [ idsupir , setIdsupir] = useState([]);
-  const [idUnit , setIdunit] = useState([]);
-  const [bukaanother , setBukaanother] = useState(false);
-  const [driveranother , setDriveranother] = useState([]);
+  const [idsupir, setIdsupir] = useState([]);
+  const [idUnit, setIdunit] = useState([]);
+  const [bukaanother, setBukaanother] = useState(false);
+  const [driveranother, setDriveranother] = useState([]);
   const { isidetail, setSpDetail } = mobil((state) => ({
     isidetail: state.isidetail,
     setSpDetail: state.setSpDetail,
@@ -25,7 +26,7 @@ function FormTable({ isidata, totalPrice , idmp}) {
     isiduit: state.isiduit,
     setDuit: state.setDuit,
   }));
-// console.log(`test idmp`, idmp);
+  // console.log(`test idmp`, idmp);
   useEffect(() => {
     setType(isidetail.map((item) => item?.kendaraan));
   }, [isidetail]);
@@ -42,18 +43,18 @@ function FormTable({ isidata, totalPrice , idmp}) {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${Token}`,
+              Authorization: localStorage.getItem("token"),
             },
           }
         );
         const nomorpolisis = sleet.data.data.vehicle;
         const drivernya = sleet.data.data.Driver;
         const idsupir = sleet.data.data.vehicle.map((item) => ({
-          id : item.id,
-          driverId : item.driverId
+          id: item.id,
+          driverId: item.driverId,
         }));
-        // console.log(`id supir`, idsupir[0]?.id); 
-        setIdsupir(idsupir[0]?.id)
+        // console.log(`id supir`, idsupir[0]?.id);
+        setIdsupir(idsupir[0]?.id);
         setselectDriver(drivernya);
         setNomorPolisi(nomorpolisis);
       }
@@ -63,50 +64,88 @@ function FormTable({ isidata, totalPrice , idmp}) {
   // console.log(`isi duit`, totalPrice);
   useState(() => {}, []);
 
-const anotherdriver = async()=>{
-  const another =await axios.get(`${Baseurl}sp/another-driver` , {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: localStorage.getItem(`token`),
-    },
-  })
-  const driveranotders = another.data.data
-  setDriveranother(driveranotders)
-  console.log(`test`,driveranother);
-}
-useEffect(()=>{
-  anotherdriver()
-},[])
-
-
+  const anotherdriver = async () => {
+    const another = await axios.get(`${Baseurl}sp/another-driver`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem(`token`),
+      },
+    });
+    const driveranotders = another.data.data;
+    setDriveranother(driveranotders);
+    console.log(`test`, driveranother);
+  };
+  useEffect(() => {
+    anotherdriver();
+  }, []);
 
   ///tombol approve
   const HandleApproveOPS = () => {
     const body = {
-      "id_mp": idmp,
-      "id_unit": selectDriver[0]?.idUnit,
-      "id_supir": selectnomor,
-      "id_mitra": ``,
-      "id_mitra_pickup": ``,
-      "id_mitra_2": ``  
+      id_mp: idmp,
+      id_unit: selectDriver[0]?.idUnit,
+      id_supir: selectnomor,
+      id_mitra: ``,
+      id_mitra_pickup: ``,
+      id_mitra_2: ``,
     };
-  
-    axios.post(`${Baseurl}sp/approve-SP`, body, {
+
+    axios
+      .post(`${Baseurl}sp/approve-SP`, body, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        const isidata = response.data.status;
+        setApproved(isidata);
+        console.log(`data approve`, approved);
+
+        // Display success alert
+        Swal.fire({
+          icon: "success",
+          title: "Approval Successful",
+          text: "The approval process has been completed successfully.",
+        });
+        handleClose();
+      })
+      .catch((error) => console.error(`Error: ${error}`));
+  };
+
+  const handleAnotherDriverClick = () => {
+    setBukaanother(true);
+    setBukaanother(!bukaanother);
+  };
+
+  const rejectsp = async () => {
+    try{
+    const body = {
+      id_mp: idmp,
+    };
+    const data = await axios.post(`${Baseurl}sp/decline-SP`, body, {
       headers: {
         "Content-Type": "application/json",
         Authorization: localStorage.getItem("token"),
       },
-    })
-    .then((response) => {
-      const isidata = response.data.status;
-      setApproved(isidata)
-      console.log(`data approve`, approved);
-    })
-    .catch((error) => console.error(`Error: ${error}`));
-  };
-  const handleAnotherDriverClick = () => {
-    setBukaanother(true);
-  };
+    });
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: "Data telah di reject",
+    });
+
+  } catch (error) {
+    // Menampilkan SweetAlert gagal
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: "Terjadi kesalahan dalam memproses data.",
+    });
+    console.error(error);
+  }
+};
+
   return (
     <Card>
       <Row>
@@ -114,7 +153,7 @@ useEffect(()=>{
           <Button size="sm" onClick={() => handleShow()}>
             Approve
           </Button>
-          <Button size="sm" variant="danger">
+          <Button size="sm" variant="danger" onClick={() => rejectsp()}>
             Reject Driver
           </Button>
         </div>
@@ -142,7 +181,7 @@ useEffect(()=>{
             <Form.Label>Kode Kendaraan</Form.Label>
             <Form.Select
               onChange={(e) => {
-                console.log(`kode kendaraan`,e.target.value);
+                console.log(`kode kendaraan`, e.target.value);
                 setSelectnomor(e.target.value);
               }}
             >
@@ -156,29 +195,38 @@ useEffect(()=>{
                 : null}
             </Form.Select>
 
-            <Form.Label >Select Driver</Form.Label>
-            <Form.Select disabled value={selectDriver[0]?.id}
-            onChange={(e)=>{console.log(`awo`,e.target.value); setIdunit(e.target.value) }}>
+            <Form.Label>Select Driver</Form.Label>
+            <Form.Select
+              disabled
+              value={selectDriver[0]?.id}
+              onChange={(e) => {
+                console.log(`awo`, e.target.value);
+                setIdunit(e.target.value);
+              }}
+            >
               <option value={selectDriver[0]?.id}>
-              {selectDriver[0] && selectDriver[0]?.name}
+                {selectDriver[0] && selectDriver[0]?.name}
               </option>
             </Form.Select>
-            <br/>
-          <hr/>
-          <Button size="sm" onClick={()=>handleAnotherDriverClick()}>another driver</ Button> 
-          <br/>
-          {bukaanother && (
-        <>
-          <Form.Label>Select Driver</Form.Label>
-          <Form.Select >
-            {driveranother && driveranother.map((item , index)=>
-            <option key={index} value={selectDriver.id}>
-              {selectDriver.name}
-            </option>
+            <br />
+            <hr />
+            <Button size="sm" onClick={() => handleAnotherDriverClick()}>
+              another driver
+            </Button>
+            <br />
+            {bukaanother && (
+              <>
+                <Form.Label>Select Driver</Form.Label>
+                <Form.Select>
+                  {driveranother &&
+                    driveranother.map((item, index) => (
+                      <option key={index} value={selectDriver.id}>
+                        {selectDriver.name}
+                      </option>
+                    ))}
+                </Form.Select>
+              </>
             )}
-          </Form.Select>
-        </>
-      )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -188,7 +236,6 @@ useEffect(()=>{
               Save Changes
             </Button>
           </Modal.Footer>
-          
         </Modal>
 
         <Col sm={6}>

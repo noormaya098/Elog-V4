@@ -3,28 +3,24 @@ import React, { useEffect, useState } from "react";
 import { Col, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Tag } from "antd";
-import Token from "../../../Api/Token";
 import Baseurl from "../../../Api/BaseUrl";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
 import DetailSP from "../DetailSP/Index";
 function SpList() {
-  // const navigate = useNavigate();
-  // const posts = useSpStore((state) => state.posts);
-  // const fetchPosts = useSpStore((state) => state.fetchPosts);
+  const Token = localStorage.getItem('token');
   const [DataTable, setDataTable] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [idmpData, setIdmpData] = useState([]);
   const [Kendaraan , setKendaraanData] = useState([]); //
-
   const DataSp = async () => {
     const urlData = await axios.get(
       `${Baseurl}sp/get-SP?limit=10&page=3&keyword=`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: localStorage.getItem("token")
         },
       }
     );
@@ -61,7 +57,7 @@ function SpList() {
       setKendaraanData(dataKendaraan); // set state here instead
       return dataKendaraan;
     } catch (error) {
-      console.error("There was a problem with the axios request:", error);
+      console.error("error broww", error);
     }
   };
   

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Tag } from "antd";
-import { Col, Row, Form, Button } from "react-bootstrap";
+import { Col, Row, Form, Button, Modal } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
@@ -15,15 +15,18 @@ function SPList() {
     currentPage: 1,
     limit: 10,
   });
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const history = useHistory();
-  const { isicombinedData, setisiCombinedData } = mobil(); 
+  const { isicombinedData, setisiCombinedData } = mobil();
   const dataapi = async (page) => {
     const isi = await axios.get(
       `${Baseurl}sp/get-SP-all?limit=30&page=${page}&keyword=`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: localStorage.getItem("token"),
         },
       }
     );
@@ -48,15 +51,12 @@ function SPList() {
   }, [isiData]);
 
   const getDestinationData = async (idmp) => {
-    const isi = await axios.get(
-      `${Baseurl}sp/get-SP-detail?idmp=${idmp}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Token}`,
-        },
-      }
-    );
+    const isi = await axios.get(`${Baseurl}sp/get-SP-detail?idmp=${idmp}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token"),
+      },
+    });
 
     const isis = isi.data.data.map((item) => ({
       idmp: idmp,
@@ -98,7 +98,7 @@ function SPList() {
       setCombinedData(combined);
     }
   }, [isiData, destinationData]);
-  console.log(`isi zustan`,isicombinedData);
+  console.log(`isi zustan`, isicombinedData);
   const columns = [
     {
       name: "No",
@@ -158,7 +158,7 @@ function SPList() {
         ) : row.approveOps === "Invalid date" ? (
           <Tag color="yellow">Waiting</Tag>
         ) : (
-          <Tag color="red">Alihkan</Tag>
+          <Tag color="red">Reject</Tag>
         );
       },
       width: "150px",
@@ -166,12 +166,12 @@ function SPList() {
     {
       name: "Approve by Akunting",
       selector: (row) => {
-        return row.approveOps === "Y" ? (
+        return row.approveAct === "Y" ? (
           <Tag color="green">Approved</Tag>
-        ) : row.dateApproveOps === "Invalid date" ? (
+        ) : row.approveAct === "Invalid date" ? (
           <Tag color="yellow">Waiting</Tag>
         ) : (
-          <Tag color="red">Alihkan</Tag>
+          <Tag color="red">Reject</Tag>
         );
       },
       width: "150px",
@@ -184,7 +184,7 @@ function SPList() {
         ) : row.dateApprovePurch === "Invalid date" ? (
           <Tag color="yellow">Waiting</Tag>
         ) : (
-          <Tag color="red">Alihkan</Tag>
+          <Tag color="red">Reject</Tag>
         );
       },
       width: "180px",
@@ -203,9 +203,10 @@ function SPList() {
     },
   ];
 
+  
   const buttonarahin = (idmp) => {
     history.push(`/masterdata/splistdetailakunting/${idmp}`);
-    console.log(`ini idmp`,idmp);
+    console.log(`ini idmp`, idmp);
   };
   const handlePageChange = async (page) => {
     setPagination({ ...pagination, currentPage: page });
@@ -228,6 +229,9 @@ function SPList() {
             />
           </Col>
         </Row>
+        <div className="d-flex justify-content-end">
+          
+        </div>
       </Card>
     </div>
   );
