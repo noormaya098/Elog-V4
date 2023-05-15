@@ -23,7 +23,7 @@ function DetailsAkunting() {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: localStorage.getItem("token")
+              Authorization: localStorage.getItem("token"),
             },
           }
         );
@@ -36,9 +36,7 @@ function DetailsAkunting() {
     };
     getDetail();
   }, [idmp]);
-  
 
-  console.log(isicombinedData);
   const columns = [
     {
       name: "Title",
@@ -54,7 +52,7 @@ function DetailsAkunting() {
     const body = {
       id_mp: idmp,
     };
-  
+
     try {
       const data = await axios.post(`${Baseurl}sp/approve-SP-akunting`, body, {
         headers: {
@@ -62,17 +60,15 @@ function DetailsAkunting() {
           Authorization: localStorage.getItem("token"),
         },
       });
-  
+
       const approve = data.status;
-      console.log(`test approve`, approve);
-  
+
       // Menampilkan SweetAlert berhasil
       Swal.fire({
         icon: "success",
         title: "Berhasil",
         text: "Data telah disetujui.",
       });
-  
     } catch (error) {
       // Menampilkan SweetAlert gagal
       Swal.fire({
@@ -83,42 +79,43 @@ function DetailsAkunting() {
       console.error(error);
     }
   };
-  
+
   const rejectbutton = async () => {
     const body = {
-        "id_mp": idmp
+      id_mp: idmp,
+    };
+    try {
+      const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Telah di Reject",
+      });
+    } catch (error) {
+      // Menampilkan SweetAlert gagal
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Terjadi kesalahan dalam memproses data.",
+      });
+      console.error(error);
     }
-    try{
-    const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
-      },
-    })
-    Swal.fire({
-      icon: "success",
-      title: "Berhasil",
-      text: "Telah di Reject",
-    });
+  };
 
-  } catch (error) {
-    // Menampilkan SweetAlert gagal
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: "Terjadi kesalahan dalam memproses data.",
-    });
-    console.error(error);
-  }
-  }
-
-    return (
+  return (
     <div>
       <Card>
         <Row>
           <div className="d-flex justify-content-end">
-            <Button size="sm" onClick={()=>tombolApprove()}>Approve</Button>
-            <Button size="sm" variant="danger" onClick={()=>rejectbutton()}>
+            <Button size="sm" onClick={() => tombolApprove()}>
+              Approve
+            </Button>
+            <Button size="sm" variant="danger" onClick={() => rejectbutton()}>
               Reject Driver
             </Button>
           </div>

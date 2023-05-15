@@ -5,6 +5,7 @@ import { Card, Checkbox } from "antd";
 import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
+import Select from "react-select";
 import axios from "axios";
 import Token from "../../../Api/Token";
 import mobil from "../../redux toolkit/store/ZustandStore";
@@ -27,7 +28,16 @@ function FormTable({ isidata, totalPrice, idmp }) {
     isiduit: state.isiduit,
     setDuit: state.setDuit,
   }));
-  // console.log(`test idmp`, idmp);
+  const { custumer, setCustumer } = mobil((state) => ({
+    custumer: state.custumer,
+    setCustumer: state.setCustumer,
+  }));
+  const { jenisBarang, setjenisBarang } = mobil((state) => ({
+    jenisBarang: state.jenisBarang,
+    setjenisBarang: state.setjenisBarang,
+  }));
+  const { orderdate, setOrderdate, asuransi, setAsuransi } = mobil();
+  // console.log(`test idmp`, orderdate, asuransi);
   useEffect(() => {
     setType(isidetail.map((item) => item?.kendaraan));
   }, [isidetail]);
@@ -66,17 +76,17 @@ function FormTable({ isidata, totalPrice, idmp }) {
   useState(() => {}, []);
 
   useEffect(() => {
-  const anotherdriver = async () => {
-    const another = await axios.get(`${Baseurl}sp/another-driver`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem(`token`),
-      },
-    });
-    const driveranotders = another.data.data;
-    setDriveranother(driveranotders);
-    console.log(`test`, driveranother);
-  };
+    const anotherdriver = async () => {
+      const another = await axios.get(`${Baseurl}sp/another-driver`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem(`token`),
+        },
+      });
+      const driveranotders = another.data.data;
+      setDriveranother(driveranotders);
+      // console.log(`test`, driveranother);
+    };
 
     anotherdriver();
   }, []);
@@ -86,7 +96,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
     const body = {
       id_mp: idmp,
       id_unit: selectDriver[0]?.idUnit,
-      id_supir: selectnomor ,
+      id_supir: selectnomor,
       id_mitra: ``,
       id_mitra_pickup: ``,
       id_mitra_2: ``,
@@ -121,35 +131,39 @@ function FormTable({ isidata, totalPrice, idmp }) {
   };
 
   const rejectsp = async () => {
-    try{
-    const body = {
-      id_mp: idmp,
-    };
-    const data = await axios.post(`${Baseurl}sp/decline-SP`, body, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-    Swal.fire({
-      icon: "success",
-      title: "Berhasil",
-      text: "Data telah di reject",
-    });
+    try {
+      const body = {
+        id_mp: idmp,
+      };
+      const data = await axios.post(`${Baseurl}sp/decline-SP`, body, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Data telah di reject",
+      });
+    } catch (error) {
+      // Menampilkan SweetAlert gagal
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Terjadi kesalahan dalam memproses data.",
+      });
+      console.error(error);
+    }
+  };
 
-  } catch (error) {
-    // Menampilkan SweetAlert gagal
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: "Terjadi kesalahan dalam memproses data.",
-    });
-    console.error(error);
-  }
-};
+  const nomorpolisiOptions = nomorpolisi.map((item) => ({
+    value: item.driverId,
+    label: item.no_polisi,
+  }));
 
   return (
-    <Card>
+    <>
       <Row>
         <div className="d-flex justify-content-end">
           <Button size="sm" onClick={() => handleShow()}>
@@ -181,21 +195,13 @@ function FormTable({ isidata, totalPrice, idmp }) {
             </Form.Select>
 
             <Form.Label>Kode Kendaraan</Form.Label>
-            <Form.Select
-              onChange={(e) => {
-                console.log(`kode kendaraan`, e.target.value);
-                setSelectnomor(e.target.value);
+            <Select
+              options={nomorpolisiOptions}
+              onChange={(selectedOption) => {
+                console.log(`kode kendaraan`, selectedOption.value);
+                setSelectnomor(selectedOption.value);
               }}
-            >
-              <option>Select Kode Kendaraan</option>
-              {Array.isArray(nomorpolisi)
-                ? nomorpolisi.map((item, index) => (
-                    <option key={index} value={item.driverId}>
-                      {item.no_polisi}
-                    </option>
-                  ))
-                : null}
-            </Form.Select>
+            />
 
             <Form.Label>Select Driver</Form.Label>
             <Form.Select
@@ -220,7 +226,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
             {bukaanother && (
               <>
                 <Form.Label>Select Driver</Form.Label>
-                <Form.Select onChange={(e)=>setIdunit()}>
+                <Form.Select onChange={(e) => setIdunit()}>
+                  <option>Select Driver</option>
                   {driveranother &&
                     driveranother.map((item, index) => (
                       <option key={index} value={item.id}>
@@ -262,6 +269,14 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 value={isidata[0] ? isidata[0].kendaraan : ""}
               />
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Jenis Barang</Form.Label>
+              <Form.Control type="text" disabled value={jenisBarang} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Customer</Form.Label>
+              <Form.Control type="text" disabled value={custumer} />
+            </Form.Group>
           </Form>
         </Col>
         <Col sm={6}>
@@ -283,8 +298,26 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 value={isidata[0] ? isidata[0].pickupDate : ""}
               />
             </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Order Date</Form.Label>
+              <Form.Control type="text" disabled value={orderdate} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Asuransi</Form.Label>
+              <Form.Control
+                type="text"
+                disabled
+                value={
+                  asuransi === "Y"
+                    ? "Menggunakan Asuransi"
+                    : "Tidak Menggunakan Asuransi"
+                }
+              />
+            </Form.Group>
           </Form>
         </Col>
+
         <Form.Group>
           <Form.Label>Pickup Address</Form.Label>
           <Form.Control
@@ -312,7 +345,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
                     <td>Berat</td>
                     <td>Qyt</td>
                     {/* <td>Exp</td> */}
-                    <td>Price</td>
+                    {/* <td>Price</td> */}
                   </tr>
                 </thead>
                 <tbody>
@@ -323,8 +356,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
                     <td>{isi.item}</td>
                     <td>{isi.berat}</td>
                     <td>{isi.qty}</td>
-                    {/* <td>Koli </td> */}
-                    <td>{isi.price}</td>
+                    {/* <td>custumer </td> */}
+                    {/* <td>{isi.price}</td> */}
                   </tr>
                 </tbody>
               </Table>
@@ -333,11 +366,11 @@ function FormTable({ isidata, totalPrice, idmp }) {
             className="d-flex justify-content-end"
             style={{ fontWeight: "bold" }}
           >
-            Total Price : {isiduit}
+            {/* Total Price : {isiduit} */}
           </p>
         </Col>
       </Row>
-    </Card>
+    </>
   );
 }
 

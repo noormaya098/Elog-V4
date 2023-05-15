@@ -177,9 +177,7 @@ function SpList() {
                     >
                       Detail
                     </Button>
-                    {/* <DetailSP u
-                    kendaraan={item.kendaraan}
-                    /> */}
+                   
                   </td>
                 </tr>
               ))}

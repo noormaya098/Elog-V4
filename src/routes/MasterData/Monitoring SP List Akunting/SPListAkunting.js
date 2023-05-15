@@ -164,9 +164,9 @@ function SPList() {
         return row.approveAct === "Y" ? (
          <><Tag color="green">Approved <br/> <small>{dateApproveAct}</small> </Tag> </> 
         ) : row.approveAct === "Invalid date" ? (
-          <>  <Tag color="yellow">Waiting <br/> <small>{dateApproveAct}</small> </Tag> </> 
+          <>  <Tag color="Red">Reject <br/> <small>{dateApproveAct}</small> </Tag> </> 
         ) : (
-          <> <Tag color="red">Reject  <br/> <small>{dateApproveAct}</small> </Tag> </> 
+          <> <Tag color="yellow">Waiting  <br/> <small>{dateApproveAct}</small> </Tag> </> 
           );
         },
         
@@ -179,9 +179,9 @@ function SPList() {
         return row.approveOps === "Y" ? (
           <><Tag color="green">Approved  <br/> <small>{dateApproveOps}</small>  </Tag></> 
          ) : row.approveAct === "Invalid date" ? (
-           <>  <Tag color="yellow">Waiting  <br/> <small>{dateApproveOps}</small> </Tag> </> 
+           <>  <Tag color="Red">Reject  <br/> <small>{dateApproveOps}</small> </Tag> </> 
          ) : (
-           <> <Tag color="red">Reject  <br/> <small>{dateApproveOps}</small> </Tag> </> 
+           <> <Tag color="yellow">Waiting  <br/> <small>{dateApproveOps}</small> </Tag> </> 
            );
       },
       width: "150px",

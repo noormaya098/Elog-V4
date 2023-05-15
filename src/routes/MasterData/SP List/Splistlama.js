@@ -7,41 +7,37 @@ import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import { useHistory } from "react-router-dom";
 function SPListlama() {
- 
-
   const [isiData, setIsiData] = useState([]);
   const [destinationData, setDestinationData] = useState([]);
-  const [ pagination, setPagination] = useState({
+  const [search, setSearch] = useState([]);
+  const [pagination, setPagination] = useState({
     currentPage: 1,
-    limit:10,
-  })
+    limit: 10,
+  });
   const history = useHistory();
 
   const dataapi = async (page) => {
     const isi = await axios.get(
-      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=`,
+      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=${search}`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token")
+          Authorization: localStorage.getItem("token"),
         },
       }
     );
-    
 
-    const isidata = isi.data.data.order
+    const isidata = isi.data.data.order;
     setPagination({
-       currentPage : isi.data.data.currentPage,
-       limit : isi.data.data.limit
-    })
+      currentPage: isi.data.data.currentPage,
+      limit: isi.data.data.limit,
+    });
 
     setIsiData(isidata);
   };
   useEffect(() => {
-    dataapi(pagination.currentPage);
-  }, []);
-  
-  
+    dataapi(pagination.currentPage, search);
+  }, [search]);
 
   useEffect(() => {
     if (isiData && isiData.length > 0) {
@@ -55,13 +51,13 @@ function SPListlama() {
     const isi = await axios.get(`${Baseurl}sp/get-SP-detail?idmp=${idmp}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
+        Authorization: localStorage.getItem("token"),
       },
     });
 
     const isis = isi.data.data.map((item) => ({
       idmp: idmp,
-      kendaraan: item.kendaraan ,
+      kendaraan: item.kendaraan,
       pickupAddress: item.pickupAddress,
       perusahaan: item.perusahaan,
       destination: item.destination,
@@ -103,7 +99,7 @@ function SPListlama() {
     {
       name: "No",
       selector: (row) => row.no,
-      width : '50px'
+      width: "50px",
     },
     {
       name: "SP ID",
@@ -135,14 +131,14 @@ function SPListlama() {
     },
 
     {
-        name: "Tgl Approved/Decline",
-        selector: (row) => {
-          const dateApproveOps = row.dateApproveOps;
-          const isValidDate = !isNaN(new Date(dateApproveOps));
-      
-          return isValidDate ? dateApproveOps : "-";
-        },
+      name: "Tgl Approved/Decline",
+      selector: (row) => {
+        const dateApproveOps = row.dateApproveOps;
+        const isValidDate = !isNaN(new Date(dateApproveOps));
+
+        return isValidDate ? dateApproveOps : "-";
       },
+    },
     {
       name: "Akunting",
       selector: (row) => {
@@ -167,17 +163,20 @@ function SPListlama() {
         );
       },
     },
-   
   ];
 
   const buttonarahin = (idmp) => {
     history.push(`/masterdata/detailsp/${idmp}`);
     // history.push(`/masterdata/splistdetailakunting/${idmp}`);
-  }
+  };
 
   const handlePageChange = async (page) => {
     setPagination({ ...pagination, currentPage: page });
-    await dataapi(page);
+    await dataapi(page, search);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
   };
   return (
     <div>
@@ -185,15 +184,24 @@ function SPListlama() {
         <Row>
           <Col>
             <h1>SP List</h1>
+            <div className="d-flex justify-content-end">
+              <Form.Group controlId="search">
+                <Form.Control
+                  type="text"
+                  placeholder="No SP ID"
+                  onChange={handleSearchChange}
+                />
+              </Form.Group>
+            </div>
             <DataTable
-            columns={columns}
-            data={combinedData}
-            pagination
-            paginationServer
-            paginationPerPage={pagination.limit}
-            paginationTotalRows={isiData.length}
-            onChangePage={handlePageChange}
-          />
+              columns={columns}
+              data={combinedData}
+              pagination
+              paginationServer
+              paginationPerPage={pagination.limit}
+              paginationTotalRows={isiData.length}
+              onChangePage={handlePageChange}
+            />
           </Col>
         </Row>
       </Card>

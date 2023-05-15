@@ -1,4 +1,4 @@
-import { Card, Tag } from "antd";
+import { Card, Tag, Input } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
@@ -7,6 +7,7 @@ import Baseurl from "../../../../Api/BaseUrl";
 
 function Index() {
   const [dataapi, setdataapi] = useState([]);
+  const [filterText, setFilterText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
@@ -39,39 +40,66 @@ function Index() {
     },
   ];
 
-  const dataapis = (page) => {
+  const dataapis = (page, keyword) => {
     axios
-      .get(`${Baseurl}driver/get-driver?limit=${limit}&page=${page}&keyword=`, {
+      .get(`${Baseurl}driver/get-driver?limit=${limit}&page=${page}&keyword=${keyword}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: localStorage.getItem("token"),
         },
       })
       .then((response) => {
-        const datas = response.data.data.order;
+        const datas = response.data.data.order.map((item, index) => {
+          return {
+            ...item,
+            no: ((page - 1) * limit) + index  + 1
+          };
+        });
         const totalPage = response.data.data.totalPage;
         setdataapi(datas);
         setTotalPages(totalPage);
       })
       .catch((error) => console.error(`Error: ${error}`));
   };
+  
 
   useEffect(() => {
-    dataapis(currentPage);
-  }, [currentPage]);
+    dataapis(currentPage, filterText);
+  }, [currentPage, filterText]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  const filteredItems = dataapi.filter(
+    item => (item.driverName && item.driverName.toLowerCase().includes(filterText.toLowerCase())) ||
+            (item.no && item.no.toString().toLowerCase().includes(filterText.toLowerCase()))
+  );
+  
 
+  const handleSearch = (e) => {
+    setFilterText(e.target.value);
+    setCurrentPage(1); // Reset page to 1 when starting a new search
+  };
+  
   return (
     <div>
       <Card>
         <Row>
           <Col>
+            <div className="d-flex justify-content-end">
+              <Col sm={3}>
+                <Input
+                  id="search"
+                  type="text"
+                  placeholder="Filter by driver name"
+                  value={filterText}
+                  onChange={handleSearch}
+                />
+              </Col>
+            </div>
             <DataTable
               columns={columns}
-              data={dataapi}
+              data={dataapi} // No need to filter here as the server does the filtering
               pagination
               paginationServer
               paginationTotalRows={totalPages}

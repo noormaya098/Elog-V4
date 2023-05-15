@@ -6,11 +6,11 @@ import DataTable from "react-data-table-component";
 import Baseurl from "../../../../Api/BaseUrl";
 
 function Index() {
-    const [dataapi, setDataapi] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPage, setTotalPage] = useState(1);
-  
-    const limit = 10; // Add 'limit' variable definition
+  const [dataapi, setDataapi] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+
+  const limit = 10;
   const columns = [
     {
       name: "No",
@@ -68,7 +68,7 @@ function Index() {
       <Card>
         <Row>
           <Col>
-          <DataTable
+            <DataTable
               columns={columns}
               data={dataapi}
               pagination

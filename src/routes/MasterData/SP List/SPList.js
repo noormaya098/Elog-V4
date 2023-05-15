@@ -7,41 +7,37 @@ import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import { useHistory } from "react-router-dom";
 function SPList() {
- 
-
   const [isiData, setIsiData] = useState([]);
   const [destinationData, setDestinationData] = useState([]);
-  const [ pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState({
     currentPage: 1,
-    limit:10,
-  })
+    limit: 10,
+  });
   const history = useHistory();
+  const [spId, setSpId] = useState("");
 
-  const dataapi = async (page) => {
+  const dataapi = async (page, spId) => {
     const isi = await axios.get(
-      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=`,
+      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=${spId}`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token")
+          Authorization: localStorage.getItem("token"),
         },
       }
     );
-    
 
-    const isidata = isi.data.data.order
+    const isidata = isi.data.data.order;
     setPagination({
-       currentPage : isi.data.data.currentPage,
-       limit : isi.data.data.limit
-    })
+      currentPage: isi.data.data.currentPage,
+      limit: isi.data.data.limit,
+    });
 
     setIsiData(isidata);
   };
   useEffect(() => {
-    dataapi(pagination.currentPage);
-  }, []);
-  
-  
+    dataapi(pagination.currentPage, spId);
+  }, [spId]);
 
   useEffect(() => {
     if (isiData && isiData.length > 0) {
@@ -55,13 +51,13 @@ function SPList() {
     const isi = await axios.get(`${Baseurl}sp/get-SP-detail?idmp=${idmp}`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token")
+        Authorization: localStorage.getItem("token"),
       },
     });
 
     const isis = isi.data.data.map((item) => ({
       idmp: idmp,
-      kendaraan: item.kendaraan ,
+      kendaraan: item.kendaraan,
       pickupAddress: item.pickupAddress,
       perusahaan: item.perusahaan,
       destination: item.destination,
@@ -103,7 +99,7 @@ function SPList() {
     {
       name: "No",
       selector: (row) => row.no,
-      width:'50px'
+      width: "50px",
     },
     {
       name: "SP ID",
@@ -153,7 +149,11 @@ function SPList() {
     {
       name: "Opsi",
       selector: (row) => (
-        <Button size="sm" variant="primary" onClick={()=>buttonarahin(row.idmp)}>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={() => buttonarahin(row.idmp)}
+        >
           Detail
         </Button>
       ),
@@ -163,27 +163,44 @@ function SPList() {
   const buttonarahin = (idmp) => {
     history.push(`/masterdata/detailsp/${idmp}`);
     // history.push(`/masterdata/splistdetailakunting/${idmp}`);
-  }
+  };
 
   const handlePageChange = async (page) => {
     setPagination({ ...pagination, currentPage: page });
-    await dataapi(page);
+    await dataapi(page, spId);
   };
+
+  const handleSpIdChange = (e) => {
+    setSpId(e.target.value);
+  };
+
   return (
     <div>
       <Card>
         <Row>
           <Col>
             <h1>New SP List</h1>
+          <div className="d-flex justify-content-end">
+          <Col sm={3}>
+            <Form.Group controlId="spId">
+              <Form.Control
+                type="text"
+                placeholder="No SP ID"
+                onChange={handleSpIdChange}
+              />
+            </Form.Group>
+            <br/>
+            </Col>
+            </div>
             <DataTable
-            columns={columns}
-            data={combinedData}
-            pagination
-            paginationServer
-            paginationPerPage={pagination.limit}
-            paginationTotalRows={isiData.length}
-            onChangePage={handlePageChange}
-          />
+              columns={columns}
+              data={combinedData}
+              pagination
+              paginationServer
+              paginationPerPage={pagination.limit}
+              paginationTotalRows={isiData.length}
+              onChangePage={handlePageChange}
+            />
           </Col>
         </Row>
       </Card>

@@ -20,12 +20,12 @@ function DetailSP() {
   const [noSPK, setNoSPK] = useState("");
   const [nama, setNama] = useState("");
   const [foto, setFoto] = useState("");
-  const { idmp , kendaraansatu } = useParams();
+  const { idmp, kendaraansatu } = useParams();
   const [data, setdata] = useState([]);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-console.log(`kendaraan satu test`,kendaraanyu);
+  console.log(`kendaraan satu test`, kendaraanyu);
   ///data api
   const [sp, setSP] = useState("");
   const [via, setVia] = useState("");
@@ -61,7 +61,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token")
+            Authorization: localStorage.getItem("token"),
           },
         }
       );
@@ -84,7 +84,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token")
+            Authorization: localStorage.getItem("token"),
           },
         }
       );
@@ -103,7 +103,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
       const response = await axios.get(`${Baseurl}sp/another-driver`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token")
+          Authorization: localStorage.getItem("token"),
         },
       });
       const SupirCadangan = response.data.data;
@@ -163,7 +163,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token")
+            Authorization: localStorage.getItem("token"),
           },
         }
       );
@@ -188,7 +188,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
     }
   };
 
-  const RejectBtn = async () =>{
+  const RejectBtn = async () => {
     try {
       const response = await axios.post(
         `${Baseurl}sp/decline-SP`,
@@ -198,7 +198,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token")
+            Authorization: localStorage.getItem("token"),
           },
         }
       );
@@ -220,9 +220,10 @@ console.log(`kendaraan satu test`,kendaraanyu);
         icon: "error",
         confirmButtonText: "OK",
       });
-      
     }
   };
+
+  
   
   return (
     <div>
@@ -236,7 +237,7 @@ console.log(`kendaraan satu test`,kendaraanyu);
           >
             Approve
           </Button>
-          <Button size="sm" variant="danger" onClick={()=>RejectBtn()}>
+          <Button size="sm" variant="danger" onClick={() => RejectBtn()}>
             Reject Driver
           </Button>
         </div>
