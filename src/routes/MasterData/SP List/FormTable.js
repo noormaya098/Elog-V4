@@ -266,7 +266,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
               <Form.Control
                 type="text"
                 disabled
-                value={isidata[0] ? isidata[0].kendaraan : ""}
+                value={isidata[0] ? isidata[0].service : ""}
               />
             </Form.Group>
             <Form.Group>

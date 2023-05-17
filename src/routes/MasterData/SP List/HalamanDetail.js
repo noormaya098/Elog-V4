@@ -89,9 +89,9 @@ function HalamanDetail() {
 
   useEffect(() => {
     detail(idmp);
-    // pilihDriver();
   }, [idmp]);
 
+  
   const messagedetail = async () => {
     const isi = await axios.get(`${Baseurl}sp/get-SP-massage?id_mp=${idmp}`, {
       headers: {
@@ -112,7 +112,7 @@ function HalamanDetail() {
   useEffect(() => {
     messagedetail();
     memos(idmp);
-  }, [memo, custumer, jenisBarang, asuransi, orderdate]);
+  }, [memo, custumer, jenisBarang, asuransi, orderdate , komen]);
 
   const memos = async () => {
     const data = await axios.get(

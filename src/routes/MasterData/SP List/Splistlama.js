@@ -18,7 +18,7 @@ function SPListlama() {
 
   const dataapi = async (page) => {
     const isi = await axios.get(
-      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=${search}`,
+      `${Baseurl}sp/get-SP-all?limit=15&page=${page}&keyword=${search}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -145,9 +145,9 @@ function SPListlama() {
         return row.approveAct === "Y" ? (
           <Tag color="green">Approved</Tag>
         ) : row.approveAct === "Invalid date" ? (
-          <Tag color="orange">Waiting</Tag>
-        ) : (
           <Tag color="red">Reject</Tag>
+        ) : (
+          <Tag color="orange">Waiting</Tag>
         );
       },
     },

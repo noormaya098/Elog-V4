@@ -94,7 +94,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
              {jobdesk === "Akunting" ? (
                 <SubMenu key="monitoring" title="Akunting">
                   <Menu.Item key="SP Lists">
-                    <Link to="/masterdata/splistakunting">
+                    <Link to="/akunting/splistakuntingbaru">
                       <i className="icon icon-widgets" />
                       <span>
                         <IntlMessages id="SP List Akunting" />

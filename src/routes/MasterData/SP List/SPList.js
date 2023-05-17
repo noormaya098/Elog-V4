@@ -133,19 +133,21 @@ function SPList() {
     {
       name: "Tgl Approved/Decline",
       selector: (row) => row.dateApproveOps,
-    },
-    {
+  },
+  {
       name: "OPS",
       selector: (row) => {
-        return row.approveOps === "Y" ? (
-          <Tag color="green">Approved</Tag>
-        ) : row.dateApproveOps === "Invalid date" ? (
-          <Tag color="orange">Waiting</Tag>
-        ) : (
-          <Tag color="red">Reject</Tag>
-        );
+          return row.approveOps === "Y" ? (
+              <Tag color="green">Approved  <br/>{row.dateApproveOps}</Tag>
+          ) : row.dateApproveOps === "Invalid date" ? (
+              <Tag color="orange">Waiting <br/> {row.dateApproveOps}</Tag>
+          ) : (
+              <Tag color="red">Reject <br/> {row.dateApproveOps}</Tag>
+          );
       },
-    },
+  },
+  
+
     {
       name: "Opsi",
       selector: (row) => (
@@ -180,17 +182,17 @@ function SPList() {
         <Row>
           <Col>
             <h1>New SP List</h1>
-          <div className="d-flex justify-content-end">
-          <Col sm={3}>
-            <Form.Group controlId="spId">
-              <Form.Control
-                type="text"
-                placeholder="No SP ID"
-                onChange={handleSpIdChange}
-              />
-            </Form.Group>
-            <br/>
-            </Col>
+            <div className="d-flex justify-content-end">
+              <Col sm={3}>
+                <Form.Group controlId="spId">
+                  <Form.Control
+                    type="text"
+                    placeholder="No SP ID"
+                    onChange={handleSpIdChange}
+                  />
+                </Form.Group>
+                <br />
+              </Col>
             </div>
             <DataTable
               columns={columns}

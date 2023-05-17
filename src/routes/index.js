@@ -17,7 +17,8 @@ const App = ({match}) => (
       <Route path={`${match.url}masterdata/newsplist`} component={asyncComponent(() => import('./MasterData/SP List/SPList'))}/>
       <Route path={`${match.url}masterdata/splist`} component={asyncComponent(() => import('./MasterData/SP List/Splistlama'))}/>
       <Route path={`${match.url}masterdata/driver`} component={asyncComponent(() => import('./MasterData/Driver/CobaTable'))}/>
-      <Route path={`${match.url}masterdata/splistakunting`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/SPListAkunting'))}/> 
+      <Route path={`${match.url}akunting/splistakunting`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/SPListAkunting'))}/> 
+      <Route path={`${match.url}akunting/splistakuntingbaru`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/SplistAkuntingBaru'))}/> 
       <Route path={`${match.url}masterdata/purchasing/driver`} component={asyncComponent(() => import('./MasterData/Purchasing/Driver/Index'))}/>
       <Route path={`${match.url}masterdata/purchasing/vehicle`} component={asyncComponent(() => import('./MasterData/Purchasing/Vehicle/Index'))}/>
 
