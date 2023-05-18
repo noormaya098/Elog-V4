@@ -122,7 +122,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="vehiclepurchs">
-                    <Link to="/purchasing/vehicle">
+                    <Link to="/purchasing/mastermitra">
                       <i className="icon icon-widgets" />
                       <span>
                         <IntlMessages id="Master Mitra" />

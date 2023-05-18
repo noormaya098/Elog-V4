@@ -21,7 +21,7 @@
         <Route path={`${match.url}akunting/splistakuntingbaru`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/SplistAkuntingBaru'))}/> 
         <Route path={`${match.url}masterdata/purchasing/driver`} component={asyncComponent(() => import('./MasterData/Purchasing/Driver/Index'))}/>
         <Route path={`${match.url}masterdata/purchasing/vehicle`} component={asyncComponent(() => import('./MasterData/Purchasing/Vehicle/Index'))}/>
-        <Route path={`${match.url}purchasing/vehicle`} component={asyncComponent(() => import('./MasterData/Purchasing/MasterMitra/Index'))}/>
+        <Route path={`${match.url}purchasing/mastermitra`} component={asyncComponent(() => import('./MasterData/Purchasing/MasterMitra/Index'))}/>
         <Route path={`${match.url}purchasing/DetailMitra/:mitraId`} component={asyncComponent(() => import('./MasterData/Purchasing/MasterMitra/DetailMitra'))}/>
 
       </Switch>

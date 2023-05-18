@@ -29,11 +29,10 @@ function FormDataDetailMitra({ mitraId }) {
 
   return (
     <div>
-      <hr/>
       <br/>
-      <h5>NAMA DAN ALAMAT PERUSAHAAN (Sold to Party )</h5>
+      <h5>NAMA DAN ALAMAT PERUSAHAAN <span><i>(Sold to Party )</i></span></h5>
       <br/>
-      <Row className="align-items-center">
+      <Row  className="align-items-center">
         <Col sm={2}>
           <Form.Label>
             <b>MITRA CODE</b>
