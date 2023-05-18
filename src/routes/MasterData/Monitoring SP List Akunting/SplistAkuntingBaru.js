@@ -162,11 +162,9 @@ function SplistAkuntingBaru() {
         dateApprovePurch: item.dateApprovePurch,
       }));
   
-      // Call detailSP for each idmp and wait for all of them to finish
       const detailPromises = isi.map(item => detailSP(item.idmp));
       const details = await Promise.all(detailPromises);
   
-      // Merge the two arrays into one
       const combinedData = isi.map((item, index) => ({
         ...item,
         vehicles: details[index]
@@ -205,7 +203,6 @@ function SplistAkuntingBaru() {
   };
 
   useEffect(() => {
-    // detailSP()
   }, [datamobil]);
 
   return (

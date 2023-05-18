@@ -331,15 +331,14 @@ function FormTable({ isidata, totalPrice, idmp }) {
       <br />
       <Row>
         <Col>
-          {isidata &&
-            isidata.map((isi, index) => (
-              <Table responsive key={index}>
+         
+              <Table responsive >
                 <thead>
                   <tr
                     style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}
                   >
                     <td>No</td>
-                    <td>Destination {index + 1}</td>
+                    <td>Destination</td>
                     <td>Via</td>
                     <td>Item</td>
                     <td>Berat</td>
@@ -349,6 +348,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
                   </tr>
                 </thead>
                 <tbody>
+                {isidata &&
+            isidata.map((isi, index) => (
                   <tr>
                     <td>{index + 1}</td>
                     <td>{isi.destination}</td>
@@ -359,9 +360,9 @@ function FormTable({ isidata, totalPrice, idmp }) {
                     {/* <td>custumer </td> */}
                     {/* <td>{isi.price}</td> */}
                   </tr>
+                ))}
                 </tbody>
               </Table>
-            ))}
           <p
             className="d-flex justify-content-end"
             style={{ fontWeight: "bold" }}

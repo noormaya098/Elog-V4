@@ -11,6 +11,7 @@ function CobaTable() {
   const [DataDalamApi, setDataDalamApi] = useState([]);
   const [driverDetails, setDriverDetails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedId, setSelectedId] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalData: 0,
@@ -73,9 +74,9 @@ function CobaTable() {
     ApiDriver(page);
   };
 
-  useEffect(() => {
-    ApiDriver();
-  }, []);
+  // useEffect(() => {
+  //   ApiDriver();
+  // }, []);
 
   useEffect(() => {
     ApiDriver(currentPage);
@@ -117,10 +118,10 @@ function CobaTable() {
     console.log("Data detail:", driverDetails);
   }, [driverDetails]);
 
-  useEffect(() => {
-    ApiDriver();
-    // driveradd();
-  }, []);
+  // useEffect(() => {
+  //   ApiDriver();
+  //   // driveradd();
+  // }, []);
 
 
 
@@ -227,7 +228,6 @@ function CobaTable() {
     }
   };
 
-  const [selectedId, setSelectedId] = useState(null);
 
   const editDriver = (id) => {
     setEditShow(true);

@@ -38,7 +38,7 @@ function DetailsAkunting() {
     };
     getDetail();
     comments();
-  }, [idmp, memo, comment]);
+  }, [idmp, memo]);
 
   const columns = [
     {

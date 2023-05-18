@@ -121,6 +121,14 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
+                  <Menu.Item key="vehiclepurchs">
+                    <Link to="/purchasing/vehicle">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Master Mitra" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
                 </SubMenu>
              ): null}
             </MenuItemGroup>
