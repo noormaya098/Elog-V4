@@ -24,7 +24,7 @@ function Index() {
     {
       name: "Status",
       selector: (row) => `-`,
-      width: "100px",
+      width: "80px",
     },
     {
       name: "Code",
@@ -39,6 +39,7 @@ function Index() {
     {
       name: "Mitra Address",
       selector: (row) => row.mitraAddress,
+      width: "150px",
     },
     {
       name: "Awal Kontrak",

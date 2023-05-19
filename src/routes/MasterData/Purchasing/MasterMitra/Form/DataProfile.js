@@ -1,44 +1,53 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect , useState } from "react";
 import { Row, Col, Form } from "react-bootstrap";
 import Baseurl from "../../../../../Api/BaseUrl";
 import { Checkbox } from "antd";
 function FormDataDetailMitra({ mitraId }) {
+  const id_mitras = mitraId;
+  const [datamiTraProfile, setDataMitraProfile] = useState([]);
+
   const datamitra = async () => {
-    const id_mitra = mitraId;
-
-    const response = await fetch(`${Baseurl}mitra/get-detail-mitra`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-
-    if (response.ok) {
-      const apiawal = await response.json();
-      console.log(apiawal);
-    } else {
-      console.error("Response Error:", response);
+    try {
+      const response = await axios.get(
+        `${Baseurl}mitra/get-detail-mitra?id_mitra=${id_mitras}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      const dataisi = response.data.data;
+      setDataMitraProfile(dataisi);
+      console.log("ini isi", dataisi);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
     datamitra();
-  }, []);
+  },[]);
 
   return (
     <div>
-      <br/>
-      <h5>NAMA DAN ALAMAT PERUSAHAAN <span><i>(Sold to Party )</i></span></h5>
-      <br/>
-      <Row  className="align-items-center">
+      <br />
+      <h5>
+        NAMA DAN ALAMAT PERUSAHAAN{" "}
+        <span>
+          <i>(Sold to Party )</i>
+        </span>
+      </h5>
+      <br />
+      <Row className="align-items-center">
         <Col sm={2}>
           <Form.Label>
             <b>MITRA CODE</b>
           </Form.Label>
           <Form.Control
             disabled
+            value={datamiTraProfile.kode_mitra}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -75,6 +84,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>MITRA NAME :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.nama_mitra}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -98,6 +108,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>JENIS USAHA :</b>
           </Form.Label>
           <Form.Select
+          defaultValue={datamiTraProfile.jenis_usaha}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -143,11 +154,11 @@ function FormDataDetailMitra({ mitraId }) {
             <b>ALAMAT KANTOR :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.alamat}
             onChange={(e) => {
               console.log(e.target.value);
             }}
-          >
-          </Form.Control>
+          ></Form.Control>
         </Col>
         <Col sm={4}>
           <Form.Label>
@@ -171,6 +182,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>DIREKTUR :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.direktur}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -182,6 +194,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>JUMLAH ARMADA :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.jumlah_armada}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -192,6 +205,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>JUMLAH SDM OPERASIONAL :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.jumlah_sdm_operasional}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -205,6 +219,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>CABANG :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.cabang}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -215,6 +230,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>JENIS KIRIMAN</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.jenis_kiriman}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -238,6 +254,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>TELP. KANTOR :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.telp}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -248,6 +265,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>FAX. KANTOR :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.fax}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -271,6 +289,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>WILAYAH :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.wilayah}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -281,17 +300,19 @@ function FormDataDetailMitra({ mitraId }) {
             <b>TUJUAN</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.tujuan}
             onChange={(e) => {
               console.log(e.target.value);
             }}
           ></Form.Control>
         </Col>
-        <br/>
+        <br />
         <Col sm={4}>
           <Form.Label>
             <b>TAHUN BERDIRI :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.tahun_berdiri}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -306,6 +327,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="date"
+            defaultValue={datamiTraProfile.awal_kontrak}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -316,6 +338,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>KONTRAK AKHIR :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.akhir_kontrak}
             type="date"
             onChange={(e) => {
               console.log(e.target.value);
@@ -330,7 +353,8 @@ function FormDataDetailMitra({ mitraId }) {
             <b>TAHUN REGISTER :</b>
           </Form.Label>
           <Form.Control
-            type="date"
+          defaultValue={datamiTraProfile.tahun_awal_kontrak}
+            type="text"
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -344,6 +368,7 @@ function FormDataDetailMitra({ mitraId }) {
         </Form.Label>
         <Form.Control
           as="textarea"
+          defaultValue={datamiTraProfile.memo}
           rows={3}
           style={{ height: "139px" }}
           onChange={(e) => {
@@ -373,6 +398,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_id}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -384,6 +410,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_name}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -398,6 +425,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_address}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -412,6 +440,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_jalan}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -425,6 +454,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>BLOK :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.npwp_blok}
             type="text"
             onChange={(e) => {
               console.log(e.target.value);
@@ -437,6 +467,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_nomor}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -448,6 +479,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_rt}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -459,6 +491,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_rw}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -470,6 +503,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_provinsi}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -481,6 +515,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_kota}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -492,6 +527,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_kecamatan}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -503,6 +539,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.npwp_kelurahan}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -515,6 +552,7 @@ function FormDataDetailMitra({ mitraId }) {
           <b>Kodepost :</b>
         </Form.Label>
         <Form.Control
+        defaultValue={datamiTraProfile.npwp_kodepos}
           type="text"
           onChange={(e) => {
             console.log(e.target.value);
@@ -525,12 +563,12 @@ function FormDataDetailMitra({ mitraId }) {
       <hr />
       <br />
       <Row>
-          <p>
-            <span>
-              <b>DATA ACCOUNTING</b>{" "}
-            </span>
-            <i>(Accounting Information)</i>
-          </p>
+        <p>
+          <span>
+            <b>DATA ACCOUNTING</b>{" "}
+          </span>
+          <i>(Accounting Information)</i>
+        </p>
         <Col sm={4}>
           <Form.Label>
             <b>Bank :</b>
@@ -556,6 +594,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>Account Name :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.nama_akun}
             type="text"
             onChange={(e) => {
               console.log(e.target.value);
@@ -567,6 +606,7 @@ function FormDataDetailMitra({ mitraId }) {
             <b>Account Number :</b>
           </Form.Label>
           <Form.Control
+          defaultValue={datamiTraProfile.no_rek}
             type="text"
             onChange={(e) => {
               console.log(e.target.value);
@@ -584,6 +624,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.currency}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -595,6 +636,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.top}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -614,14 +656,15 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Select>
         </Col>
       </Row>
-      <br/>
+      <br />
       <Row>
-      <Col sm={4}>
+        <Col sm={4}>
           <Form.Label>
             <b>Contact Person :</b>
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.contact_person}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -633,6 +676,7 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.email}
             onChange={(e) => {
               console.log(e.target.value);
             }}
@@ -644,11 +688,11 @@ function FormDataDetailMitra({ mitraId }) {
           </Form.Label>
           <Form.Control
             type="text"
+            defaultValue={datamiTraProfile.telp}
             onChange={(e) => {
               console.log(e.target.value);
             }}
-          >
-          </Form.Control>
+          ></Form.Control>
         </Col>
       </Row>
     </div>

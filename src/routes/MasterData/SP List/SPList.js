@@ -104,6 +104,7 @@ function SPList() {
     {
       name: "SP ID",
       selector: (row) => row.sp,
+      width : "150px"
     },
     {
       name: "Perusahaan",
@@ -112,18 +113,22 @@ function SPList() {
     {
       name: "Marketing",
       selector: (row) => row.salesName,
+      width : "100px"
     },
     {
       name: "Service",
       selector: (row) => row.service,
+      width : "80px"
     },
     {
       name: "Vehicle",
       selector: (row) => row.kendaraan,
+      width : "80px"
     },
     {
       name: "Pickup Date",
       selector: (row) => row.pickupDate,
+      width : "150px"
     },
     {
       name: "Destination",
@@ -132,8 +137,10 @@ function SPList() {
 
     {
       name: "Tgl Approved/Decline",
-      selector: (row) => row.dateApproveOps,
-  },
+      selector: (row) => (row.dateApproveOps === "Invalid date" ? "-" : row.dateApproveOps),
+      width: "150px"
+    },
+    
   {
       name: "OPS",
       selector: (row) => {
@@ -145,6 +152,7 @@ function SPList() {
               <Tag color="red">Reject <br/> {row.dateApproveOps}</Tag>
           );
       },
+      width : "150px"
   },
   
 
@@ -187,7 +195,7 @@ function SPList() {
                 <Form.Group controlId="spId">
                   <Form.Control
                     type="text"
-                    placeholder="No SP ID"
+                    placeholder="No SP "
                     onChange={handleSpIdChange}
                   />
                 </Form.Group>

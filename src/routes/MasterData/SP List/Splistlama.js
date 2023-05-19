@@ -108,26 +108,32 @@ function SPListlama() {
     {
       name: "Perusahaan",
       selector: (row) => row.perusahaan,
+      width: "150px",
     },
     {
       name: "Marketing",
       selector: (row) => row.salesName,
+      width: "120px",
     },
     {
       name: "Service",
       selector: (row) => row.service,
+      width: "100px",
     },
     {
       name: "Vehicle",
       selector: (row) => row.kendaraan,
+      width: "100px",
     },
     {
       name: "Pickup Date",
       selector: (row) => row.pickupDate,
+      width: "150px",
     },
     {
       name: "Destination",
       selector: (row) => row.destination,
+      width: "150px",
     },
 
     {
@@ -188,7 +194,7 @@ function SPListlama() {
               <Form.Group controlId="search">
                 <Form.Control
                   type="text"
-                  placeholder="No SP ID"
+                  placeholder="No SP "
                   onChange={handleSearchChange}
                 />
               </Form.Group>

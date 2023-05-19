@@ -38,11 +38,13 @@ function SplistAkuntingBaru() {
     {
       name: "Vehicle",
       selector: (row) => row.vehicles.map(v => v.kendaraan).join(', '),
+      width: "80px"
     },
     
     {
       name: "Pickup Date",
       selector: (row) => row.pickupDate,
+      width:"150px"
     },
     {
       name: "Approve By Akunting",
@@ -66,7 +68,7 @@ function SplistAkuntingBaru() {
 
         return <>{displayText}</>;
       },
-      width: "200px",
+      width: "150px",
     },
     {
       name: "Approve By Ops",
@@ -90,7 +92,7 @@ function SplistAkuntingBaru() {
 
         return <>{displayText}</>;
       },
-      width: "200px",
+      width: "150px",
     },
 
     {
@@ -115,7 +117,7 @@ function SplistAkuntingBaru() {
 
         return <>{displayText}</>;
       },
-      width: "200px",
+      width: "150px",
     },
     {
       name: "Detail",
@@ -215,7 +217,7 @@ function SplistAkuntingBaru() {
                 <Col sm={3}>
                   <Form.Control
                     type="text"
-                    placeholder="No SP ID"
+                    placeholder="No SP "
                     onChange={handleFilterChange}
                   />
                 </Col>

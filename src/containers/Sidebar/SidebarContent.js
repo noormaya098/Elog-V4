@@ -77,7 +77,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     <Link to="/masterdata/newsplist">
                       <i className="icon icon-widgets" />
                       <span>
-                        <IntlMessages id="New SP" />
+                        <IntlMessages id="Approve SP" />
                       </span>
                     </Link>
                   </Menu.Item>
@@ -97,7 +97,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     <Link to="/akunting/splistakuntingbaru">
                       <i className="icon icon-widgets" />
                       <span>
-                        <IntlMessages id="SP List Akunting" />
+                        <IntlMessages id="Approve SP" />
                       </span>
                     </Link>
                   </Menu.Item>
@@ -105,7 +105,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               ): null}
              {jobdesk === "purchasing" ?  (
                 <SubMenu key="monitorings" title="Purchasing">
-                  <Menu.Item key="driverpurch">
+                  {/* <Menu.Item key="driverpurch">
                     <Link to="/masterdata/purchasing/driver">
                       <i className="icon icon-widgets" />
                       <span>
@@ -120,7 +120,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <IntlMessages id="Master Vehicle" />
                       </span>
                     </Link>
-                  </Menu.Item>
+                  </Menu.Item> */}
                   <Menu.Item key="vehiclepurchs">
                     <Link to="/purchasing/mastermitra">
                       <i className="icon icon-widgets" />
