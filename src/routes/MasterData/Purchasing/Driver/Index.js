@@ -78,7 +78,7 @@ function Index() {
 
   const handleSearch = (e) => {
     setFilterText(e.target.value);
-    setCurrentPage(1); // Reset page to 1 when starting a new search
+    setCurrentPage(1);
   };
   
   return (
@@ -99,7 +99,7 @@ function Index() {
             </div>
             <DataTable
               columns={columns}
-              data={dataapi} // No need to filter here as the server does the filtering
+              data={dataapi} 
               pagination
               paginationServer
               paginationTotalRows={totalPages}

@@ -11,7 +11,10 @@
         <Route path={`${match.url}masterdata/vehicle`} component={asyncComponent(() => import('./MasterData/Vehicle'))}/>
         {/* <Route path={`${match.url}masterdata/detailsp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/> */}
         <Route path={`${match.url}masterdata/detailsplama/:idmp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/>
+        
         <Route path={`${match.url}masterdata/detailsp/:idmp`} component={asyncComponent(() => import('./MasterData/SP List/HalamanDetail'))}/>
+
+
         <Route path={`${match.url}masterdata/splistdetailakunting/:idmp`} component={asyncComponent(() => import('./MasterData/Monitoring SP List Akunting/DetailsAkunting'))}/> 
         <Route path={`${match.url}masterdata/splistlama`} component={asyncComponent(() => import('./MasterData/SP List/index'))}/>
         <Route path={`${match.url}masterdata/newsplist`} component={asyncComponent(() => import('./MasterData/SP List/SPList'))}/>
@@ -24,6 +27,9 @@
         <Route path={`${match.url}purchasing/mastermitra`} component={asyncComponent(() => import('./MasterData/Purchasing/MasterMitra/Index'))}/>
         <Route path={`${match.url}purchasing/DetailMitra/:mitraId`} component={asyncComponent(() => import('./MasterData/Purchasing/MasterMitra/DetailMitra'))}/>
 
+
+        <Route path={`${match.url}masterdata/purchasing/detailsp/:idmp`} component={asyncComponent(() => import('./MasterData/SP List/HalamanDetail'))}/>
+        <Route path={`${match.url}purchasing/newsplist`} component={asyncComponent(() => import('./MasterData/Purchasing/SP/SplistAkuntingBaru'))}/>
       </Switch>
     </div>
   );

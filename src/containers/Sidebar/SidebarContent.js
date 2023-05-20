@@ -73,6 +73,14 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
+                  <Menu.Item key="monitoringVehicle">
+                    <Link to="/masterdata/vehicle">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Monitoring Vehicle" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
                   <Menu.Item key="New SP">
                     <Link to="/masterdata/newsplist">
                       <i className="icon icon-widgets" />
@@ -105,31 +113,61 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               ): null}
              {jobdesk === "purchasing" ?  (
                 <SubMenu key="monitorings" title="Purchasing">
-                  {/* <Menu.Item key="driverpurch">
-                    <Link to="/masterdata/purchasing/driver">
-                      <i className="icon icon-widgets" />
-                      <span>
-                        <IntlMessages id="Master Driver" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="vehiclepurch">
-                    <Link to="/masterdata/purchasing/vehicle">
-                      <i className="icon icon-widgets" />
-                      <span>
-                        <IntlMessages id="Master Vehicle" />
-                      </span>
-                    </Link>
-                  </Menu.Item> */}
-                  <Menu.Item key="vehiclepurchs">
-                    <Link to="/purchasing/mastermitra">
-                      <i className="icon icon-widgets" />
-                      <span>
-                        <IntlMessages id="Master Mitra" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
+                 
+                  <SubMenu key="data" title="Data">
+                    <Menu.Item key="New SP">
+                      <Link to="/purchasing/newsplist">
+                        <i className="icon icon-widgets" />
+                        <span>
+                          <IntlMessages id="Approve SP" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SP List">
+                      <Link to="/masterdata/splist">
+                        <i className="icon icon-widgets" />
+                        <span>
+                          <IntlMessages id="SP List" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SJ List">
+                      <Link to="/masterdata/splist">
+                        <i className="icon icon-widgets" />
+                        <span>
+                          <IntlMessages id="SJ List" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
+                  <SubMenu key="master" title="Master Data">
+                    <Menu.Item key="driverpurch">
+                      <Link to="/masterdata/purchasing/driver">
+                        <i className="icon icon-widgets" />
+                        <span>
+                          <IntlMessages id="Master Driver" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="vehiclepurch">
+                      <Link to="/masterdata/purchasing/vehicle">
+                        <i className="icon icon-widgets" />
+                        <span>
+                          <IntlMessages id="Master Vehicle" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="vehiclepurchs">
+                      <Link to="/purchasing/mastermitra">
+                        <i className="icon icon-widgets" />
+                        <span>
+                          <IntlMessages id="Master Mitra" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
                 </SubMenu>
+                
              ): null}
             </MenuItemGroup>
           </Menu>

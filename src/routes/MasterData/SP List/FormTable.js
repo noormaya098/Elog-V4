@@ -9,7 +9,11 @@ import Select from "react-select";
 import axios from "axios";
 import Token from "../../../Api/Token";
 import mobil from "../../redux toolkit/store/ZustandStore";
+
+const jobdesk = localStorage.getItem("jobdesk");
 function FormTable({ isidata, totalPrice, idmp }) {
+  const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
+  const [mitraVehicle, setMitraVehicle] = useState([]);
   const [types, setType] = useState([]);
   const [nomorpolisi, setNomorPolisi] = useState([]);
   const [selectnomor, setSelectnomor] = useState([]);
@@ -45,6 +49,26 @@ function FormTable({ isidata, totalPrice, idmp }) {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  ///select mitra
+
+  const mitraList = async () => {
+    const sleet = await axios.get(
+      `${Baseurl}vehicle/get-vehicle?limit=10&page=1&keyword=`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    console.log(`id supir`, sleet.data.data.order);
+    setMitraVehicle(sleet.data.data.order);
+  };
+
+  useEffect(() => {
+    mitraList();
+  }, []);
   ///select driver
   useEffect(() => {
     const vehicle = async () => {
@@ -157,10 +181,25 @@ function FormTable({ isidata, totalPrice, idmp }) {
     }
   };
 
+  const mitraOptions = mitraVehicle.map((item) => ({
+    value: item.vendor,
+    label: item.vendor,
+  }));
   const nomorpolisiOptions = nomorpolisi.map((item) => ({
     value: item.driverId,
     label: item.no_polisi,
   }));
+
+
+
+  useEffect(() => {
+    // Mendengarkan perubahan pada local storage
+    window.addEventListener("storage", () => {
+      // Jika ada perubahan, update state 'jobdesk' dengan nilai terbaru
+      setJobdesk(localStorage.getItem("jobdesk"));
+    });
+  }, []);
+
 
   return (
     <>
@@ -178,6 +217,18 @@ function FormTable({ isidata, totalPrice, idmp }) {
             <Modal.Title>Approve Driver</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            {jobdesk == "purchasing" ? (
+              <>
+                <Form.Label>Select Mitra</Form.Label>
+                <Select
+                  options={mitraOptions}
+                  onChange={(selectedOption) => {
+                    // console.log(e.target.value);
+                  }}
+                />
+              </>
+            ) : null}
+
             <Form.Label>Vehicle Type</Form.Label>
             <Form.Select
               type="text"
@@ -216,27 +267,34 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 {selectDriver[0] && selectDriver[0]?.name}
               </option>
             </Form.Select>
-            <Checkbox className="justify-content-end d-flex">Multi</Checkbox>
-            <br />
-            <hr />
-            <Button size="sm" onClick={() => handleAnotherDriverClick()}>
-              another driver
-            </Button>
-            <br />
-            {bukaanother && (
+
+            {jobdesk != "purchasing" ? (
               <>
-                <Form.Label>Select Driver</Form.Label>
-                <Form.Select onChange={(e) => setIdunit()}>
-                  <option>Select Driver</option>
-                  {driveranother &&
-                    driveranother.map((item, index) => (
-                      <option key={index} value={item.id}>
-                        {item?.name}
-                      </option>
-                    ))}
-                </Form.Select>
+                <Checkbox className="justify-content-end d-flex">
+                  Multi
+                </Checkbox>
+                <br />
+                <hr />
+                <Button size="sm" onClick={() => handleAnotherDriverClick()}>
+                  another driver
+                </Button>
+                <br />
+                {bukaanother && (
+                  <>
+                    <Form.Label>Select Driver</Form.Label>
+                    <Form.Select onChange={(e) => setIdunit()}>
+                      <option>Select Driver</option>
+                      {driveranother &&
+                        driveranother.map((item, index) => (
+                          <option key={index} value={item.id}>
+                            {item?.name}
+                          </option>
+                        ))}
+                    </Form.Select>
+                  </>
+                )}
               </>
-            )}
+            ) : null}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -251,7 +309,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
         <Col sm={6}>
           <Form>
             <Form.Group>
-              <Form.Label>No.SPK</Form.Label>
+              <Form.Label>ID SP</Form.Label>
               <Form.Control
                 type="text"
                 disabled
@@ -331,28 +389,29 @@ function FormTable({ isidata, totalPrice, idmp }) {
       <br />
       <Row>
         <Col>
-         
-              <Table responsive >
-                <thead>
-                  <tr
-                    style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}
-                  >
-                    <td>No</td>
-                    <td>Destination</td>
-                    <td>Via</td>
-                    <td>Item</td>
-                    <td>Berat</td>
-                    <td>Qyt</td>
-                    {/* <td>Exp</td> */}
-                    {/* <td>Price</td> */}
-                  </tr>
-                </thead>
-                <tbody>
-                {isidata &&
-            isidata.map((isi, index) => (
+          <Table responsive>
+            <thead>
+              <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
+                <td>No</td>
+                <td>ID SJ</td>
+                <td>Destination</td>
+                <td>Vehicle</td>
+                <td>Via</td>
+                <td>Item</td>
+                <td>Berat</td>
+                <td>Qyt</td>
+                {/* <td>Exp</td> */}
+                {/* <td>Price</td> */}
+              </tr>
+            </thead>
+            <tbody>
+              {isidata &&
+                isidata.map((isi, index) => (
                   <tr>
                     <td>{index + 1}</td>
+                    <td>{index + 1}</td>
                     <td>{isi.destination}</td>
+                    <td>{isi.via}</td>
                     <td>{isi.via}</td>
                     <td>{isi.item}</td>
                     <td>{isi.berat}</td>
@@ -361,8 +420,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
                     {/* <td>{isi.price}</td> */}
                   </tr>
                 ))}
-                </tbody>
-              </Table>
+            </tbody>
+          </Table>
           <p
             className="d-flex justify-content-end"
             style={{ fontWeight: "bold" }}
