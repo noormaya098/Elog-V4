@@ -9,7 +9,7 @@ function DriverMap() {
   const driverData = [
     { id: 1, status: "Online", driver: "Driver 1", contact: "1234567890", location: "Location 1", date: "2023-05-21", update: "2023-05-21" },
     { id: 2, status: "Offline", driver: "Driver 2", contact: "0987654321", location: "Location 2", date: "2023-05-21", update: "2023-05-21" },
-    { id: 3, status: "Offline", driver: "Driver 2", contact: "0987654321", location: "Location 2", date: "2023-05-21", update: "2023-05-21" }
+    { id: 3, status: "Offline", driver: "Driver 3", contact: "0987654321", location: "Location 2", date: "2023-05-21", update: "2023-05-21" }
   ]
 
   return (
@@ -21,13 +21,13 @@ function DriverMap() {
             <p className='d-flex justify-content-center'>ceritanya gambar location</p>
           </Card>
             <Button size='sm' onClick={() => setShowDriverTable(!showDriverTable)}>
-              Hide Driver Location
+               Driver Location
             </Button>
             {showDriverTable && (
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Status</th>
                     <th>Driver</th>
                     <th>Contact</th>
@@ -53,13 +53,13 @@ function DriverMap() {
             )}
             <br/>
             <Button size='sm' onClick={() => setShowOrderDriver(!showOrderDriver)}>
-             Hide Order Driver
+              Order Driver
             </Button>
             {showOrderDriver && (
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Driver</th>
                     <th>Keterangan</th>
                     <th>Custumer</th>
