@@ -9,7 +9,10 @@
         <Route path={`${match.url}sample`} component={asyncComponent(() => import('./SamplePage'))}/>
         <Route path={`${match.url}masterdata/drivers`} component={asyncComponent(() => import('./MasterData/Driver'))}/>
         <Route path={`${match.url}masterdata/vehicle`} component={asyncComponent(() => import('./MasterData/Vehicle'))}/>
-        {/* <Route path={`${match.url}masterdata/detailsp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/> */}
+
+
+        <Route path={`${match.url}masterdata/monitoring`} component={asyncComponent(() => import('./MasterData/Monitoring/DriverMap'))}/>
+
         <Route path={`${match.url}masterdata/detailsplama/:idmp`} component={asyncComponent(() => import('./MasterData/DetailSP/Index'))}/>
         
         <Route path={`${match.url}masterdata/detailsp/:idmp`} component={asyncComponent(() => import('./MasterData/SP List/HalamanDetail'))}/>

@@ -74,7 +74,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="monitoringVehicle">
-                    <Link to="/masterdata/vehicle">
+                    <Link to="/masterdata/monitoring">
                       <i className="icon icon-widgets" />
                       <span>
                         <IntlMessages id="Monitoring Vehicle" />
@@ -97,6 +97,35 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
+                </SubMenu>
+              )}
+              {jobdesk == "operasional" && (
+                <SubMenu key="monitorings" title="Monitoring">
+                  <Menu.Item key="monitoringVehicle">
+                    <Link to="/masterdata/monitoring">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Vehicle Map" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="monitoringDriver">
+                    <Link to="/masterdata/monitoring">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Driver Map" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="DriverEmc">
+                    <Link to="/masterdata/monitoring">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Driver Emc" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                 
                 </SubMenu>
               )}
              {jobdesk === "Akunting" ? (

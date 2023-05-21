@@ -190,8 +190,6 @@ function FormTable({ isidata, totalPrice, idmp }) {
     label: item.no_polisi,
   }));
 
-
-
   useEffect(() => {
     // Mendengarkan perubahan pada local storage
     window.addEventListener("storage", () => {
@@ -199,7 +197,6 @@ function FormTable({ isidata, totalPrice, idmp }) {
       setJobdesk(localStorage.getItem("jobdesk"));
     });
   }, []);
-
 
   return (
     <>
@@ -268,33 +265,35 @@ function FormTable({ isidata, totalPrice, idmp }) {
               </option>
             </Form.Select>
 
-            {jobdesk != "purchasing" ? (
-              <>
+            <>
+              {jobdesk != "purchasing" ? (
                 <Checkbox className="justify-content-end d-flex">
                   Multi
                 </Checkbox>
-                <br />
-                <hr />
-                <Button size="sm" onClick={() => handleAnotherDriverClick()}>
-                  another driver
-                </Button>
-                <br />
-                {bukaanother && (
-                  <>
-                    <Form.Label>Select Driver</Form.Label>
-                    <Form.Select onChange={(e) => setIdunit()}>
-                      <option>Select Driver</option>
-                      {driveranother &&
-                        driveranother.map((item, index) => (
-                          <option key={index} value={item.id}>
-                            {item?.name}
-                          </option>
-                        ))}
-                    </Form.Select>
-                  </>
-                )}
-              </>
-            ) : null}
+              ) : null}
+
+              <br />
+              <hr />
+
+              <Button size="sm" onClick={() => handleAnotherDriverClick()}>
+                another driver
+              </Button>
+              <br />
+              {bukaanother && (
+                <>
+                  <Form.Label>Select Driver</Form.Label>
+                  <Form.Select onChange={(e) => setIdunit()}>
+                    <option>Select Driver</option>
+                    {driveranother &&
+                      driveranother.map((item, index) => (
+                        <option key={index} value={item.id}>
+                          {item?.name}
+                        </option>
+                      ))}
+                  </Form.Select>
+                </>
+              )}
+            </>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
