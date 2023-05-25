@@ -20,7 +20,7 @@ const Productivity = () => {
       <div className="gx-text-center gx-px-3 gx-pt-3">
         <div className="gx-d-flex gx-justify-content-around gx-align-items-center gx-mb-3">
           <i className="icon icon-chart gx-fs-xxl gx-text-grey"/>
-          <Avatar className="gx-size-80" src={"https://via.placeholder.com/150"}/>
+          <Avatar className="gx-size-80" src={"https://avatars.githubusercontent.com/u/130539563?s=200&v=4"}/>
           <i className="icon icon-chat gx-fs-xxl gx-text-grey"/>
         </div>
         <div className="gx-mb-3">

@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 function DetailsAkunting() {
   const [detailData, setDetailData] = useState([]);
   const [memo, setMemo] = useState([]);
+  const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
   const { isicombinedData, setisiCombinedData } = mobil((item) => ({
     sp: item.sp,
   }));
@@ -122,16 +123,40 @@ function DetailsAkunting() {
     setComment(comment);
   };
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setJobdesk(localStorage.getItem("jobdesk"));
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+  console.log(jobdesk);
   return (
     <div>
       <Card>
         <Row>
           <div className="d-flex justify-content-end">
-            <Button size="sm" onClick={() => tombolApprove()}>
-              Approve
-            </Button>
-            <Button size="sm" variant="danger" onClick={() => rejectbutton()}>
-              Reject Driver
+            {jobdesk != "sales" ? (
+              <>
+                <Button size="sm" onClick={() => tombolApprove()}>
+                  Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => rejectbutton()}
+                >
+                  Reject Driver
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+            <Button size="sm" variant="danger">
+              Print
             </Button>
           </div>
 
@@ -218,12 +243,15 @@ function DetailsAkunting() {
               <thead>
                 <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
                   <td>No</td>
+                  <td width="100px">SJ ID</td>
                   <td>Destination</td>
+                  <td>Kendaraan</td>
                   <td>Via</td>
                   <td>Item</td>
                   <td>Berat</td>
                   <td>Qty</td>
-                  <td>Price</td>
+                  <td width="150px">Biaya Kirim</td>
+                  <td width="150px">Total</td>
                 </tr>
               </thead>
               <tbody>
@@ -232,21 +260,62 @@ function DetailsAkunting() {
                   detailData.detail.map((data, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
+                      <td>{data.noSJ}</td>
                       <td>{data.destination}</td>
+                      <td>{data.kendaraan}</td>
                       <td>{data.via}</td>
                       <td>{data.item}</td>
                       <td>{data.berat}</td>
                       <td>{data.qty}</td>
                       <td>{data.Price}</td>
+                      <td>{data.Price}</td>
                     </tr>
                   ))}
               </tbody>
             </Table>
+
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Total Price :{detailData?.Totalprice}
+              Biaya Muat :{detailData?.biaya_muat}
+            </p>
+            <p
+              className="d-flex justify-content-end"
+              style={{ fontWeight: "bold" }}
+            >
+              Biaya Bongkar :{detailData?.biaya_muat_bongkar}
+            </p>
+            <p
+              className="d-flex justify-content-end"
+              style={{ fontWeight: "bold" }}
+            >
+              Biaya MultiDrop :{detailData?.biaya_multidrop}
+            </p>
+            <p
+              className="d-flex justify-content-end"
+              style={{ fontWeight: "bold" }}
+            >
+              Biaya Overtonase :{detailData?.biaya_overtonase}
+            </p>
+            <p
+              className="d-flex justify-content-end"
+              style={{ fontWeight: "bold" }}
+            >
+              Biaya Mel :{detailData?.Totalprice}
+            </p>
+            <p
+              className="d-flex justify-content-end"
+              style={{ fontWeight: "bold" }}
+            >
+              Biaya Inap :{detailData?.Totalprice}
+            </p>
+            <hr />
+            <p
+              className="d-flex justify-content-end"
+              style={{ fontWeight: "bold" }}
+            >
+              TOTAL KESELURUHAN :{detailData?.Totalprice}
             </p>
             <Form.Group>
               <Form.Label style={{ fontWeight: "bold" }}>Isi Memo</Form.Label>

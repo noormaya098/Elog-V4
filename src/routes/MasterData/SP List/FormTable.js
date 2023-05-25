@@ -17,6 +17,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
   const [types, setType] = useState([]);
   const [nomorpolisi, setNomorPolisi] = useState([]);
   const [selectnomor, setSelectnomor] = useState([]);
+  const [selectnopol, setSelectNopol] = useState([]);
+  const [selectMitra, setSelectMitra] = useState([]);
   const [approved, setApproved] = useState([]);
   const [selectDriver, setselectDriver] = useState([]);
   const [idsupir, setIdsupir] = useState([]);
@@ -41,20 +43,18 @@ function FormTable({ isidata, totalPrice, idmp }) {
     setjenisBarang: state.setjenisBarang,
   }));
   const { orderdate, setOrderdate, asuransi, setAsuransi } = mobil();
-  // console.log(`test idmp`, orderdate, asuransi);
   useEffect(() => {
     setType(isidetail.map((item) => item?.kendaraan));
   }, [isidetail]);
-  // console.log(`ini duit`, isiduit);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  ///select mitra
 
+  ///select mitra
   const mitraList = async () => {
     const sleet = await axios.get(
-      `${Baseurl}vehicle/get-vehicle?limit=10&page=1&keyword=`,
+      `${Baseurl}vehicle/get-vehicle-mitra?limit=10&page=1&keyword=`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,10 @@ function FormTable({ isidata, totalPrice, idmp }) {
         },
       }
     );
-    console.log(`id supir`, sleet.data.data.order);
+    const mitraa = sleet.data.data.order.map((item) => ({
+      mitraId: item.mitraId,
+    }));
+    console.log(`mitra`, mitraa);
     setMitraVehicle(sleet.data.data.order);
   };
 
@@ -71,8 +74,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
   }, []);
   ///select driver
   useEffect(() => {
-    const vehicle = async () => {
-      if (types.length > 0) {
+    if (types.length > 0 && selectnomor) {
+      const vehicle = async () => {
         const sleet = await axios.get(
           `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&id=${selectnomor}`,
           {
@@ -88,14 +91,14 @@ function FormTable({ isidata, totalPrice, idmp }) {
           id: item.id,
           driverId: item.driverId,
         }));
-        // console.log(`id supir`, idsupir[0]?.id);
         setIdsupir(idsupir[0]?.id);
         setselectDriver(drivernya);
         setNomorPolisi(nomorpolisis);
-      }
-    };
-    vehicle();
+      };
+      vehicle();
+    }
   }, [types, selectnomor]);
+
   // console.log(`isi duit`, totalPrice);
   useState(() => {}, []);
 
@@ -124,6 +127,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
       id_mitra: ``,
       id_mitra_pickup: ``,
       id_mitra_2: ``,
+      plat_nomor: selectnopol,
+      merk: types[0],
     };
 
     axios
@@ -149,6 +154,41 @@ function FormTable({ isidata, totalPrice, idmp }) {
       .catch((error) => console.error(`Error: ${error}`));
   };
 
+  ///tombol approve
+  const HandleApprovePURCH = () => {
+    const body = {
+      id_mp: idmp,
+      id_unit: selectDriver[0]?.idUnit,
+      id_supir: selectnomor,
+      id_mitra: selectMitra,
+      id_mitra_pickup: ``,
+      id_mitra_2: ``,
+      plat_nomor: selectnopol,
+      merk: types[0],
+    };
+
+    axios
+      .post(`${Baseurl}sp/approve-SP`, body, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        const isidata = response.data.status;
+        setApproved(isidata);
+        console.log(`data approve`, approved);
+
+        // Display success alert
+        Swal.fire({
+          icon: "success",
+          title: "Approval Successful",
+          text: "The approval process has been completed successfully.",
+        });
+        handleClose();
+      })
+      .catch((error) => console.error(`Error: ${error}`));
+  };
   const handleAnotherDriverClick = () => {
     setBukaanother(true);
     setBukaanother(!bukaanother);
@@ -182,7 +222,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
   };
 
   const mitraOptions = mitraVehicle.map((item) => ({
-    value: item.vendor,
+    value: item.mitraId,
     label: item.vendor,
   }));
   const nomorpolisiOptions = nomorpolisi.map((item) => ({
@@ -191,11 +231,14 @@ function FormTable({ isidata, totalPrice, idmp }) {
   }));
 
   useEffect(() => {
-    // Mendengarkan perubahan pada local storage
-    window.addEventListener("storage", () => {
-      // Jika ada perubahan, update state 'jobdesk' dengan nilai terbaru
+    const handleStorageChange = () => {
       setJobdesk(localStorage.getItem("jobdesk"));
-    });
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   return (
@@ -211,7 +254,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
         </div>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Approve Driver</Modal.Title>
+            <Modal.Title>Approve {jobdesk}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {jobdesk == "purchasing" ? (
@@ -219,8 +262,8 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 <Form.Label>Select Mitra</Form.Label>
                 <Select
                   options={mitraOptions}
-                  onChange={(selectedOption) => {
-                    // console.log(e.target.value);
+                  onChange={(mitraOptions) => {
+                    setSelectMitra(mitraOptions.value);
                   }}
                 />
               </>
@@ -248,6 +291,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
               onChange={(selectedOption) => {
                 console.log(`kode kendaraan`, selectedOption.value);
                 setSelectnomor(selectedOption.value);
+                setSelectNopol(selectedOption.label);
               }}
             />
 
@@ -282,7 +326,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
               {bukaanother && (
                 <>
                   <Form.Label>Select Driver</Form.Label>
-                  <Form.Select onChange={(e) => setIdunit()}>
+                  <Form.Select onChange={(e) => setIdunit(driveranother.name)}>
                     <option>Select Driver</option>
                     {driveranother &&
                       driveranother.map((item, index) => (
@@ -299,7 +343,14 @@ function FormTable({ isidata, totalPrice, idmp }) {
             <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={() => HandleApproveOPS()}>
+            <Button
+              variant="primary"
+              onClick={() =>
+                jobdesk == "operasional"
+                  ? HandleApproveOPS()
+                  : HandleApprovePURCH()
+              }
+            >
               Save Changes
             </Button>
           </Modal.Footer>
@@ -352,7 +403,7 @@ function FormTable({ isidata, totalPrice, idmp }) {
               <Form.Control
                 type="text"
                 disabled
-                value={isidata[0] ? isidata[0].pickupDate : ""}
+                value={isidata[0] ? (isidata[0].pickupDate === "Invalid date" ? "-" : isidata[0].pickupDate) : ""}
               />
             </Form.Group>
 
@@ -408,9 +459,9 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 isidata.map((isi, index) => (
                   <tr>
                     <td>{index + 1}</td>
-                    <td>{index + 1}</td>
+                    <td>{isi.noSj}</td>
                     <td>{isi.destination}</td>
-                    <td>{isi.via}</td>
+                    <td>{types[0]}</td>
                     <td>{isi.via}</td>
                     <td>{isi.item}</td>
                     <td>{isi.berat}</td>
@@ -421,12 +472,53 @@ function FormTable({ isidata, totalPrice, idmp }) {
                 ))}
             </tbody>
           </Table>
-          <p
-            className="d-flex justify-content-end"
-            style={{ fontWeight: "bold" }}
-          >
-            {/* Total Price : {isiduit} */}
-          </p>
+          {(jobdesk === "purchasing") && (
+            <>
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                Biaya Muat :{"-"}
+              </p>
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                Biaya Bongkar :{"-"}
+              </p>
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                Biaya MultiDrop :{"-"}
+              </p>
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                Biaya Overtonase :{"-"}
+              </p>
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                Biaya Mel :{"-"}
+              </p>
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                Biaya Inap :{"-"}
+              </p>
+              <hr />
+              <p
+                className="d-flex justify-content-end"
+                style={{ fontWeight: "bold" }}
+              >
+                TOTAL KESELURUHAN :{"-"}
+              </p>
+            </>
+          )}
         </Col>
       </Row>
     </>

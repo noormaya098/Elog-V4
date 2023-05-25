@@ -1,0 +1,10 @@
+.imageContainer {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.employeeImage {
+  width: 300px;
+  height: auto;
+}

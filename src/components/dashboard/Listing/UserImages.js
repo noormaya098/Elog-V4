@@ -7,35 +7,35 @@ import WidgetHeader from "components/WidgetHeader/index";
 const userImageList = [
   {
     id: 1,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
     name: 'Alex Johns',
     rating: '5.0',
     deals: '27 Deals'
   },
   {
     id: 2,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
     name: 'Chelsea Johns',
     rating: '4.5',
     deals: '21 Deals'
   },
   {
     id: 3,
-    image:"https://via.placeholder.com/150",
+    image:"https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
     name: 'Domnic Johns',
     rating: '5.0',
     deals: '27 Deals'
   },
   {
     id: 4,
-    image:"https://via.placeholder.com/150",
+    image:"https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
     name: 'Ken Ramirez',
     rating: '5.0',
     deals: '27 Deals'
   },
   {
     id: 5,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
     name: 'Zakie Chain',
     rating: '5.0',
     deals: '27 Deals'

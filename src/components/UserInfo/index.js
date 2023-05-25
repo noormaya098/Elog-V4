@@ -18,7 +18,7 @@ const UserInfo = () => {
 
   return (
     <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={userMenuOptions} trigger="click">
-      <Avatar src={"https://via.placeholder.com/150"} className="gx-avatar gx-pointer" alt=""/>
+      <Avatar src={"https://avatars.githubusercontent.com/u/130539563?s=200&v=4"} className="gx-avatar gx-pointer" alt=""/>
     </Popover>
   );
 };

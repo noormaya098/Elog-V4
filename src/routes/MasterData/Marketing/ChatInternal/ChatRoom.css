@@ -1,0 +1,70 @@
+.chat-room-container {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.chat-list {
+  flex: 1;
+  overflow-y: scroll;
+  padding-bottom: 10px;
+}
+
+.chat-list .ant-list-item {
+  display: flex;
+  flex-direction: row;
+}
+
+.chat-list .ant-list-item-main {
+  margin-left: 10px;
+}
+
+.chat-list .ant-list-item-meta-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.chat-list .ant-list-item-meta-title {
+  font-weight: bold;
+}
+
+.chat-list .ant-list-item-meta-description {
+  font-size: 12px;
+}
+
+.chat-list .ant-list-item-meta {
+  flex: none;
+}
+
+.chat-input {
+  display: flex;
+  margin-top: 10px;
+}
+
+.ant-input {
+  margin-right: 10px;
+  flex: 1;
+}
+
+.chat-room-container .ant-btn {
+  flex: none;
+}
+
+.chat-list .ant-list-item:nth-child(even) .ant-list-item-meta-avatar {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.chat-list .ant-list-item:nth-child(even) .ant-list-item-main {
+  justify-content: flex-end;
+}
+
+.chat-list .ant-list-item:nth-child(even) .ant-list-item-meta-title {
+  text-align: right;
+}
+
+.chat-list .ant-list-item:nth-child(even) .ant-list-item-meta-description {
+  text-align: right;
+}

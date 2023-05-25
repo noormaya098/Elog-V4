@@ -3,10 +3,12 @@ import React, { useEffect , useState } from "react";
 import { Row, Col, Form } from "react-bootstrap";
 import Baseurl from "../../../../../Api/BaseUrl";
 import { Checkbox } from "antd";
+import mobil from "../../../../redux toolkit/store/ZustandStore";
 function FormDataDetailMitra({ mitraId }) {
   const id_mitras = mitraId;
   const [datamiTraProfile, setDataMitraProfile] = useState([]);
 
+  useEffect(() => {
   const datamitra = async () => {
     try {
       const response = await axios.get(
@@ -20,21 +22,19 @@ function FormDataDetailMitra({ mitraId }) {
       );
       const dataisi = response.data.data;
       setDataMitraProfile(dataisi);
-      console.log("ini isi", dataisi);
     } catch (error) {
       console.error(error);
     }
   };
-
-  useEffect(() => {
     datamitra();
-  },[]);
+  }, []);
 
+  
   return (
     <div>
       <br />
       <h5>
-        NAMA DAN ALAMAT PERUSAHAAN{" "}
+        NAMA DAN ALAMAT PERUSAHAAN 
         <span>
           <i>(Sold to Party )</i>
         </span>

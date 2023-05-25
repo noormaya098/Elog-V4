@@ -5,6 +5,7 @@ import { Button, Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import Baseurl from "../../../../Api/BaseUrl";
 import { useHistory } from "react-router-dom";
+import CreateMitraModal from "./CreateMitraModal";
 
 function Index() {
   const history = useHistory();
@@ -23,7 +24,7 @@ function Index() {
     },
     {
       name: "Status",
-      selector: (row) => `-`,
+      selector: (row) => row.status,
       width: "80px",
     },
     {
@@ -43,7 +44,7 @@ function Index() {
     },
     {
       name: "Awal Kontrak",
-      selector: (row) => `-`,
+      selector: (row) => row.awalKontrak,
       width: "100px",
     },
     {
@@ -53,12 +54,12 @@ function Index() {
     },
     {
       name: " Berlaku Perpanjangan Otomatis",
-      selector: (row) => `-`,
+      selector: (row) => row.perpanjangOtomatis,
       width: "250px",
     },
     {
       name: " Pic",
-      selector: (row) => `-`,
+      selector: (row) => row.pic,
       width: "100px",
     },
     {
@@ -134,7 +135,7 @@ function Index() {
                 />
               </Col>
             </Row>
-
+            <CreateMitraModal />
             <DataTable
               columns={columns}
               data={dataapiawal}

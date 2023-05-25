@@ -169,11 +169,16 @@ function SPListlama() {
         );
       },
     },
+    {
+      name: "Detail",
+      selector: (row) => <><Button size="sm" onClick={()=>buttonarahin(row.idmp)}>Detail</Button></>,
+      width: "150px",
+    },
   ];
 
   const buttonarahin = (idmp) => {
-    history.push(`/masterdata/detailsp/${idmp}`);
-    // history.push(`/masterdata/splistdetailakunting/${idmp}`);
+    // history.push(`/masterdata/detailsp/${idmp}`);
+    history.push(`/masterdata/splistdetailakunting/${idmp}`);
   };
 
   const handlePageChange = async (page) => {

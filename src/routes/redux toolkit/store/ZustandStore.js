@@ -27,6 +27,8 @@ const mobil = create((set, get) => ({
   asuransi : [],
   setAsuransi: (asuransi) => set({ asuransi }),
 
+  detailmitra : [],
+  setDetailMitra: (detailmitra) => set({ detailmitra}),
 
 }));
 

@@ -81,6 +81,7 @@ function HalamanDetail() {
       service: item.service,
       pickupDate: item.pickupDate,
       price: item.price,
+      noSj : item.noSj,
     }));
     setIsidata(semua);
     setSpDetail(semua);
@@ -89,7 +90,7 @@ function HalamanDetail() {
 
   useEffect(() => {
     detail(idmp);
-  }, [idmp]);
+  }, []);
 
   
   const messagedetail = async () => {
@@ -109,10 +110,22 @@ function HalamanDetail() {
     // console.log(`test isi data apakah ada`, data);
   };
 
+
   useEffect(() => {
     messagedetail();
-    memos(idmp);
-  }, [memo, custumer, jenisBarang, asuransi, orderdate , komen]);
+    memos();
+  }, []);
+
+  useEffect(() => {
+    
+    const timeoutId = setTimeout(() => {
+    messagedetail();
+    }, 5000); // delay 5 detik
+  
+    return () => clearTimeout(timeoutId);
+  }, [komen]);
+  
+
 
   const memos = async () => {
     const data = await axios.get(

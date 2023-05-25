@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import CustomScrollbars from "util/CustomScrollbars";
 import SidebarLogo from "./SidebarLogo";
 import UserProfile from "./UserProfile";
@@ -12,12 +12,13 @@ import {
 } from "../../constants/ThemeSetting";
 import IntlMessages from "../../util/IntlMessages";
 import { useSelector } from "react-redux";
+import { Button } from "react-bootstrap";
 const { SubMenu } = Menu;
 
 const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   const { navStyle, themeType } = useSelector(({ settings }) => settings);
   const pathname = useSelector(({ common }) => common.pathname);
-
+  const history = useHistory();
   const getNoHeaderClass = (navStyle) => {
     if (
       navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR ||
@@ -33,6 +34,10 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   const defaultOpenKeys = selectedKeys.split("/")[1];
   const jobdesk = localStorage.getItem("jobdesk");
   console.log(`jobdeks`, jobdesk);
+
+  const createsp = () => {
+    history.push(`/masterdata/marketing/createsp`);
+  };
 
   return (
     <>
@@ -55,6 +60,58 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             mode="inline"
           >
             <MenuItemGroup key="main">
+              {jobdesk === "sales" ?( 
+             
+              <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
+                <Button
+                  size="lg"
+                  style={{width:180}}
+                  className="d-flex align-items-center justify-content-center"
+                  onClick={() => createsp()}
+                  variant="warning"
+                >
+                  ADD SP
+                </Button>
+              </div>
+              ) : (
+                <></>
+              )}
+              {jobdesk == "sales" && (
+                <SubMenu key="master" title="Marketing">
+                  <Menu.Item key="SP List">
+                    <Link to="/masterdata/marketing/splist">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="SP List" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="driver">
+                    <Link to="/masterdata/driver">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="sidebar.driver" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="vehicle">
+                    <Link to="/masterdata/vehicle">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="sidebar.vehicle" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="monitoringVehicle">
+                    <Link to="/masterdata/monitoring">
+                      <i className="icon icon-widgets" />
+                      <span>
+                        <IntlMessages id="Monitoring Vehicle" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+              )}
               {jobdesk == "operasional" && (
                 <SubMenu key="master" title="Operasional">
                   <Menu.Item key="driver">
@@ -125,24 +182,21 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
-                 
                 </SubMenu>
               )}
-             {jobdesk === "Akunting" ? (
+              {jobdesk.toLowerCase() === "akunting" ? (
                 <SubMenu key="monitoring" title="Akunting">
                   <Menu.Item key="SP Lists">
                     <Link to="/akunting/splistakuntingbaru">
                       <i className="icon icon-widgets" />
-                      <span>
-                        <IntlMessages id="Approve SP" />
-                      </span>
+                      <span>Approve SP</span>
                     </Link>
                   </Menu.Item>
                 </SubMenu>
-              ): null}
-             {jobdesk === "purchasing" ?  (
+              ) : null}
+
+              {jobdesk === "purchasing" ? (
                 <SubMenu key="monitorings" title="Purchasing">
-                 
                   <SubMenu key="data" title="Data">
                     <Menu.Item key="New SP">
                       <Link to="/purchasing/newsplist">
@@ -161,7 +215,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </Link>
                     </Menu.Item>
                     <Menu.Item key="SJ List">
-                      <Link to="/masterdata/splist">
+                      <Link to="/masterdata/sjlist">
                         <i className="icon icon-widgets" />
                         <span>
                           <IntlMessages id="SJ List" />
@@ -196,8 +250,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Menu.Item>
                   </SubMenu>
                 </SubMenu>
-                
-             ): null}
+              ) : null}
             </MenuItemGroup>
           </Menu>
         </CustomScrollbars>

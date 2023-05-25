@@ -6,20 +6,20 @@ import {Avatar} from "antd";
 const userImageList = [
   {
     id: 1,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
   },
   {
     id: 2,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
   },
   {
     id: 3,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
 
   },
   {
     id: 4,
-    image: "https://via.placeholder.com/150",
+    image: "https://avatars.githubusercontent.com/u/130539563?s=200&v=4",
     name: 'Mila Alba',
     rating: '5.0',
     deals: '27 Deals'

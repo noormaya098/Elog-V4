@@ -4,6 +4,9 @@ import { Col, Row, Tab, Tabs } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import FormDataDetailMitra from "./Form/DataProfile";
 import DataReferensi from "./Form/DataReferensi";
+import DataKeuangan from "./Form/DataKeuangan";
+import PIC from "./Form/PIC";
+import Report from "./Form/Report";
 export default function DetailMitra() {
   const { mitraId } = useParams();
 
@@ -23,16 +26,16 @@ export default function DetailMitra() {
                 <FormDataDetailMitra mitraId={mitraId} />
               </Tab>
               <Tab eventKey="profile" title="DATA REFERENSI">
-              <DataReferensi/>
+              <DataReferensi mitraId={mitraId}/>
               </Tab>
               <Tab eventKey="longer-tab" title="DATA KEUANGAN">
-                Tab content for Loooonger Tab
-              </Tab>
+                <DataKeuangan mitraId={mitraId}/>
+                </Tab>
               <Tab eventKey="contact" title="PIC">
-                Tab content for Contact
+               <PIC mitraId={mitraId}/>
               </Tab>
               <Tab eventKey="contacts" title="Report">
-                Tab content for Contact
+              <Report mitraId={mitraId}/>
               </Tab>
             </Tabs>
           </Col>

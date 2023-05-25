@@ -8,7 +8,7 @@ const ProfileHeader = () => {
         <div className="gx-profile-banner-top">
           <div className="gx-profile-banner-top-left">
             <div className="gx-profile-banner-avatar">
-              <Avatar className="gx-size-90" alt="..." src={"https://via.placeholder.com/150"}/>
+              <Avatar className="gx-size-90" alt="..." src={"https://avatars.githubusercontent.com/u/130539563?s=200&v=4"}/>
             </div>
             <div className="gx-profile-banner-avatar-info">
               <h2 className="gx-mb-2 gx-mb-sm-3 gx-fs-xxl gx-font-weight-light">Kiley Brown</h2>

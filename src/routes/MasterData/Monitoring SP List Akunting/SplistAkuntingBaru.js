@@ -138,7 +138,7 @@ function SplistAkuntingBaru() {
     const dataapi = async () => {
       setLoading(true)
       const data = await axios.get(
-        `${Baseurl}sp/get-SP-all?limit=13&page=${page}&keyword=${filter}`,
+        `${Baseurl}sp/get-SP-all?limit=50&page=${page}&keyword=${filter}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -9,6 +9,7 @@ import {
   TAB_SIZE,
   THEME_TYPE_LITE
 } from "../../constants/ThemeSetting";
+import gambar from "../../containers/Sidebar/elogs_white.png"
 
 const SidebarLogo = ({sidebarCollapsed, setSidebarCollapsed}) => {
   const {width, themeType} = useSelector(({settings}) => settings);
@@ -30,7 +31,7 @@ const SidebarLogo = ({sidebarCollapsed, setSidebarCollapsed}) => {
 
       <Link to="/" className="gx-site-logo">
         {navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR && width >= TAB_SIZE ?
-          <img alt="lo" src={("/assets/images/w-logo.png")}/> :
+          <img alt="lo" src={(`https://avatars.githubusercontent.com/u/130539563?s=200&v=4`)}/> :
           themeType === THEME_TYPE_LITE ?
             <img alt="logo1" src={("/assets/images/logo-white.png")}/> :
             <img alt="logo2" src={("/assets/images/logo.png")}/>}
