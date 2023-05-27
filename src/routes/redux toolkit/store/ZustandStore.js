@@ -29,7 +29,9 @@ const mobil = create((set, get) => ({
 
   detailmitra : [],
   setDetailMitra: (detailmitra) => set({ detailmitra}),
-
+  
+  phZustand : [],
+  setPHZustand: (phZustand) => set({ phZustand}),
 }));
 
 export default mobil;

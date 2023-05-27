@@ -3,12 +3,13 @@ import { Col, Row, Form, Modal, Button, Table } from "react-bootstrap";
 import React from "react";
 import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import axios from "axios";
 import mobil from "../../redux toolkit/store/ZustandStore";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
 function DetailsAkunting() {
+  const history = useHistory();
   const [detailData, setDetailData] = useState([]);
   const [memo, setMemo] = useState([]);
   const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
@@ -134,6 +135,24 @@ function DetailsAkunting() {
     };
   }, []);
   console.log(jobdesk);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const pindahedit = () => {
+    history.push(`/masterdata/edit-sp/${idmp}`);
+  };
+
+  ///to IDR
+  const total = detailData?.Totalprice;
+  const rupiah = total?.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+
+  // console.log(`TOTAL KESELURUHAN : ${rupiah}`);
+
   return (
     <div>
       <Card>
@@ -155,9 +174,14 @@ function DetailsAkunting() {
             ) : (
               <></>
             )}
-            <Button size="sm" variant="danger">
+            <Button size="sm" onClick={() => handlePrint()} variant="primary">
               Print
             </Button>
+            {jobdesk === "sales" && (
+              <Button size="sm" onClick={pindahedit} variant="danger">
+                Edit SJ
+              </Button>
+            )}
           </div>
 
           <Modal>
@@ -205,7 +229,7 @@ function DetailsAkunting() {
             <Form>
               <Form.Group>
                 <Form.Label>Via</Form.Label>
-                <Form.Control disabled value={detailData?.detail?.[0].via} />
+                <Form.Control disabled value={detailData?.detail?.[0]?.via} />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Pickup Date</Form.Label>
@@ -263,60 +287,146 @@ function DetailsAkunting() {
                       <td>{data.noSJ}</td>
                       <td>{data.destination}</td>
                       <td>{data.kendaraan}</td>
-                      <td>{data.via}</td>
+                      <td>{data?.via}</td>
                       <td>{data.item}</td>
                       <td>{data.berat}</td>
                       <td>{data.qty}</td>
-                      <td>{data.Price}</td>
-                      <td>{data.Price}</td>
+                      <td>
+                        {data.Price?.toLocaleString("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                        })}
+                      </td>
+                      <td>
+                        {data.Price?.toLocaleString("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                        })}
+                      </td>
                     </tr>
                   ))}
               </tbody>
+              <tfoot className="text-end " >
+                <tr>
+                  <td colSpan={10}>
+                    {" "}
+                    Biaya Muat :
+                  </td>{" "}
+                  <td>
+                    {detailData?.biaya_muat?.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={10} >
+                    {" "}
+                    Biaya Bongkar :
+                    {detailData?.biaya_muat_bongkar?.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={10} className="text-right">
+                    {" "}
+                    Biaya MultiDrop :
+                    {detailData?.biaya_multidrop?.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={10} className="text-right">
+                    {" "}
+                    Biaya Overtonase :
+                    {detailData?.biaya_overtonase?.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={10} className="text-right">
+                    {" "}
+                    Biaya Mel :
+                    {detailData?.Totalprice?.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={10} className="text-right">
+                    {" "}
+                    Biaya Inap :
+                    {detailData?.Totalprice?.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={10} className="text-right">
+                    {" "}
+                    <b>
+                      TOTAL KESELURUHAN :{" "}
+                      {detailData?.Totalprice?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
+                    </b>
+                  </td>
+                </tr>
+              </tfoot>
             </Table>
 
-            <p
+            {/* <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Muat :{detailData?.biaya_muat}
+              Biaya Muat :{detailData?.biaya_muat?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Bongkar :{detailData?.biaya_muat_bongkar}
+              Biaya Bongkar :{detailData?.biaya_muat_bongkar?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya MultiDrop :{detailData?.biaya_multidrop}
+              Biaya MultiDrop :{detailData?.biaya_multidrop?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Overtonase :{detailData?.biaya_overtonase}
+              Biaya Overtonase :{detailData?.biaya_overtonase?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Mel :{detailData?.Totalprice}
+              Biaya Mel :{detailData?.Totalprice?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Inap :{detailData?.Totalprice}
+              Biaya Inap :{detailData?.Totalprice?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
             </p>
             <hr />
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              TOTAL KESELURUHAN :{detailData?.Totalprice}
-            </p>
+             TOTAL KESELURUHAN : {detailData?.Totalprice?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+            </p> */}
             <Form.Group>
               <Form.Label style={{ fontWeight: "bold" }}>Isi Memo</Form.Label>
               <Form.Control disabled value={memo} />

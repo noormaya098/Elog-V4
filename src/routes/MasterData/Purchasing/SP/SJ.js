@@ -50,27 +50,27 @@ function SJ() {
     },
     {
       name: "SJ",
-      selector: (row) => row.sm,
+      selector: (row) => row?.sm,
       width: "15%",
     },
     {
       name: "SP",
-      selector: (row) => row.sp,
+      selector: (row) => row?.sp,
       width: "15%",
     },
     {
       name: "Perusahaan",
-      selector: (row) => row.perusahaan,
+      selector: (row) => row?.perusahaan,
       width: "20%",
     },
     {
       name: "Pickup Date",
-      selector: (row) => row.pickupDate === "Invalid date" ? "-" : row.pickupDate,
+      selector: (row) => row?.pickupDate === "Invalid date" ? "-" : row?.pickupDate,
       width: "15%",
     },
     {
       name: "Destination",
-      selector: (row) => row.destination,
+      selector: (row) => row?.destination,
       width: "15%",
     },
     {

@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import mobil from "../redux toolkit/store/ZustandStore";
 import IntlMessages from "util/IntlMessages";
+import { useHistory } from "react-router-dom";
+import Token from "../../Api/Token";
 
 const SamplePage = () => {
-  const [nama, setNama] = useState('');
-
+  const [namaJobdesk, setNamaJobdesk] = useState('');
+const history = useHistory()
   useEffect(() => {
     const jobdesk = localStorage.getItem('jobdesk');
-    setNama(jobdesk);
+    if (Token === "") { 
+      history.push('/signin')
+    }
+    setNamaJobdesk(jobdesk);
   }, []);
 
   return (
     <div>
-      <h2>Halo {nama}</h2>
+      <h2>Halo {namaJobdesk}</h2>
 
       <div className="gx-d-flex justify-content-center">
         {/* <h4>Start building your app. Happy Coding!</h4> */}

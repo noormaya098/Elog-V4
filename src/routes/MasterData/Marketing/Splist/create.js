@@ -45,6 +45,8 @@ const SamplePage = () => {
   const [companyOptions, setCompanyOptions] = useState([]);
   const [alamat, setAlamat] = useState({ label: "", value: "" });
   const [alamatInvoiceOptions, setAlamatInvoiceOptions] = useState([]);
+  const [diskonValue, setdiskonValue] = useState([]);
+  const [diskonOption, setdiskonOption] = useState([]);
   const [marketing, setMarketing] = useState("");
   const [marketingOptions, setMarketingOptions] = useState([]);
   const [insurance, setInsurance] = useState("");
@@ -88,7 +90,6 @@ const SamplePage = () => {
    */
   const inputRef = useRef(null);
   const formRef = useRef(null);
-
   /* The above code is using the `useEffect` hook in React to focus on an input element if it has a
   required rule. It checks if the input element exists, has props, and has rules that include a
   required rule. If all conditions are met, it calls the `focus` method on the input element with
@@ -139,7 +140,7 @@ const SamplePage = () => {
       koli: "0",
       ikat: "0",
       km: "0",
-      diskon: "0",
+      diskon: diskonValue,
       harga: "0",
       panjang: 0,
       lebar: 0,
@@ -161,7 +162,7 @@ const SamplePage = () => {
         volume: volume,
         asuransi_fee: 0,
         total_keseluruhan: 0,
-        is_multi:0,
+        is_multi: 0,
       };
       setTimeout(() => {
         const input = inputRef.current;
@@ -217,13 +218,13 @@ const SamplePage = () => {
                   );
                   setShipmentOptions(
                     data.data.shipment
-                    // .filter(x => { 
-                    //   return x.via  === via
-                    // })
-                    .map(x => ({
-                      label:  x.via + "-" + x.shipment ,
-                      value: x.id,
-                    }))
+                      // .filter(x => {
+                      //   return x.via  === via
+                      // })
+                      .map((x) => ({
+                        label: x.via + "-" + x.shipment,
+                        value: x.id,
+                      }))
                   );
                   if (data.data.spNumber) {
                     setIdMp(data.data.spNumber[0].idmp);
@@ -275,31 +276,6 @@ const SamplePage = () => {
             setProses(3);
             setDataDestiTable([updatedValues]);
             router.push(`/masterdata/edit-sp/${idMp}`);
-            // httpClient
-            //   .post("sp/create-SP", updatedValues)
-            //   .then(({ data }) => {
-            //     notification.success({
-            //       message: "Success",
-            //       description: data.message,
-            //     });
-            //   })
-            //   .catch(function (error) {
-            //     notification.error({
-            //       message: "Error",
-            //       description: error.message,
-            //     });
-            //     console.log(error.message);
-            //   });
-            // httpClient
-            //   .get("sp/get-SP-select-detail?keyword=&companyId=")
-            //   .then(({ data }) => {
-            //     if (data.status.code === 200) {
-            //     }
-            //   })
-            //   .catch(function (error) {
-            //     console.log(error.message);
-            //   });
-            // setTimeout(() => router.push("/splist"), 1000);
           })
           .catch(function (error) {
             notification.error({
@@ -319,8 +295,6 @@ const SamplePage = () => {
       .get(
         "sp/get-SP-select-create?keyword=&companyId=&divisi=sales&kode_cabang=JKT"
       )
-      // .get("sp/get-SP-select-create?keyword=&companyId=")
-      // .get("customer/get-customer-address")
       .then(({ data }) => {
         if (data.status.code === 200) {
           formik.setFieldValue("msp", data.data.noSP);
@@ -408,6 +382,23 @@ const SamplePage = () => {
       .catch(function (error) {
         console.log(error.message);
       });
+  }, []);
+
+  const setDiskonOptions = () => {
+    const options = [
+      { value: 1, label: "1 %" },
+      { value: 5, label: "5 %" },
+      { value: 10, label: "10 %" },
+      { value: 20, label: "20 %" },
+    ];
+
+    // Mengatur state diskonOption dengan opsi yang baru dibuat
+    setdiskonOption(options);
+  };
+
+  useEffect(() => {
+    setDiskonOptions();
+    console.log(diskonOption);
   }, []);
 
   /**
@@ -501,7 +492,7 @@ const SamplePage = () => {
       // formik.setFieldValue("id_almuat", value.value);
     } else if (e.name === "id_almuat") {
       setAlamat(value);
-        formik.setFieldValue("id_almuat", value.value);
+      formik.setFieldValue("id_almuat", value.value);
       // if (value && value.length > 0) {
       //   const selectedValues = value.map((option) => option.value);
       //   formik.setFieldValue("id_almuat", selectedValues.value);
@@ -583,7 +574,7 @@ const SamplePage = () => {
   return (
     <div>
       <Card>
-      <h2>Buat SP</h2>
+        <h2>Buat SP</h2>
         <Form
           onFinish={formik.handleSubmit}
           initialValues={{
@@ -606,7 +597,6 @@ const SamplePage = () => {
         >
           {proses === 1 ? (
             <>
-
               <Row>
                 <Col md={6}>
                   <Form.Item
@@ -617,15 +607,15 @@ const SamplePage = () => {
                     <Input onChange={formik.handleChange} disabled />
                   </Form.Item>
                 </Col>
-                <Col md={6} >
+                <Col md={6}>
                   <Form.Item
                     label="No. PH"
                     name="ph"
-                    style={{display:'none'}}
+                    style={{ display: "none" }}
                     rules={[{ required: true, message: "Mohon isi No. PH" }]}
                   >
                     <Input onChange={formik.handleChange} disabled />
-                  </Form.Item> 
+                  </Form.Item>
                   <Form.Item
                     label="Marketing"
                     name="kodesales"
@@ -646,7 +636,7 @@ const SamplePage = () => {
                       onChange={onSelectChange}
                     />
                   </Form.Item>
-                </Col> 
+                </Col>
               </Row>
               <Row>
                 <Col md={6}>
@@ -685,7 +675,6 @@ const SamplePage = () => {
                       onChange={(date, dateString) =>
                         formik.setFieldValue("tgl_pickup", dateString)
                       }
-                      
                     />
                   </Form.Item>
                 </Col>
@@ -710,7 +699,7 @@ const SamplePage = () => {
                 </Col>
               </Row>
               <Row>
-                <Col md={8}>
+                <Col md={6}>
                   <Form.Item
                     label="Alamat Invoice"
                     name="invoiceAddress"
@@ -729,8 +718,8 @@ const SamplePage = () => {
                     />
                   </Form.Item>
                 </Col>
-                
-              <Col md={4}>
+
+                <Col md={2}>
                   <Form.Item
                     label="Jenis Barang"
                     name="jenis_barang"
@@ -744,6 +733,37 @@ const SamplePage = () => {
                       autoFocus
                       disabled
                     />
+                  </Form.Item>
+                </Col>
+                <Col md={2}>
+                  <Form.Item label="Diskon %" name="jenis_barang">
+                    <Select
+                      options={diskonOption}
+                      isSearchable
+                      placeholder=""
+                      name="discount"
+                      styles={customStylesReactSelect}
+                      onChange={(option) => setdiskonValue(option.value)}
+                      as={(SelectComponent) => (
+                        <SelectComponent
+                          onChange={(option) => setdiskonValue(option.value)}
+                        />
+                      )}
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col md={2}>
+                  <Form.Item label="Diskon Amount" name="jenis_barang">
+                    <Select
+                      options={diskonOption}
+                      value={alamat}
+                      isSearchable
+                      placeholder=""
+                      name="discount"
+                      styles={customStylesReactSelect}
+                      onChange={onSelectChange}
+                    ></Select>
                   </Form.Item>
                 </Col>
               </Row>
@@ -786,7 +806,6 @@ const SamplePage = () => {
                 </Col> */}
               </Row>
               <Row>
-                
                 <Col md={4}>
                   <Form.Item
                     label="Service"
@@ -824,24 +843,23 @@ const SamplePage = () => {
                   </Form.Item>
                 </Col>
                 <Col sm={4}>
-                <Form.Item
-                label="Packing Request"
-                name="packing"
-                rules={[{ required: true, message: "Mohon pilih Packing" }]}
-              >
-                <Select
-                  options={packingOptions}
-                  value={packing}
-                  isSearchable
-                  placeholder="Select packing"
-                  name="packing"
-                  styles={customStylesReactSelect}
-                  onChange={onSelectChange}
-                />
-              </Form.Item></Col>
+                  <Form.Item
+                    label="Packing Request"
+                    name="packing"
+                    rules={[{ required: true, message: "Mohon pilih Packing" }]}
+                  >
+                    <Select
+                      options={packingOptions}
+                      value={packing}
+                      isSearchable
+                      placeholder="Select packing"
+                      name="packing"
+                      styles={customStylesReactSelect}
+                      onChange={onSelectChange}
+                    />
+                  </Form.Item>
+                </Col>
               </Row>
-
-             
 
               <Form.Item label="Memo" name="memo">
                 <Input.TextArea rows={4} onChange={formik.handleChange} />
@@ -878,7 +896,7 @@ const SamplePage = () => {
               </Row>
 
               <Row>
-                <Col md={6} style={{display:'none'}}>
+                <Col md={6} style={{ display: "none" }}>
                   <Form.Item label="Email" name="email">
                     <Input onChange={formik.handleChange} disabled />
                   </Form.Item>
@@ -887,7 +905,7 @@ const SamplePage = () => {
                   <Form.Item label="Kota" name="kota">
                     <Input onChange={formik.handleChange} disabled />
                   </Form.Item>
-                </Col> 
+                </Col>
                 <Col md={6}>
                   <Form.Item label="Telpon" name="telpon">
                     <Input onChange={formik.handleChange} disabled />
@@ -933,7 +951,7 @@ const SamplePage = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <hr/>
+                    <hr />
                     <Row>
                       <Col md={12}>
                         <h5>Alamat Bongkar</h5>
@@ -950,7 +968,6 @@ const SamplePage = () => {
                             name="id_albongkar"
                             styles={customStylesReactSelect}
                             onChange={onSelectChange}
-                            
                           />
                         </Form.Item>
                       </Col>
@@ -1003,7 +1020,7 @@ const SamplePage = () => {
                         </Form.Item>
                       </Col>
                       <Col md={6}>
-                        <Form.Item 
+                        <Form.Item
                           label="Jenis Barang"
                           name="jenis_barang"
                           style={{ marginLeft: 10 }}

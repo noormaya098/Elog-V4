@@ -10,7 +10,10 @@ import Baseurl from "../../../../Api/BaseUrl";
 import Swal from "sweetalert2";
 function EditSP() {
   const [show, setShow] = useState(false);
-
+  const { phZustand, setPHZustand } = mobil((state) => ({
+    setPHZustand: state.setPHZustand,
+    phZustand: state.phZustand,
+  }));
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [detailData, setDetailData] = useState([]);
@@ -24,23 +27,24 @@ function EditSP() {
   }));
   const { idmp } = useParams();
   const [comment, setComment] = useState([]);
-  const [selectVia, setSelectVia] = useState([]);
-  const [ShipmentModal, setShipmentModal] = useState([]); // initial state for your Shipment data
-  const [shipmentOptions, setShipmentOptions] = useState([]); // initial state for your Shipment options based on Via
-  const [KendaraanValue , setKendaraanValue] = useState("");
-  const [alamatMuatValue , setalamatMuatValue] = useState("");
-  const [alamtBongkarValue , setAlamatBongkarValue] = useState("");
-  const [shipmentValue , setshipmentValue] = useState([])
-  const [BeratValue , setBeratValue] = useState("")
-  const [QytValue , setQytValue] = useState("")
-  const [KoliValue , setKoliValue] = useState("")
-  const [PanjangValue , setPanjangValue] = useState("")
-  const [LebarValue , setLebarValue] = useState("")
-  const [TinggiValue , setTinggiValue] = useState("")
+  const [selectVia, setSelectVia] = useState("");
+  const [ShipmentModal, setShipmentModal] = useState([]);
+  const [shipmentOptions, setShipmentOptions] = useState([]);
+  const [KendaraanValue, setKendaraanValue] = useState("");
+  const [alamatMuatValue, setalamatMuatValue] = useState("");
+  const [alamtBongkarValue, setAlamatBongkarValue] = useState("");
+  const [shipmentValue, setshipmentValue] = useState([]);
+  const [BeratValue, setBeratValue] = useState("");
+  const [QytValue, setQytValue] = useState("");
+  const [KoliValue, setKoliValue] = useState("");
+  const [PanjangValue, setPanjangValue] = useState("");
+  const [LebarValue, setLebarValue] = useState("");
+  const [TinggiValue, setTinggiValue] = useState("");
   const [bongkarValue, setBongkarValue] = useState(0);
   const [biayaMuatValue, setBiayaMuatValue] = useState(0);
   const [TarifValue, setTarifValue] = useState(0);
   const [totalValue, settotalValue] = useState(0);
+  const [tambahKomen, setTambahKomen] = useState("");
   useEffect(() => {
     const getDetail = async () => {
       try {
@@ -86,7 +90,7 @@ function EditSP() {
         // handle error appropriately
       }
     };
-    
+
     getDetailModal();
   }, [detailData?.customer]);
 
@@ -109,8 +113,6 @@ function EditSP() {
       // handle error appropriately
     }
   };
-  
-
 
   const columns = [
     {
@@ -204,11 +206,10 @@ function EditSP() {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
-  // console.log(jobdesk);
   useEffect(() => {
     if (selectVia) {
       const filteredShipments = ShipmentModal.filter(
-        (item) => item.via === selectVia
+        (item) => item?.via === selectVia
       );
       setShipmentOptions(filteredShipments);
     } else {
@@ -239,7 +240,10 @@ function EditSP() {
       {
         idMp: idmp,
         idcustomer: 1,
-        ph: detailData?.detail?.[0].noSJ,
+        ph:
+          phZustand !== ""
+            ? JSON.stringify(phZustand)
+            : JSON.stringify(detailData?.detail?.[0]?.noSJ),
         via: selectVia,
         shipment: shipmentValue,
         kendaraan: KendaraanValue,
@@ -252,11 +256,10 @@ function EditSP() {
         tinggi: TinggiValue,
         qty: QytValue,
         koli: KoliValue,
-        tarif : TarifValue,
-        bongkar : bongkarValue,
-        biaya_muat : biayaMuatValue,
-        harga: totalValue,
-
+        harga: TarifValue,
+        harga_bongkar: bongkarValue,
+        harga_muat: biayaMuatValue,
+        total: totalValue,
       },
       {
         headers: {
@@ -264,15 +267,51 @@ function EditSP() {
           Authorization: localStorage.getItem("token"),
         },
       }
-      );
-      refresh()
-      handleClose()
-      Swal.fire(
-        'Good job!',
-        'Data Berhasil Di tambahkan',
-        'success'
-      )
+    );
+    refresh();
+    handleClose();
+    Swal.fire("Good job!", "Data Berhasil Di tambahkan", "success");
   };
+
+  const deltebutton = async (x) => {
+    Swal.fire({
+      title: "Ingin Menghapus SJ?",
+      showDenyButton: true,
+      denyButtonText: `Tidak`,
+      confirmButtonText: "Iya?",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const data = await axios.post(
+          `${Baseurl}sp/delete-SP-detail`,
+          {
+            id: x,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        refresh();
+        handleClose();
+        Swal.fire("Good job!", "Data Berhasil Di hapus", "success");
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  };
+
+  const tambahkomen = async () => {
+    const data = await axios.post();
+  };
+
+  const total = detailData?.Totalprice;
+  const rupiah = total?.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+
 
   return (
     <div>
@@ -308,10 +347,14 @@ function EditSP() {
                 <Form>
                   <Form.Group>
                     <Form.Label>* Alamat Muat</Form.Label>
-                    <Form.Select  onChange={(e)=>setalamatMuatValue(e.target.value)}>
+                    <Form.Select
+                      onChange={(e) => setalamatMuatValue(e.target.value)}
+                    >
                       <option>Pilih Alamat Muat</option>
                       {detaildestination.map((item, index) => (
-                        <option value={item.id}>{item.pic + "-" + item.address}</option>
+                        <option value={item.id}>
+                          {item.pic + "-" + item.address}
+                        </option>
                       ))}
                     </Form.Select>
 
@@ -320,10 +363,17 @@ function EditSP() {
                     <Row>
                       <Col sm={12}>
                         <Form.Label>* Alamat Bongkar</Form.Label>
-                        <Form.Select value={alamtBongkarValue} onChange={(e)=>setAlamatBongkarValue(e.target.value)}>
+                        <Form.Select
+                          value={alamtBongkarValue}
+                          onChange={(e) =>
+                            setAlamatBongkarValue(e.target.value)
+                          }
+                        >
                           <option>Pilih Alamat Bongkar</option>
                           {detaildestination.map((item, index) => (
-                            <option value={item.id}>{item.pic + "-" + item.address}</option>
+                            <option value={item.id}>
+                              {item.pic + "-" + item.address}
+                            </option>
                           ))}
                         </Form.Select>
                       </Col>
@@ -331,7 +381,9 @@ function EditSP() {
                     <Row>
                       <Col sm={4}>
                         <Form.Label>* Kendaraan</Form.Label>
-                        <Form.Select onChange={(e)=>setKendaraanValue(e.target.value)}>
+                        <Form.Select
+                          onChange={(e) => setKendaraanValue(e.target.value)}
+                        >
                           <option>Pilih Kendaraan</option>
                           {KendaraanModal.map((item, index) => (
                             <option>{item.type}</option>
@@ -351,7 +403,9 @@ function EditSP() {
                       </Col>
                       <Col sm={4}>
                         <Form.Label>* Shipment</Form.Label>
-                        <Form.Select onChange={(e)=>setshipmentValue(e.target.value)}>
+                        <Form.Select
+                          onChange={(e) => setshipmentValue(e.target.value)}
+                        >
                           <option>Pilih Shipment</option>
                           {shipmentOptions.map((item, index) => (
                             <option>{item.shipment}</option>
@@ -363,29 +417,41 @@ function EditSP() {
                     <Row>
                       <Col sm={4}>
                         <Form.Label>* Berat</Form.Label>
-                        <Form.Control onChange={(e)=>setBeratValue(e.target.value)}></Form.Control>
+                        <Form.Control
+                          onChange={(e) => setBeratValue(e.target.value)}
+                        ></Form.Control>
                       </Col>
                       <Col sm={4}>
                         <Form.Label>* Qyt</Form.Label>
-                        <Form.Control onChange={(e)=>setQytValue(e.target.value)}></Form.Control>
+                        <Form.Control
+                          onChange={(e) => setQytValue(e.target.value)}
+                        ></Form.Control>
                       </Col>
                       <Col sm={4}>
                         <Form.Label>* Koli</Form.Label>
-                        <Form.Control onChange={(e)=>setKoliValue(e.target.value)}></Form.Control>
+                        <Form.Control
+                          onChange={(e) => setKoliValue(e.target.value)}
+                        ></Form.Control>
                       </Col>
                     </Row>
                     <Row>
                       <Col sm={4}>
                         <Form.Label>Panjang</Form.Label>
-                        <Form.Control onChange={(e)=>setPanjangValue(e.target.value)}></Form.Control>
+                        <Form.Control
+                          onChange={(e) => setPanjangValue(e.target.value)}
+                        ></Form.Control>
                       </Col>
                       <Col sm={4}>
                         <Form.Label>Lebar</Form.Label>
-                        <Form.Control onChange={(e)=>setLebarValue(e.target.value)}></Form.Control>
+                        <Form.Control
+                          onChange={(e) => setLebarValue(e.target.value)}
+                        ></Form.Control>
                       </Col>
                       <Col sm={4}>
                         <Form.Label>Tinggi</Form.Label>
-                        <Form.Control onChange={(e)=>setTinggiValue(e.target.value)}></Form.Control>
+                        <Form.Control
+                          onChange={(e) => setTinggiValue(e.target.value)}
+                        ></Form.Control>
                       </Col>
                     </Row>
                     <Row>
@@ -452,7 +518,7 @@ function EditSP() {
           <Col sm={6}>
             <Form>
               <Form.Group>
-                <Form.Label>No.SPK</Form.Label>
+                <Form.Label>No.SP</Form.Label>
                 <Form.Control disabled value={detailData?.sp} />
               </Form.Group>
 
@@ -464,22 +530,23 @@ function EditSP() {
                 <Form.Label>Jenis Barang</Form.Label>
                 <Form.Control disabled value={detailData?.jenisBarang} />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>Customer</Form.Label>
-                <Form.Control disabled value={detailData?.customer} />
-              </Form.Group>
             </Form>
           </Col>
           <Col sm={6}>
             <Form>
-              <Form.Group>
+              {/* <Form.Group>
                 <Form.Label>Via</Form.Label>
-                <Form.Control disabled value={detailData?.detail?.[0].via} />
+                <Form.Control disabled value={detailData?.detail?.[0]?.via} />
+              </Form.Group> */}
+              <Form.Group>
+                <Form.Label>Customer</Form.Label>
+                <Form.Control disabled value={detailData?.customer} />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Pickup Date</Form.Label>
                 <Form.Control disabled value={detailData?.pickup_date} />
               </Form.Group>
+
               <Form.Group>
                 <Form.Label>Order Date</Form.Label>
                 <Form.Control disabled value={detailData?.order_date} />
@@ -504,6 +571,7 @@ function EditSP() {
               Tambah Alamat
             </Button>
           </Col>
+
           <Col sm={8}>
             <Form.Group>
               <Form.Label>Pickup Address</Form.Label>
@@ -536,36 +604,99 @@ function EditSP() {
         <Row>
           <Col>
             <Table responsive>
-              <thead>
-                <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
-                  <td>No</td>
-                  <td width="100px">SJ ID</td>
-                  <td>Destination</td>
-                  <td>Kendaraan</td>
-                  <td>Via</td>
-                  <td>Item</td>
-                  <td>Berat</td>
-                  <td>Qty</td>
-                  <td width="150px">Biaya Kirim</td>
-                  <td width="150px">Total</td>
-                </tr>
-              </thead>
+              <thead></thead>
               <tbody>
                 {detailData &&
                   detailData.detail &&
                   detailData.detail.map((data, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{data.noSJ}</td>
-                      <td>{data.destination}</td>
-                      <td>{data.kendaraan}</td>
-                      <td>{data.via}</td>
-                      <td>{data.item}</td>
-                      <td>{data.berat}</td>
-                      <td>{data.qty}</td>
-                      <td>{data.Price}</td>
-                      <td>{data.Price}</td>
-                    </tr>
+                    <>
+                      <tr style={{ fontWeight: "bold" }}>
+                        <td colSpan={10}>
+                          <hr />
+                          <br />{" "}
+                        </td>
+                      </tr>
+                      <tr
+                        style={{
+                          fontWeight: "bold",
+                          backgroundColor: "#dff0d8",
+                        }}
+                      >
+                        <td> </td>
+                        <td colSpan={9}>Alamat Muat</td>
+                      </tr>
+
+                      <tr key={index}>
+                        <td>
+                          {/* {index + 1}
+                            <span>
+                              <Button
+                                size="md"
+                                variant="danger"
+                                onClick={() => deltebutton(data.idmpd)}
+                                className="mt-2"
+                              >
+                                X
+                              </Button>
+                            </span> */}
+                        </td>
+                        <td colSpan={9}>{data.pickup}</td>
+                      </tr>
+                      {detailData &&
+                        detailData.detail[index].tujuan &&
+                        detailData.detail[index].tujuan.map((data, index) => (
+                          <>
+                            <tr
+                              style={{
+                                fontWeight: "bold",
+                                backgroundColor: "#dff0d8",
+                              }}
+                            >
+                              <td> </td>
+                              <td>Alamat Bongkar</td>
+                              <td width="100px">SJ ID</td>
+                              <td>Kendaraan</td>
+                              <td>Via</td>
+                              <td>Item</td>
+                              <td>Berat</td>
+                              <td>Qty</td>
+                              <td width="150px">Biaya Kirim</td>
+                              <td width="150px">Total</td>
+                            </tr>
+
+                            <tr key={index}>
+                              <td>
+                                {index + 1}
+                                <span>
+                                  <Button
+                                    size="md"
+                                    variant="danger"
+                                    onClick={() => deltebutton(data.idmpd)}
+                                    className="mt-2"
+                                  >
+                                    X
+                                  </Button>
+                                </span>
+                              </td>
+                              <td>{data.destination}</td>
+                              <td>{data.noSJ}</td>
+                              <td>{data.kendaraan}</td>
+                              <td>{data?.via}</td>
+                              <td>{data.item}</td>
+                              <td>{data.berat}</td>
+                              <td>{data.qty}</td>
+                              <td>{data.Price?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}</td>
+                              <td>{data.Price?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}</td>
+                            </tr>
+                          </>
+                        ))}
+                    </>
                   ))}
               </tbody>
               <tfoot>
@@ -573,7 +704,10 @@ function EditSP() {
                   <td colSpan={9} width="150px" className="text-right">
                     Sub Total
                   </td>
-                  <td width="150px">Rp</td>
+                  <td width="150px">Rp {detailData?.totalMuat?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}</td>
                 </tr>
               </tfoot>
             </Table>
@@ -582,50 +716,86 @@ function EditSP() {
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Muat :{detailData?.biaya_muat}
+              Biaya Muat :{detailData?.totalMuat?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Bongkar :{detailData?.biaya_muat_bongkar}
+              Biaya Bongkar :{detailData?.totalBongkar?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya MultiDrop :{detailData?.biaya_multidrop}
+              Biaya MultiDrop :{detailData?.biaya_multidrop?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Overtonase :{detailData?.biaya_overtonase}
+              Biaya Overtonase :{detailData?.biaya_overtonase?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Mel :{detailData?.Totalprice}
+              Biaya Mel :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              Biaya Inap :{detailData?.Totalprice}
+              Biaya Inap :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <hr />
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}
             >
-              TOTAL KESELURUHAN :{detailData?.Totalprice}
+              TOTAL KESELURUHAN :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                      })}
             </p>
             <Form.Group>
               <Form.Label style={{ fontWeight: "bold" }}>Isi Memo</Form.Label>
               <Form.Control disabled value={memo} />
             </Form.Group>
-            <br />
+            <Row className="mt-3">
+            <Col sm={12}>
+              <Form.Group>
+                <Form.Label style={{ fontWeight: "bold" }}></Form.Label>
+                <Form.Control
+                  onChange={(e) => setTambahKomen(e.target.value)}
+                  type="text"
+                />
+              </Form.Group>
+            </Col>
+            <Col className="mt-3" sm={4}>
+              <Button onClick={tambahkomen} size="sm">
+                Tambah Komen
+              </Button>
+            </Col>
+          </Row>
             <br />
             <Table responsive>
               <thead>
@@ -649,6 +819,8 @@ function EditSP() {
               </tbody>
             </Table>
           </Col>
+          <br />
+          
         </Row>
       </Card>
     </div>

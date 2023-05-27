@@ -1,6 +1,7 @@
 import { Card } from 'antd'
 import React, { useState } from 'react'
 import { Button, Col, Row, Table } from 'react-bootstrap'
+import Test from './Test'
 
 function DriverMap() {
   const [showDriverTable, setShowDriverTable] = useState(true)
@@ -18,7 +19,7 @@ function DriverMap() {
         <Card>
           <Col>
           <Card>
-            <p className='d-flex justify-content-center'>ceritanya gambar location</p>
+            <p className='d-flex justify-content-center'><Test/></p>
           </Card>
             <Button size='sm' onClick={() => setShowDriverTable(!showDriverTable)}>
                Driver Location
