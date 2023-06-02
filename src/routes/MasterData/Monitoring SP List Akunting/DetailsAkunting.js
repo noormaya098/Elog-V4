@@ -58,58 +58,82 @@ function DetailsAkunting() {
       id_mp: idmp,
     };
 
-    try {
-      const data = await axios.post(`${Baseurl}sp/approve-SP-akunting`, body, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+    Swal.fire({
+      title: 'Apakah yakin untuk approve?',
+      text: "jika belum, silahkan cek lagi",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, approve!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const data = await axios.post(`${Baseurl}sp/approve-SP-akunting`, body, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token"),
+            },
+          });
 
-      const approve = data.status;
+          const approve = data.status;
 
-      // Menampilkan SweetAlert berhasil
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil",
-        text: "Data telah disetujui.",
-      });
-    } catch (error) {
-      // Menampilkan SweetAlert gagal
-      Swal.fire({
-        icon: "error",
-        title: "Gagal",
-        text: "Terjadi kesalahan dalam memproses data.",
-      });
-      console.error(error);
-    }
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Data telah disetujui.",
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: "Terjadi kesalahan dalam memproses data.",
+          });
+          console.error(error);
+        }
+      }
+    })
   };
 
-  const rejectbutton = async () => {
-    const body = {
-      id_mp: idmp,
-    };
-    try {
-      const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil",
-        text: "Telah di Reject",
-      });
-    } catch (error) {
-      // Menampilkan SweetAlert gagal
-      Swal.fire({
-        icon: "error",
-        title: "Gagal",
-        text: "Terjadi kesalahan dalam memproses data.",
-      });
-      console.error(error);
-    }
+
+  const rejectbutton = () => {
+    Swal.fire({
+      title: 'Apakah yakin untuk Reject?',
+      text: "jika belum, silahkan cek lagi",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, reject it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const body = {
+          id_mp: idmp,
+        };
+
+        try {
+          const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token"),
+            },
+          });
+
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Telah di Reject",
+          });
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: "Terjadi kesalahan dalam memproses data.",
+          });
+          console.error(error);
+        }
+      }
+    });
   };
 
   const comments = async () => {
@@ -120,7 +144,6 @@ function DetailsAkunting() {
       },
     });
     const comment = api.data.data;
-    // console.log(comment);
     setComment(comment);
   };
 
@@ -157,26 +180,42 @@ function DetailsAkunting() {
     <div>
       <Card>
         <Row>
-          <div className="d-flex justify-content-end">
-            {jobdesk != "sales" ? (
+          {/* <div className="d-flex justify-content-end">
+            {(jobdesk !== "operasional" && jobdesk !== "sales") && (
               <>
                 <Button size="sm" onClick={() => tombolApprove()}>
                   Approve
                 </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => rejectbutton()}
-                >
-                  Reject Driver
-                </Button>
               </>
-            ) : (
-              <></>
             )}
+
+          </div> */}
+          <div className="d-flex justify-content-end">
+            {
+              (jobdesk !== "operasional" && jobdesk !== "sales" && jobdesk !== "purchasing") ? (
+                <>
+                  <Button size="sm" onClick={() => tombolApprove()}>
+                    Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => rejectbutton()}
+                  >
+                    Reject Driver
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )
+            }
+
+
             <Button size="sm" onClick={() => handlePrint()} variant="primary">
               Print
             </Button>
+
+
             {jobdesk === "sales" && (
               <Button size="sm" onClick={pindahedit} variant="danger">
                 Edit SJ
@@ -219,17 +258,18 @@ function DetailsAkunting() {
                 <Form.Label>Jenis Barang</Form.Label>
                 <Form.Control disabled value={detailData?.jenisBarang} />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>Customer</Form.Label>
-                <Form.Control disabled value={detailData?.customer} />
-              </Form.Group>
+
             </Form>
           </Col>
           <Col sm={6}>
             <Form>
-              <Form.Group>
+              {/* <Form.Group>
                 <Form.Label>Via</Form.Label>
                 <Form.Control disabled value={detailData?.detail?.[0]?.via} />
+              </Form.Group> */}
+              <Form.Group>
+                <Form.Label>Customer</Form.Label>
+                <Form.Control disabled value={detailData?.customer} />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Pickup Date</Form.Label>
@@ -252,138 +292,213 @@ function DetailsAkunting() {
               </Form.Group>
             </Form>
           </Col>
-          <Form.Group>
+          {/* <Form.Group>
             <Form.Label>Pickup Address</Form.Label>
             <Form.Control
               disabled
               value={detailData?.detail?.[0]?.pickupAddress}
             />
-          </Form.Group>
+          </Form.Group> */}
         </Row>
         <br />
         <Row>
           <Col>
             <Table responsive>
-              <thead>
-                <tr style={{ fontWeight: "bold", backgroundColor: "#dff0d8" }}>
-                  <td>No</td>
-                  <td width="100px">SJ ID</td>
-                  <td>Destination</td>
-                  <td>Kendaraan</td>
-                  <td>Via</td>
-                  <td>Item</td>
-                  <td>Berat</td>
-                  <td>Qty</td>
-                  <td width="150px">Biaya Kirim</td>
-                  <td width="150px">Total</td>
-                </tr>
-              </thead>
+
+              <thead></thead>
               <tbody>
                 {detailData &&
                   detailData.detail &&
                   detailData.detail.map((data, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{data.noSJ}</td>
-                      <td>{data.destination}</td>
-                      <td>{data.kendaraan}</td>
-                      <td>{data?.via}</td>
-                      <td>{data.item}</td>
-                      <td>{data.berat}</td>
-                      <td>{data.qty}</td>
-                      <td>
-                        {data.Price?.toLocaleString("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                        })}
-                      </td>
-                      <td>
-                        {data.Price?.toLocaleString("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                        })}
-                      </td>
-                    </tr>
+                    <>
+                      <tr style={{ fontWeight: "bold" }}>
+                        <td colSpan={10}>
+                          <hr />
+                          <br />{" "}
+                        </td>
+                      </tr>
+
+                      <tr
+
+                        style={{
+                          fontWeight: "bold",
+                          backgroundColor: "#dff0d8",
+                        }}
+
+                      >
+
+                        <td>{index + 1}</td>
+                        <td colSpan={9}>Alamat Muat</td>
+                      </tr>
+                      <tr key={index}>
+                        <td>
+                          {/* {index + 1}
+                            <span>
+                              <Button
+                                size="md"
+                                variant="danger"
+                                onClick={() => deltebutton(data.idmpd)}
+                                className="mt-2"
+                              >
+                                X
+                              </Button>
+                            </span> */}
+                        </td>
+                        <td colSpan={9}>{data.pickup}</td>
+                      </tr>
+                      {detailData &&
+                        detailData.detail[index].tujuan &&
+                        detailData.detail[index].tujuan.map((data, index) => (
+                          <>
+                            <tr
+                              style={{
+                                fontWeight: "bold",
+                                backgroundColor: "#dff0d8",
+                              }}
+                            >
+                              <td> </td>
+                              <td>Alamat Bongkar</td>
+                              <td width="100px">SJ ID</td>
+                              <td>Kendaraan</td>
+                              <td>Via</td>
+                              <td>Item</td>
+                              <td>Berat</td>
+                              <td>Qty</td>
+                              {jobdesk !== "operasional" && (
+                                <>
+                                  <td width="150px">Biaya Kirim</td>
+                                  <td width="150px">Total</td>
+                                </>)}
+                            </tr>
+
+                            <tr key={index}>
+                              {/* <td>
+                                {index + 1}
+                                <span>
+                                  <Button
+                                    size="md"
+                                    variant="danger"
+                                    onClick={() => deltebutton(data.idmpd)}
+                                    className="mt-2"
+                                  >
+                                    X
+                                  </Button>
+                                </span>
+                              </td> */}
+                              <td></td>
+                              <td>{data.destination}</td>
+                              <td>{data.noSJ}</td>
+                              <td>{data.kendaraan}</td>
+                              <td>{data?.via}</td>
+                              <td>{data.item}</td>
+                              <td>{data.berat}</td>
+                              <td>{data.qty}</td>
+                              {jobdesk !== "operasional" && (
+                                <>
+                                  <td>{data.Price?.toLocaleString("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                  })}</td>
+                                  <td>{data.Price?.toLocaleString("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                  })}</td>
+                                </>)}
+                            </tr>
+                          </>
+                        ))}
+                    </>
                   ))}
               </tbody>
-              <tfoot className="text-end " >
-                <tr>
-                  <td colSpan={10}>
-                    {" "}
-                    Biaya Muat :
-                  </td>{" "}
-                  <td>
-                    {detailData?.biaya_muat?.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={10} >
-                    {" "}
-                    Biaya Bongkar :
-                    {detailData?.biaya_muat_bongkar?.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={10} className="text-right">
-                    {" "}
-                    Biaya MultiDrop :
-                    {detailData?.biaya_multidrop?.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={10} className="text-right">
-                    {" "}
-                    Biaya Overtonase :
-                    {detailData?.biaya_overtonase?.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={10} className="text-right">
-                    {" "}
-                    Biaya Mel :
-                    {detailData?.Totalprice?.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={10} className="text-right">
-                    {" "}
-                    Biaya Inap :
-                    {detailData?.Totalprice?.toLocaleString("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    })}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={10} className="text-right">
-                    {" "}
-                    <b>
-                      TOTAL KESELURUHAN :{" "}
-                      {detailData?.Totalprice?.toLocaleString("id-ID", {
+
+              <tfoot>
+                <tr style={{ fontWeight: "bold" }}>
+                  {jobdesk !== "operasional" && (
+                    <>
+                      <td colSpan={9} width="150px" className="text-right">
+                        Sub Total
+                      </td>
+                    </>)}
+                  {jobdesk !== "operasional" && (
+                    <>
+
+                      <td width="150px">Rp {detailData?.subTotal?.toLocaleString("id-ID", {
                         style: "currency",
                         currency: "IDR",
-                      })}
-                    </b>
-                  </td>
+                      })}</td>
+                    </>
+                  )}
                 </tr>
               </tfoot>
             </Table>
-
+            {jobdesk !== "operasional" && (
+              <>
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Muat :{detailData?.totalMuat?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Bongkar :{detailData?.totalBongkar?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya MultiDrop :{detailData?.biaya_multidrop?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Overtonase :{detailData?.biaya_overtonase?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Mel :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Inap :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <hr />
+                <p
+                  className="d-flex justify-content-end"
+                  style={{ fontWeight: "bold" }}
+                >
+                  TOTAL KESELURUHAN :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+              </>
+            )}
             {/* <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}

@@ -35,11 +35,11 @@ function SplistOperasional() {
       name: "Service",
       selector: (row) => row.service,
     },
-    {
-      name: "Vehicle",
-      selector: (row) => row.vehicles.map(v => v.kendaraan).join(', '),
-      width: "80px"
-    },
+    // {
+    //   name: "Vehicle",
+    //   selector: (row) => row.vehicles.map(v => v.kendaraan).join(', '),
+    //   width: "80px"
+    // },
     
     {
       name: "Pickup Date",
@@ -62,7 +62,7 @@ function SplistOperasional() {
             </Tag>
           ) : (
             <Tag color="red">
-              Reject <br /> <small>{dateApproveAct}</small>
+              Diverted <br /> <small>{dateApproveAct}</small>
             </Tag>
           );
 
@@ -86,7 +86,7 @@ function SplistOperasional() {
             </Tag>
           ) : (
             <Tag color="red">
-              Reject <br /> <small>{dateApproveAct}</small>
+              Diverted <br /> <small>{dateApproveAct}</small>
             </Tag>
           );
 
@@ -111,7 +111,7 @@ function SplistOperasional() {
             </Tag>
           ) : (
             <Tag color="red">
-              Reject <br /> <small>{dateApproveAct}</small>
+              Diverted <br /> <small>{dateApproveAct}</small>
             </Tag>
           );
 

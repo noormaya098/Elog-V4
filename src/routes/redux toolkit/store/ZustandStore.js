@@ -17,21 +17,27 @@ const mobil = create((set, get) => ({
 
   custumer: [],
   setCustumer: (custumer) => set({ custumer }),
-  
+
   jenisBarang: [],
   setjenisBarang: (jenisBarang) => set({ jenisBarang }),
 
-  orderdate : [],
+  orderdate: [],
   setOrderdate: (orderdate) => set({ orderdate }),
-  
-  asuransi : [],
+
+  asuransi: [],
   setAsuransi: (asuransi) => set({ asuransi }),
 
-  detailmitra : [],
-  setDetailMitra: (detailmitra) => set({ detailmitra}),
+  detailmitra: [],
+  setDetailMitra: (detailmitra) => set({ detailmitra }),
+
+  phZustand: [],
+  setPHZustand: (phZustand) => set({ phZustand }),
   
-  phZustand : [],
-  setPHZustand: (phZustand) => set({ phZustand}),
+  jobdesk: [],
+  setJobdesk: (jobdesk) => set({ jobdesk }),
+
+  shipmentSementara: [],
+  setshipmentSementara: (shipmentSementara) => set({ shipmentSementara }),
 }));
 
 export default mobil;

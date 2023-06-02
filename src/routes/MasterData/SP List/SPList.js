@@ -171,7 +171,7 @@ function SPList() {
   ];
 
   const buttonarahin = (idmp) => {
-    history.push(`/masterdata/detailsp/${idmp}`);
+    history.push(`/masterdata/purchasing/detailsp/${idmp}`);
     // history.push(`/masterdata/splistdetailakunting/${idmp}`);
   };
 
@@ -189,7 +189,7 @@ function SPList() {
       <Card>
         <Row>
           <Col>
-            <h1>New SP List</h1>
+            <h1>Approve Sp</h1>
             <div className="d-flex justify-content-end">
               <Col sm={3}>
                 <Form.Group controlId="spId">

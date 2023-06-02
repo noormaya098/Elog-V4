@@ -10,6 +10,7 @@ import mobil from "../../redux toolkit/store/ZustandStore";
 import useStore from "../../redux toolkit/store/UseStore";
 function HalamanDetail() {
   const { idmp } = useParams();
+  const [IsiDataSPSemua , setIsiDataSPSemua] = useState("")
   const [isidata, setIsidata] = useState([]);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -52,7 +53,7 @@ function HalamanDetail() {
   const [komen, setKomen] = useState([]);
 
   useEffect(() => {
-    setkendarran(isidetail.map((item) => item.kendaraan));
+    setkendarran(isidetail.map((item) => item?.kendaraan));
   }, [isidetail]);
 
   // console.log(`isni data`, isidata);
@@ -71,7 +72,7 @@ function HalamanDetail() {
     const isidetail = isi.data.data.map((item) => ({
       berat: item.berat,
       sp: item.sp,
-      kendaraan: item.kendaraan,
+      kendaraan: item?.kendaraan,
       pickupAddress: item.pickupAddress,
       perusahaan: item.perusahaan,
       destination: item.destination,
@@ -147,13 +148,14 @@ function HalamanDetail() {
     setjenisBarang(jenisBarangs);
     setOrderdate(orderdate);
     setAsuransi(asuransis);
+    setIsiDataSPSemua(data.data)
     // console.log(`asuransi`, asuransi);
   };
-
+console.log(`ini log semua`,IsiDataSPSemua);
   return (
     <div>
       <Card>
-        <FormTable isidata={isidata} idmp={idmp}></FormTable>
+        <FormTable IsiDataSPSemua={IsiDataSPSemua} isidata={isidata} idmp={idmp}></FormTable>
         <Form>
           <Form.Group controlId="inputText">
             <Form.Label style={{ fontWeight: "bold" }}>Isi Memo</Form.Label>

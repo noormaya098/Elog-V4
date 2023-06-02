@@ -18,28 +18,28 @@ function SplistAkuntingBaru() {
   const columns = [
     {
       name: "No",
-      selector: (row) => row.no,
+      selector: (row) => row?.no,
       width: "50px",
     },
     {
       name: "No SP",
-      selector: (row) => row.sp,
+      selector: (row) => row?.sp,
       width : "150px"
     },
     {
       name: " Perusahaan",
-      selector: (row) => row.perusahaan,
+      selector: (row) => row?.perusahaan,
       width : "250px"
     },
     {
       name: "Service",
-      selector: (row) => row.service,
+      selector: (row) => row?.service,
     },
-    {
-      name: "Vehicle",
-      selector: (row) => row.vehicles.map(v => v.kendaraan).join(', '),
-      width: "80px"
-    },
+    // {
+    //   name: "Vehicle",
+    //   selector: (row) => row?.vehicles.map(v => v.kendaraan).join(', '),
+    //   width: "80px"
+    // },
     
     {
       name: "Pickup Date",
@@ -49,8 +49,8 @@ function SplistAkuntingBaru() {
     {
       name: "Approve By Akunting",
       cell: (row) => {
-        const approveact = row.approveAct;
-        const dateApproveAct = row.dateApproveAct;
+        const approveact = row?.approveAct;
+        const dateApproveAct = row?.dateApproveAct;
         let displayText =
           approveact === "Y" && dateApproveAct !== "Invalid date" ? (
             <Tag color="green">
@@ -73,8 +73,8 @@ function SplistAkuntingBaru() {
     {
       name: "Approve By Ops",
       selector: (row) => {
-        const approveact = row.approveOps;
-        const dateApproveAct = row.dateApproveOps;
+        const approveact = row?.approveOps;
+        const dateApproveAct = row?.dateApproveOps;
         let displayText =
           approveact === "Y" && dateApproveAct !== "Invalid date" ? (
             <Tag color="green">
@@ -98,8 +98,8 @@ function SplistAkuntingBaru() {
     {
       name: "Approve By Purchasing",
       selector: (row) => {
-        const approveact = row.approvePurch;
-        const dateApproveAct = row.dateApprovePurch;
+        const approveact = row?.approvePurch;
+        const dateApproveAct = row?.dateApprovePurch;
         let displayText =
           approveact === "Y" && dateApproveAct !== "Invalid date" ? (
             <Tag color="green">
@@ -131,14 +131,15 @@ function SplistAkuntingBaru() {
 
   const buttonarahin = (idmp) => {
     console.log(`klik dong`, idmp);
-    history.push(`/masterdata/splistdetailakunting/${idmp}`);
+    history.push(`/masterdata/purchasing/detailsp/${idmp}`);
   };
 
   useEffect(() => {
+    setLoading(true)
     const dataapi = async () => {
-      setLoading(true)
+      // setLoading(true)
       const data = await axios.get(
-        `${Baseurl}sp/get-SP-all?limit=50&page=${page}&keyword=${filter}`,
+        `${Baseurl}sp/get-SP-all?limit=15&page=${page}&keyword=${filter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -147,21 +148,21 @@ function SplistAkuntingBaru() {
         }
       );
       const isi = data.data.data.order.map((item) => ({
-        no: item.no,
-        idmp: item.idmp,
-        sp: item.sp,
-        salesName: item.salesName,
-        perusahaan: item.perusahaan,
-        service: item.service,
-        pickupDate: item.pickupDate,
-        approveAct: item.approveAct,
-        dateApproveAct: item.dateApproveAct,
-        approveOps: item.approveOps,
-        idops: item.idops,
-        operationalName: item.operationalName,
-        dateApproveOps: item.dateApproveOps,
-        approvePurch: item.approvePurch,
-        dateApprovePurch: item.dateApprovePurch,
+        no: item?.no,
+        idmp: item?.idmp,
+        sp: item?.sp,
+        salesName: item?.salesName,
+        perusahaan: item?.perusahaan,
+        service: item?.service,
+        pickupDate: item?.pickupDate,
+        approveAct: item?.approveAct,
+        dateApproveAct: item?.dateApproveAct,
+        approveOps: item?.approveOps,
+        idops: item?.idops,
+        operationalName: item?.operationalName,
+        dateApproveOps: item?.dateApproveOps,
+        approvePurch: item?.approvePurch,
+        dateApprovePurch: item?.dateApprovePurch,
       }));
   
       const detailPromises = isi.map(item => detailSP(item.idmp));
@@ -174,6 +175,7 @@ function SplistAkuntingBaru() {
   
       setTotalRows(data.data.data.total);
       setCombinedData(combinedData);
+      setLoading(false)
     };
     dataapi();
   }, [filter, page]);
@@ -195,8 +197,8 @@ function SplistAkuntingBaru() {
         }
       );
       return response.data.detail.map((item) => ({
-        kendaraan: item.kendaraan,
-        destination: item.destination
+        kendaraan: item?.kendaraan,
+        destination: item?.destination
       }));
     } catch (error) {
       console.error(error);
@@ -213,6 +215,7 @@ function SplistAkuntingBaru() {
         <Row>
           <Col>
             <Row>
+              
               <div className="d-flex justify-content-end">
                 <Col sm={3}>
                   <Form.Control
@@ -223,6 +226,9 @@ function SplistAkuntingBaru() {
                 </Col>
               </div>
             </Row>
+            {loading ? ( // Jika state loading bernilai true, tampilkan pesan "Loading..."
+                <p>Loading...</p>
+              ) : ( // Jika state loading bernilai false, tampilkan tabel
             <DataTable
               columns={columns}
               data={combinedData}
@@ -231,6 +237,7 @@ function SplistAkuntingBaru() {
               paginationTotalRows={totalRows}
               onChangePage={setPage}
             />
+            )}
           </Col>
         </Row>
       </Card>

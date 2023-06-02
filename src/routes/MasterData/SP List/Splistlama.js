@@ -57,15 +57,15 @@ function SPListlama() {
 
     const isis = isi.data.data.map((item) => ({
       idmp: idmp,
-      kendaraan: item.kendaraan,
-      pickupAddress: item.pickupAddress,
-      perusahaan: item.perusahaan,
-      destination: item.destination,
-      via: item.via,
-      item: item.item,
-      qty: item.qty,
-      service: item.service,
-      pickupDate: item.pickupDate,
+      kendaraan: item?.kendaraan,
+      pickupAddress: item?.pickupAddress,
+      perusahaan: item?.perusahaan,
+      destination: item?.destination,
+      via: item?.via,
+      item: item?.item,
+      qty: item?.qty,
+      service: item?.service,
+      pickupDate: item?.pickupDate,
     }));
 
     setDestinationData((prevData) => [...prevData, ...isis]);
@@ -98,75 +98,89 @@ function SPListlama() {
   const columns = [
     {
       name: "No",
-      selector: (row) => row.no,
+      selector: (row) => row?.no,
       width: "50px",
     },
     {
       name: "SP ID",
-      selector: (row) => row.sp,
+      selector: (row) => row?.sp,
+      width: "150px",
     },
     {
       name: "Perusahaan",
-      selector: (row) => row.perusahaan,
+      selector: (row) => row?.perusahaan,
       width: "150px",
     },
     {
       name: "Marketing",
-      selector: (row) => row.salesName,
-      width: "120px",
+      selector: (row) => row?.salesName,
+      width: "80px",
     },
     {
       name: "Service",
-      selector: (row) => row.service,
+      selector: (row) => row?.service,
       width: "100px",
     },
     {
       name: "Vehicle",
-      selector: (row) => row.kendaraan,
+      selector: (row) => row?.kendaraan,
       width: "100px",
     },
     {
       name: "Pickup Date",
-      selector: (row) => row.pickupDate,
-      width: "150px",
+      selector: (row) => {
+        let date = new Date(row?.pickupDate);
+        let year = date.getFullYear();
+        let month = (1 + date.getMonth()).toString().padStart(2, '0');
+        let day = date.getDate().toString().padStart(2, '0');
+    
+        return `${year}-${month}-${day}`; // return dalam format yyyy-mm-dd
+      },
+      width: "100px",
     },
+    
     {
       name: "Destination",
-      selector: (row) => row.destination,
+      selector: (row) => row?.destination,
       width: "150px",
     },
 
-    {
-      name: "Tgl Approved/Decline",
-      selector: (row) => {
-        const dateApproveOps = row.dateApproveOps;
-        const isValidDate = !isNaN(new Date(dateApproveOps));
+    // {
+    //   name: "Tgl Approved/Decline",
+    //   selector: (row) => {
+    //     const dateApproveOps = row?.dateApproveOps;
+    //     const isValidDate = !isNaN(new Date(dateApproveOps));
 
-        return isValidDate ? dateApproveOps : "-";
-      },
-    },
+    //     const data = isValidDate ? dateApproveOps : "-";
+    //     return data
+    //   },
+    // },
     {
       name: "Akunting",
       selector: (row) => {
-        return row.approveAct === "Y" ? (
+        return row?.approveAct === "Y" ? (
           <Tag color="green">Approved</Tag>
-        ) : row.approveAct === "Invalid date" ? (
-          <Tag color="red">Reject</Tag>
+        ) : row?.approveAct === "Invalid date" ? (
+          <Tag color="red">Diverted</Tag>
         ) : (
           <Tag color="orange">Waiting</Tag>
         );
       },
+      width: "100px",
     },
     {
       name: "Operasional",
       selector: (row) => {
-        return row.approveOps === "Y" ? (
-          <Tag color="green">Approved</Tag>
-        ) : row.dateApproveOps === "Invalid date" ? (
-          <Tag color="orange">Waiting</Tag>
-        ) : (
-          <Tag color="red">Reject</Tag>
-        );
+        const dateApproveOps = row?.dateApproveOps;
+        const isValidDate = !isNaN(new Date(dateApproveOps));
+        const data = isValidDate ? dateApproveOps : "-";
+        if (row?.approveOps === "Y") {
+          return <Tag color="green">Approved <br/> {data}</Tag>;
+        } else if (!isValidDate) {
+          return <Tag color="orange">Waiting <br/> {data}</Tag>;
+        } else {
+          return <Tag color="red">Diverted <br/> {data}</Tag>;
+        }
       },
     },
     {

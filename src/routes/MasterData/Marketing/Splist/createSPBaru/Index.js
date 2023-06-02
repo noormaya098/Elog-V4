@@ -5,12 +5,13 @@ import Baseurl from "../../../../../Api/BaseUrl";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import mobil from "../../../../redux toolkit/store/ZustandStore";
+import Select from 'react-select';
 
 function Index() {
-    const { phZustand, setPHZustand } = mobil((state)=>({
-        setPHZustand : state.setPHZustand,
-        phZustand : state.phZustand
-      }));
+  const { phZustand, setPHZustand } = mobil((state) => ({
+    setPHZustand: state.setPHZustand,
+    phZustand: state.phZustand
+  }));
   const [getawalSP, setgetAwalSP] = useState([]);
   const [noPH, setnoPH] = useState("");
   const [noSPawal, setnogetAwalSP] = useState("");
@@ -22,6 +23,7 @@ function Index() {
   const [diskonselect, setDiskonSelect] = useState("");
   const [diskonselectValue, setDiskonSelectValue] = useState("");
   const [serviceSelect, setServiceSelect] = useState("");
+  const [serviceSelectValue, setServiceSelectValue] = useState("");
   const [insuranceSelect, setInsuranceSelect] = useState("");
   const [insuranceSelects, setInsuranceSelects] = useState("");
   const [packingValue, setpackingValue] = useState("");
@@ -74,7 +76,7 @@ function Index() {
           asuransi: insuranceSelects,
           tgl_pickup: tgl_pickup,
           tgl_bongkar: tgl_bongkar,
-          service: AlamatInvoiceValue,
+          service: serviceSelectValue,
           alamat_invoice: AlamatInvoiceValue,
           diskon: diskonselectValue,
           asuransi_fee: 0,
@@ -126,27 +128,20 @@ function Index() {
           <Row className="mt-2">
             <Col sm={6}>
               <FormGroup>
-                <Form.Label>Nama Perusahaan</Form.Label>
-                <Form.Select
-                  placeholder="test"
-                  onChange={(e) => {
-                    const item = JSON.parse(e.target.value);
-                    dapetinnosp(item.id);
-                    setCompanyID(item.id);
-                    setJenisBarang(item.companyStuff);
-                    console.log(item.id);
+                <Form.Label>Nama Pelanggan</Form.Label>
+                <Select
+                  placeholder="Select Nama Perusahaan"
+                  options={namaPerusahaan && namaPerusahaan.map(item => ({ label: item.companyName, value: item.id, item }))}
+                  onChange={selectedOption => {
+                    dapetinnosp(selectedOption.value);
+                    setCompanyID(selectedOption.value);
+                    setJenisBarang(selectedOption.item.companyStuff);
+                    console.log(selectedOption.value);
                   }}
-                >
-                  <option>Select Nama Perusahaan</option>
-                  {namaPerusahaan &&
-                    namaPerusahaan.map((item) => (
-                      <option value={JSON.stringify(item)} id={item.id}>
-                        {item.companyName}
-                      </option>
-                    ))}
-                </Form.Select>
+                />
               </FormGroup>
             </Col>
+
             <Col sm={3}>
               <FormGroup>
                 <Form.Label>Tanggal Pickup</Form.Label>
@@ -170,19 +165,15 @@ function Index() {
             <Col sm={6}>
               <FormGroup>
                 <Form.Label>Alamat Invoice</Form.Label>
-                <Form.Select
-                  onChange={(e) => setAlamatInvoiceValue(e.target.value)}
-                >
-                  <option>Alamat Invoice</option>
-
-                  {Array.isArray(alamatInvoice) &&
-                    alamatInvoice.map((item) => (
-                      <option value={item.address}>{item.address}</option>
-                    ))}
-                </Form.Select>
+                <Select
+                  placeholder="Alamat Invoice"
+                  options={Array.isArray(alamatInvoice) ? alamatInvoice.map(item => ({ label: item.address, value: item.address })) : []}
+                  onChange={selectedOption => setAlamatInvoiceValue(selectedOption.value)}
+                />
               </FormGroup>
             </Col>
-            <Col sm={2}>
+
+            <Col sm>
               <FormGroup>
                 <Form.Label>Jenis Barang</Form.Label>
                 <Form.Control
@@ -192,7 +183,7 @@ function Index() {
                 ></Form.Control>
               </FormGroup>
             </Col>
-            <Col sm={2}>
+            {/* <Col sm={2}>
               <FormGroup>
                 <Form.Label>Diskon %</Form.Label>
                 <Form.Select
@@ -210,18 +201,20 @@ function Index() {
             <Col sm={2}>
               <FormGroup>
                 <Form.Label>Diskon Amount</Form.Label>
-                <Form.Control type="text"></Form.Control>
+                <Form.Control
+
+                  type="text"></Form.Control>
               </FormGroup>
-            </Col>
+            </Col> */}
           </Row>
           <Row className="mt-2">
             <Col sm={4}>
               <FormGroup>
                 <Form.Label>Service</Form.Label>
-                <Form.Select type="text">
+                <Form.Select onChange={(e) => setServiceSelectValue(e.target.value)} type="text">
                   <option>Pilih Service</option>
                   {serviceSelect &&
-                    serviceSelect.map((item) => <option>{item.tipe}</option>)}
+                    serviceSelect.map((item) => <option value={item.tipe}>{item.tipe}</option>)}
                 </Form.Select>
               </FormGroup>
             </Col>
