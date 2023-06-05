@@ -119,11 +119,11 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   }, []);
 
   ///tombol approve
-  const HandleApproveOPS = (idMpd) => {
+  const HandleApproveOPS = (idmpd) => {
     const body = {
       id_mpd: IDMPD,
       id_mp: idmp,
-      id_unit: idUnit,
+      id_unit: selectDriver[0]?.idUnit,
       id_supir: selectnomor,
       id_mitra: ``,
       id_mitra_pickup: ``,
@@ -151,7 +151,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
           title: "Approval Successful",
           text: "The approval process has been completed successfully.",
         });
-        // window.location.reload()
+        window.location.reload()
         handleClose();
       })
       .catch((error) => console.error(`Error: ${error}`));
@@ -354,7 +354,25 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     })
   }
   let counter = 1
-  console.log(selectDriver);
+  console.log(IsiDataSPSemua);
+
+
+
+  const options = nomorpolisi.map(vehicle => ({
+    value: vehicle.id,
+    label: vehicle.no_polisi + "-" + vehicle.kd_kendaraan
+  }));
+
+  const handleSelectChange = selectedOption => {
+    if (selectedOption) {
+      setSelectnomor(selectedOption.value);
+
+      const selectedVehicle = nomorpolisi.find((vehicle) => vehicle.id === selectedOption.value);
+      if (selectedVehicle) {
+        setSelectNopol(selectedVehicle.no_polisi);
+      }
+    }
+  };
   return (
     <>
       <Row>
@@ -397,21 +415,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                       <Col sm={12}>
                         <Form.Label>Kode Kendaraan</Form.Label>
-                        <Form.Select onChange={(e) => setSelectnomor(e.target.value)}>
-
-                          <option>Pilih Kode Kendaraan</option>
-                          {nomorpolisi && nomorpolisi.map((i) =>
-                            <option value={i.id}>{i.no_polisi + "-" + i.kd_kendaraan}</option>
-                          )}
-                        </Form.Select>
-                        {/* <Select
-                          options={nomorpolisiOptions}
-                          onChange={(selectedOption) => {
-                            console.log(`kode kendaraan`, selectedOption.value);
-                            setSelectnomor(selectedOption.value);
-                            setSelectNopol(selectedOption.label);
-                          }}
-                        /> */}
+                        <Select
+                          options={options}
+                          onChange={handleSelectChange}
+                        />
                       </Col>
                     </Row>
                     <Row>
@@ -426,7 +433,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                             setIdunit(e.target.value);
                           }}
                         >
-                          <option>Pilih Driver</option>
                           <option value={selectDriver[0]?.idUnit}>
                             {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
                           </option>
@@ -617,7 +623,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                   </>)}
                   <>
                     {jobdesk != "purchasing" ? (
-                      <Checkbox  className="justify-content-end d-flex">
+                      <Checkbox className="justify-content-end d-flex">
                         Multi
                       </Checkbox>
                     ) : null}
@@ -1145,27 +1151,26 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                     <Button
                                       size="sm"
                                       variant="primary"
-                                      onClick={() => handleShow()
-                                        // setIdmpdPerstate(data.idmpd);
-                                        // handleShowSP(data.idmpd, data.noSJ);
-                                        // setIsiDataSPSemuaTemp(data)
-                                      }
+                                      onClick={() => {
+                                        handleShow(data.idmpd);
+                                        approvebaru(data.idmpd);
+                                      }}
                                       className="mt-2"
                                     >
                                       Approve
                                     </Button>
+
                                   </>)
                                 }
-                                {(jobdesk == "operasional" &&(
+                                {(jobdesk == "operasional" && (
                                   <>
-                                <Button
+                                    <Button
                                       size="sm"
                                       variant="primary"
-                                      onClick={() => handleShow()
-                                        // setIdmpdPerstate(data.idmpd);
-                                        // handleShowSP(data.idmpd, data.noSJ);
-                                        // setIsiDataSPSemuaTemp(data)
-                                      }
+                                      onClick={() => {
+                                        handleShow(data.idmpd);
+                                        approvebaru(data.idmpd);
+                                      }}
                                       className="mt-2"
                                     >
                                       Approve
