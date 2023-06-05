@@ -123,13 +123,14 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     const body = {
       id_mpd: IDMPD,
       id_mp: idmp,
-      id_unit: selectDriver[0]?.idUnit,
+      id_unit: idUnit,
       id_supir: selectnomor,
       id_mitra: ``,
       id_mitra_pickup: ``,
       id_mitra_2: ``,
       plat_nomor: selectnopol,
       merk: types[0],
+      is_multi: "",
     };
 
     axios
@@ -150,6 +151,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
           title: "Approval Successful",
           text: "The approval process has been completed successfully.",
         });
+        // window.location.reload()
         handleClose();
       })
       .catch((error) => console.error(`Error: ${error}`));
@@ -351,13 +353,318 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       }
     })
   }
-let counter = 1
-
+  let counter = 1
+  console.log(selectDriver);
   return (
     <>
       <Row>
         <div className="d-flex justify-content-end">
-          {(jobdesk != "purchasing") && (
+          {(jobdesk == "operasional") && (
+            <>
+              {(jobdesk != "purchasing") && (
+                <>
+                  <Button size="sm" onClick={() => jobdesk === "akunting" ? akuntingAprpove() : handleShow()}>
+                    Approve
+                  </Button>
+                </>
+              )}
+              <Modal show={show} onHide={handleClose} size="md" >
+                <Modal.Header closeButton>
+                  <Modal.Title>Approve {jobdesk}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {jobdesk == "operasional" && (<>
+                    <Row>
+                      <Col sm={12}>
+                        <Form.Label>Vehicle Type</Form.Label>
+                        <Form.Select
+                          type="text"
+                          disabled
+                          value={types[0] || ""}
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                        >
+                          {types.map((type, index) => (
+                            <option key={index} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                    <Row>
+
+                      <Col sm={12}>
+                        <Form.Label>Kode Kendaraan</Form.Label>
+                        <Form.Select onChange={(e) => setSelectnomor(e.target.value)}>
+
+                          <option>Pilih Kode Kendaraan</option>
+                          {nomorpolisi && nomorpolisi.map((i) =>
+                            <option value={i.id}>{i.no_polisi + "-" + i.kd_kendaraan}</option>
+                          )}
+                        </Form.Select>
+                        {/* <Select
+                          options={nomorpolisiOptions}
+                          onChange={(selectedOption) => {
+                            console.log(`kode kendaraan`, selectedOption.value);
+                            setSelectnomor(selectedOption.value);
+                            setSelectNopol(selectedOption.label);
+                          }}
+                        /> */}
+                      </Col>
+                    </Row>
+                    <Row>
+
+                      <Col sm={12}>
+                        <Form.Label>Select Driver</Form.Label>
+                        <Form.Select
+
+                          value={selectDriver[0]?.id}
+                          onChange={(e) => {
+                            console.log(`awo`, e.target.value);
+                            setIdunit(e.target.value);
+                          }}
+                        >
+                          <option>Pilih Driver</option>
+                          <option value={selectDriver[0]?.idUnit}>
+                            {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                          </option>
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                  </>)}
+
+                  {/* Bukan operasional */}
+                  {jobdesk != "operasional" && (<>
+                    <Row>
+                      <Col sm={3}>
+                        {jobdesk == "purchasing" ? (
+                          <>
+                            <Form.Label>Select Mitra 1</Form.Label>
+                            <Select
+                              options={mitraOptions}
+                              onChange={(mitraOptions) => {
+                                setSelectMitra(mitraOptions.value);
+                              }}
+                            />
+                          </>
+                        ) : null}
+                      </Col>
+
+                      <Col sm={3}>
+
+                        <Form.Label>Vehicle Type</Form.Label>
+                        <Form.Select
+                          type="text"
+                          disabled
+                          value={types[0] || ""}
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                        >
+                          {types.map((type, index) => (
+                            <option key={index} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
+                      <Col sm={3}>
+                        <Form.Label>Kode Kendaraan</Form.Label>
+                        <Select
+                          options={nomorpolisiOptions}
+                          onChange={(selectedOption) => {
+                            console.log(`kode kendaraan`, selectedOption.value);
+                            setSelectnomor(selectedOption.value);
+                            setSelectNopol(selectedOption.label);
+                          }}
+                        />
+                      </Col>
+                      <Col sm={3}>
+                        <Form.Label>Select Driver</Form.Label>
+                        <Form.Select
+
+                          value={selectDriver[0]?.id}
+                          onChange={(e) => {
+                            console.log(`awo`, e.target.value);
+                            setIdunit(e.target.value);
+                          }}
+                        >
+                          <option value={selectDriver[0]?.id}>
+                            {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                          </option>
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col sm={3}>
+                        {jobdesk == "purchasing" ? (
+                          <>
+                            <Form.Label>Select Mitra 2</Form.Label>
+                            <Select
+                              options={mitraOptions}
+                              onChange={(mitraOptions) => {
+                                setSelectMitra(mitraOptions.value);
+                              }}
+                            />
+                          </>
+                        ) : null}
+                      </Col>
+
+                      <Col sm={3}>
+                        <Form.Label>Vehicle Type</Form.Label>
+                        <Form.Select
+                          type="text"
+                          disabled
+                          value={types[0] || ""}
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                        >
+                          {types.map((type, index) => (
+                            <option key={index} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
+                      <Col sm={3}>
+                        <Form.Label>Kode Kendaraan</Form.Label>
+                        <Select
+                          options={nomorpolisiOptions}
+                          onChange={(selectedOption) => {
+                            console.log(`kode kendaraan`, selectedOption.value);
+                            setSelectnomor(selectedOption.value);
+                            setSelectNopol(selectedOption.label);
+                          }}
+                        />
+                      </Col>
+                      <Col sm={3}>
+                        <Form.Label>Select Driver</Form.Label>
+                        <Form.Select
+                          value={selectDriver[0]?.id}
+                          onChange={(e) => {
+                            console.log(`awo`, e.target.value);
+                            setIdunit(e.target.value);
+                          }}
+                        >
+                          <option value={selectDriver[0]?.id}>
+                            {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                          </option>
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col sm={3}>
+                        {jobdesk == "purchasing" ? (
+                          <>
+                            <Form.Label>Select Mitra 3</Form.Label>
+                            <Select
+                              options={mitraOptions}
+                              onChange={(mitraOptions) => {
+                                setSelectMitra(mitraOptions.value);
+                              }}
+                            />
+                          </>
+                        ) : null}
+                      </Col>
+
+                      <Col sm={3}>
+                        <Form.Label>Vehicle Type</Form.Label>
+                        <Form.Select
+                          type="text"
+                          disabled
+                          value={types[0] || ""}
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                          }}
+                        >
+                          {types.map((type, index) => (
+                            <option key={index} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
+                      <Col sm={3}>
+                        <Form.Label>Kode Kendaraan</Form.Label>
+                        <Select
+                          options={nomorpolisiOptions}
+                          onChange={(selectedOption) => {
+                            console.log(`kode kendaraan`, selectedOption.value);
+                            setSelectnomor(selectedOption.value);
+                            setSelectNopol(selectedOption.label);
+                          }}
+                        />
+                      </Col>
+                      <Col sm={3}>
+                        <Form.Label>Select Driver</Form.Label>
+                        <Form.Select
+
+                          value={selectDriver[0]?.id}
+                          onChange={(e) => {
+                            console.log(`awo`, e.target.value);
+                            setIdunit(e.target.value);
+                          }}
+                        >
+                          <option value={selectDriver[0]?.id}>
+                            {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                          </option>
+                        </Form.Select>
+                      </Col>
+                    </Row>
+                  </>)}
+                  <>
+                    {jobdesk != "purchasing" ? (
+                      <Checkbox  className="justify-content-end d-flex">
+                        Multi
+                      </Checkbox>
+                    ) : null}
+
+                    <br />
+                    <hr />
+
+                    <Button size="sm" onClick={() => handleAnotherDriverClick()}>
+                      another driver
+                    </Button>
+                    <br />
+                    {bukaanother && (
+                      <>
+                        <Form.Label>Select Driver</Form.Label>
+                        <Form.Select onChange={(e) => setIdunit(driveranother.name)}>
+                          <option>Select Driver</option>
+                          {driveranother &&
+                            driveranother.map((item, index) => (
+                              <option key={index} value={item.id}>
+                                {item?.name}
+                              </option>
+                            ))}
+                        </Form.Select>
+                      </>
+                    )}
+                  </>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleClose}>
+                    Close
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={() =>
+                      jobdesk == "operasional"
+                        ? HandleApproveOPS()
+                        : HandleApprovePURCH()
+                    }
+                  >
+                    Save Changes
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+
+            </>
+          )}
+          {(jobdesk != "purchasing" && jobdesk != "operasional") && (
             <>
               <Button size="sm" onClick={() => jobdesk === "akunting" ? akuntingAprpove() : handleShow()}>
                 Approve
@@ -368,292 +675,296 @@ let counter = 1
             Reject Driver
           </Button>
         </div>
-        <Modal show={show} onHide={handleClose} size="lg">
-          <Modal.Header closeButton>
-            <Modal.Title>Approve {jobdesk}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {jobdesk == "operasional" && (<>
-              <Row>
-                <Col sm={12}>
-                  <Form.Label>Vehicle Type</Form.Label>
-                  <Form.Select
-                    type="text"
-                    disabled
-                    value={types[0] || ""}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                    }}
-                  >
-                    {types.map((type, index) => (
-                      <option key={index} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-              </Row>
-              <Row>
+        {(jobdesk != "operasional" && (
+          <>
 
-                <Col sm={12}>
-                  <Form.Label>Kode Kendaraan</Form.Label>
-                  <Select
-                    options={nomorpolisiOptions}
-                    onChange={(selectedOption) => {
-                      console.log(`kode kendaraan`, selectedOption.value);
-                      setSelectnomor(selectedOption.value);
-                      setSelectNopol(selectedOption.label);
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row>
+            <Modal show={show} onHide={handleClose} size="lg" >
+              <Modal.Header closeButton>
+                <Modal.Title>Approve {jobdesk}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {jobdesk == "operasional" && (<>
+                  <Row>
+                    <Col sm={12}>
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Form.Select
+                        type="text"
+                        disabled
+                        value={types[0] || ""}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                        }}
+                      >
+                        {types.map((type, index) => (
+                          <option key={index} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                  <Row>
 
-                <Col sm={12}>
-                  <Form.Label>Select Driver</Form.Label>
-                  <Form.Select
-
-                    value={selectDriver[0]?.id}
-                    onChange={(e) => {
-                      console.log(`awo`, e.target.value);
-                      setIdunit(e.target.value);
-                    }}
-                  >
-                    <option value={selectDriver[0]?.id}>
-                      {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
-                    </option>
-                  </Form.Select>
-                </Col>
-              </Row>
-            </>)}
-
-            {/* Bukan operasional */}
-            {jobdesk != "operasional" && (<>
-              <Row>
-                <Col sm={3}>
-                  {jobdesk == "purchasing" ? (
-                    <>
-                      <Form.Label>Select Mitra 1</Form.Label>
+                    <Col sm={12}>
+                      <Form.Label>Kode Kendaraan</Form.Label>
                       <Select
-                        options={mitraOptions}
-                        onChange={(mitraOptions) => {
-                          setSelectMitra(mitraOptions.value);
+                        options={nomorpolisiOptions}
+                        onChange={(selectedOption) => {
+                          console.log(`kode kendaraan`, selectedOption.value);
+                          setSelectnomor(selectedOption.value);
+                          setSelectNopol(selectedOption.label);
                         }}
                       />
-                    </>
-                  ) : null}
-                </Col>
+                    </Col>
+                  </Row>
+                  <Row>
 
-                <Col sm={3}>
+                    <Col sm={12}>
+                      <Form.Label>Select Driver</Form.Label>
+                      <Form.Select
 
-                  <Form.Label>Vehicle Type</Form.Label>
-                  <Form.Select
-                    type="text"
-                    disabled
-                    value={types[0] || ""}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                    }}
-                  >
-                    {types.map((type, index) => (
-                      <option key={index} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-                <Col sm={3}>
-                  <Form.Label>Kode Kendaraan</Form.Label>
-                  <Select
-                    options={nomorpolisiOptions}
-                    onChange={(selectedOption) => {
-                      console.log(`kode kendaraan`, selectedOption.value);
-                      setSelectnomor(selectedOption.value);
-                      setSelectNopol(selectedOption.label);
-                    }}
-                  />
-                </Col>
-                <Col sm={3}>
-                  <Form.Label>Select Driver</Form.Label>
-                  <Form.Select
-
-                    value={selectDriver[0]?.id}
-                    onChange={(e) => {
-                      console.log(`awo`, e.target.value);
-                      setIdunit(e.target.value);
-                    }}
-                  >
-                    <option value={selectDriver[0]?.id}>
-                      {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
-                    </option>
-                  </Form.Select>
-                </Col>
-              </Row>
-              <Row>
-                <Col sm={3}>
-                  {jobdesk == "purchasing" ? (
-                    <>
-                      <Form.Label>Select Mitra 2</Form.Label>
-                      <Select
-                        options={mitraOptions}
-                        onChange={(mitraOptions) => {
-                          setSelectMitra(mitraOptions.value);
+                        value={selectDriver[0]?.id}
+                        onChange={(e) => {
+                          console.log(`awo`, e.target.value);
+                          setIdunit(e.target.value);
                         }}
-                      />
-                    </>
-                  ) : null}
-                </Col>
-
-                <Col sm={3}>
-                  <Form.Label>Vehicle Type</Form.Label>
-                  <Form.Select
-                    type="text"
-                    disabled
-                    value={types[0] || ""}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                    }}
-                  >
-                    {types.map((type, index) => (
-                      <option key={index} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-                <Col sm={3}>
-                  <Form.Label>Kode Kendaraan</Form.Label>
-                  <Select
-                    options={nomorpolisiOptions}
-                    onChange={(selectedOption) => {
-                      console.log(`kode kendaraan`, selectedOption.value);
-                      setSelectnomor(selectedOption.value);
-                      setSelectNopol(selectedOption.label);
-                    }}
-                  />
-                </Col>
-                <Col sm={3}>
-                  <Form.Label>Select Driver</Form.Label>
-                  <Form.Select
-                    value={selectDriver[0]?.id}
-                    onChange={(e) => {
-                      console.log(`awo`, e.target.value);
-                      setIdunit(e.target.value);
-                    }}
-                  >
-                    <option value={selectDriver[0]?.id}>
-                      {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
-                    </option>
-                  </Form.Select>
-                </Col>
-              </Row>
-              <Row>
-                <Col sm={3}>
-                  {jobdesk == "purchasing" ? (
-                    <>
-                      <Form.Label>Select Mitra 3</Form.Label>
-                      <Select
-                        options={mitraOptions}
-                        onChange={(mitraOptions) => {
-                          setSelectMitra(mitraOptions.value);
-                        }}
-                      />
-                    </>
-                  ) : null}
-                </Col>
-
-                <Col sm={3}>
-                  <Form.Label>Vehicle Type</Form.Label>
-                  <Form.Select
-                    type="text"
-                    disabled
-                    value={types[0] || ""}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                    }}
-                  >
-                    {types.map((type, index) => (
-                      <option key={index} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-                <Col sm={3}>
-                  <Form.Label>Kode Kendaraan</Form.Label>
-                  <Select
-                    options={nomorpolisiOptions}
-                    onChange={(selectedOption) => {
-                      console.log(`kode kendaraan`, selectedOption.value);
-                      setSelectnomor(selectedOption.value);
-                      setSelectNopol(selectedOption.label);
-                    }}
-                  />
-                </Col>
-                <Col sm={3}>
-                  <Form.Label>Select Driver</Form.Label>
-                  <Form.Select
-
-                    value={selectDriver[0]?.id}
-                    onChange={(e) => {
-                      console.log(`awo`, e.target.value);
-                      setIdunit(e.target.value);
-                    }}
-                  >
-                    <option value={selectDriver[0]?.id}>
-                      {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
-                    </option>
-                  </Form.Select>
-                </Col>
-              </Row>
-            </>)}
-            <>
-              {jobdesk != "purchasing" ? (
-                <Checkbox className="justify-content-end d-flex">
-                  Multi
-                </Checkbox>
-              ) : null}
-
-              <br />
-              <hr />
-
-              <Button size="sm" onClick={() => handleAnotherDriverClick()}>
-                another driver
-              </Button>
-              <br />
-              {bukaanother && (
-                <>
-                  <Form.Label>Select Driver</Form.Label>
-                  <Form.Select onChange={(e) => setIdunit(driveranother.name)}>
-                    <option>Select Driver</option>
-                    {driveranother &&
-                      driveranother.map((item, index) => (
-                        <option key={index} value={item.id}>
-                          {item?.name}
+                      >
+                        <option value={selectDriver[0]?.id}>
+                          {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
                         </option>
-                      ))}
-                  </Form.Select>
-                </>
-              )}
-            </>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() =>
-                jobdesk == "operasional"
-                  ? HandleApproveOPS()
-                  : HandleApprovePURCH()
-              }
-            >
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Modal>
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                </>)}
 
+                {/* Bukan operasional */}
+                {jobdesk != "operasional" && (<>
+                  <Row>
+                    <Col sm={3}>
+                      {jobdesk == "purchasing" ? (
+                        <>
+                          <Form.Label>Select Mitra 1</Form.Label>
+                          <Select
+                            options={mitraOptions}
+                            onChange={(mitraOptions) => {
+                              setSelectMitra(mitraOptions.value);
+                            }}
+                          />
+                        </>
+                      ) : null}
+                    </Col>
+
+                    <Col sm={3}>
+
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Form.Select
+                        type="text"
+                        disabled
+                        value={types[0] || ""}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                        }}
+                      >
+                        {types.map((type, index) => (
+                          <option key={index} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                    <Col sm={3}>
+                      <Form.Label>Kode Kendaraan</Form.Label>
+                      <Select
+                        options={nomorpolisiOptions}
+                        onChange={(selectedOption) => {
+                          console.log(`kode kendaraan`, selectedOption.value);
+                          setSelectnomor(selectedOption.value);
+                          setSelectNopol(selectedOption.label);
+                        }}
+                      />
+                    </Col>
+                    <Col sm={3}>
+                      <Form.Label>Select Driver</Form.Label>
+                      <Form.Select
+
+                        value={selectDriver[0]?.id}
+                        onChange={(e) => {
+                          console.log(`awo`, e.target.value);
+                          setIdunit(e.target.value);
+                        }}
+                      >
+                        <option value={selectDriver[0]?.id}>
+                          {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                        </option>
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm={3}>
+                      {jobdesk == "purchasing" ? (
+                        <>
+                          <Form.Label>Select Mitra 2</Form.Label>
+                          <Select
+                            options={mitraOptions}
+                            onChange={(mitraOptions) => {
+                              setSelectMitra(mitraOptions.value);
+                            }}
+                          />
+                        </>
+                      ) : null}
+                    </Col>
+
+                    <Col sm={3}>
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Form.Select
+                        type="text"
+                        disabled
+                        value={types[0] || ""}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                        }}
+                      >
+                        {types.map((type, index) => (
+                          <option key={index} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                    <Col sm={3}>
+                      <Form.Label>Kode Kendaraan</Form.Label>
+                      <Select
+                        options={nomorpolisiOptions}
+                        onChange={(selectedOption) => {
+                          console.log(`kode kendaraan`, selectedOption.value);
+                          setSelectnomor(selectedOption.value);
+                          setSelectNopol(selectedOption.label);
+                        }}
+                      />
+                    </Col>
+                    <Col sm={3}>
+                      <Form.Label>Select Driver</Form.Label>
+                      <Form.Select
+                        value={selectDriver[0]?.id}
+                        onChange={(e) => {
+                          console.log(`awo`, e.target.value);
+                          setIdunit(e.target.value);
+                        }}
+                      >
+                        <option value={selectDriver[0]?.id}>
+                          {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                        </option>
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm={3}>
+                      {jobdesk == "purchasing" ? (
+                        <>
+                          <Form.Label>Select Mitra 3</Form.Label>
+                          <Select
+                            options={mitraOptions}
+                            onChange={(mitraOptions) => {
+                              setSelectMitra(mitraOptions.value);
+                            }}
+                          />
+                        </>
+                      ) : null}
+                    </Col>
+
+                    <Col sm={3}>
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Form.Select
+                        type="text"
+                        disabled
+                        value={types[0] || ""}
+                        onChange={(e) => {
+                          console.log(e.target.value);
+                        }}
+                      >
+                        {types.map((type, index) => (
+                          <option key={index} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                    <Col sm={3}>
+                      <Form.Label>Kode Kendaraan</Form.Label>
+                      <Select
+                        options={nomorpolisiOptions}
+                        onChange={(selectedOption) => {
+                          console.log(`kode kendaraan`, selectedOption.value);
+                          setSelectnomor(selectedOption.value);
+                          setSelectNopol(selectedOption.label);
+                        }}
+                      />
+                    </Col>
+                    <Col sm={3}>
+                      <Form.Label>Select Driver</Form.Label>
+                      <Form.Select
+
+                        value={selectDriver[0]?.id}
+                        onChange={(e) => {
+                          console.log(`awo`, e.target.value);
+                          setIdunit(e.target.value);
+                        }}
+                      >
+                        <option value={selectDriver[0]?.id}>
+                          {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
+                        </option>
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                </>)}
+                <>
+                  {jobdesk != "purchasing" ? (
+                    <Checkbox className="justify-content-end d-flex">
+                      Multi
+                    </Checkbox>
+                  ) : null}
+
+                  <br />
+                  <hr />
+
+                  <Button size="sm" onClick={() => handleAnotherDriverClick()}>
+                    another driver
+                  </Button>
+                  <br />
+                  {bukaanother && (
+                    <>
+                      <Form.Label>Select Driver</Form.Label>
+                      <Form.Select onChange={(e) => setIdunit(driveranother.name)}>
+                        <option>Select Driver</option>
+                        {driveranother &&
+                          driveranother.map((item, index) => (
+                            <option key={index} value={item.id}>
+                              {item?.name}
+                            </option>
+                          ))}
+                      </Form.Select>
+                    </>
+                  )}
+                </>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Close
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    jobdesk == "operasional"
+                      ? HandleApproveOPS()
+                      : HandleApprovePURCH()
+                  }
+                >
+                  Save Changes
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </>
+        ))}
         <Col sm={6}>
           <Form>
             <Form.Group>
@@ -775,7 +1086,7 @@ let counter = 1
                             }}
                           >
 
-                            <td>No {counter++}</td>
+                            <td>No</td>
 
 
                             <td>Alamat Bongkar</td>
@@ -792,10 +1103,10 @@ let counter = 1
 
                           <tr key={index}>
                             <td>
-                              {(jobdesk !== "purchasing" &&(
+                              {(jobdesk !== "purchasing" && (
 
                                 <>
-                                <p className="text-center">#</p>
+                                  <p className="text-center">{index + 1}</p>
                                 </>
                               ))}
                               <span >
@@ -845,6 +1156,22 @@ let counter = 1
                                     </Button>
                                   </>)
                                 }
+                                {(jobdesk == "operasional" &&(
+                                  <>
+                                <Button
+                                      size="sm"
+                                      variant="primary"
+                                      onClick={() => handleShow()
+                                        // setIdmpdPerstate(data.idmpd);
+                                        // handleShowSP(data.idmpd, data.noSJ);
+                                        // setIsiDataSPSemuaTemp(data)
+                                      }
+                                      className="mt-2"
+                                    >
+                                      Approve
+                                    </Button>
+                                  </>
+                                ))}
 
 
 

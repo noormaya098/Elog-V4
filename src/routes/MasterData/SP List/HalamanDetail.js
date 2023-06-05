@@ -151,7 +151,7 @@ function HalamanDetail() {
     setIsiDataSPSemua(data.data)
     // console.log(`asuransi`, asuransi);
   };
-console.log(`ini log semua`,IsiDataSPSemua);
+// console.log(`ini log semua`,IsiDataSPSemua);
   return (
     <div>
       <Card>

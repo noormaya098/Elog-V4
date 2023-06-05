@@ -37,6 +37,7 @@ function EditSP() {
     sp: item.sp,
   }));
   const { idmp } = useParams();
+  const [validated, setValidated] = useState(false);
   const [comment, setComment] = useState([]);
   const [selectVia, setSelectVia] = useState("");
   const [ShipmentModal, setShipmentModal] = useState([]);
@@ -219,6 +220,7 @@ function EditSP() {
     // console.log(comment);
     setComment(comment);
   };
+  console.log(`initempdata`, detailDataTemp?.via);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -236,7 +238,8 @@ function EditSP() {
         (item) => item?.via === selectVia
       );
       setShipmentOptions(filteredShipments);
-    } else {
+    }
+     else {
       setShipmentOptions([]);
     }
   }, [selectVia, ShipmentModal]);
@@ -334,7 +337,30 @@ function EditSP() {
   };
 
   const tambahkomen = async () => {
-    const data = await axios.post();
+    try {
+      if (tambahKomen === "") {
+        alert("Kolom komentar harus terisi");
+      } else {
+        const data = await axios.post(
+          `${Baseurl}sp/create-massage`,
+          {
+            id_mp: idmp,
+            ph: detailData?.sp,
+            chat: tambahKomen,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const total = detailData?.Totalprice;
@@ -501,7 +527,7 @@ function EditSP() {
   }
   let counter = 1;
 
-  // console.log(`detail data`, detailData);
+  console.log(`detail data`, detailDataTemp);
 
   console.log(`detail data`, detailDataTemp);
   // console.log(`detail data`, detailData.detail?.[0].tujuan);
@@ -539,7 +565,7 @@ function EditSP() {
             </Modal.Header>
             <Modal.Body>
               <Col sm={12}>
-                <Form>
+                <Form noValidate validated={validated}  >
                   <Form.Group>
                     <Form.Label>* Alamat Muat</Form.Label>
                     <Select
@@ -591,26 +617,26 @@ function EditSP() {
 
                           }
                         >
-
                           <option>Pilih Shipment</option>
                           {shipmentOptions.map((item, index) => (
-                            <option>{item.shipment}</option>
+                            <option value={item.id}>{item.shipment}</option>
                           ))}
                         </Form.Select>
                       </Col>
                     </Row>
-
                     <Row>
                       <Col sm={3}>
                         <Form.Label>* Berat</Form.Label>
                         <Form.Control
                           value={detailDataTemp.berat}
                           onChange={(e) => setBeratValue(e.target.value)}
+                          required
                         ></Form.Control>
                       </Col>
                       <Col sm={3}>
                         <Form.Label>* Qty</Form.Label>
                         <Form.Control
+                          required
                           onChange={(e) => setValue(e.target.value)}
                         ></Form.Control>
                       </Col>
@@ -802,6 +828,7 @@ function EditSP() {
                       <Col sm={4}>
                         <Form.Label>* Via</Form.Label>
                         <Form.Select
+                          disabled
                           value={detailDataTemp?.via}
                           onChange={(e) => setSelectVia(e.target.value)}
                         >
@@ -814,12 +841,12 @@ function EditSP() {
                       <Col sm={4}>
                         <Form.Label>* Shipment</Form.Label>
                         <Form.Select
-                          value={shipmentSementara}
+                          // value={detailDataTemp?.shipmentName}
                           onChange={(e) => setshipmentValue(e.target.value)}
                         >
                           <option>Pilih Shipment</option>
                           {shipmentOptions.map((item, index) => (
-                            <option>{item.shipment}</option>
+                            <option value={item.id}>{item.shipment}</option>
                           ))}
                         </Form.Select>
                       </Col>
