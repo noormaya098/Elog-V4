@@ -10,7 +10,7 @@ import mobil from "../../redux toolkit/store/ZustandStore";
 import useStore from "../../redux toolkit/store/UseStore";
 function HalamanDetail() {
   const { idmp } = useParams();
-  const [IsiDataSPSemua , setIsiDataSPSemua] = useState("")
+  const [IsiDataSPSemua, setIsiDataSPSemua] = useState("")
   const [isidata, setIsidata] = useState([]);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -49,7 +49,8 @@ function HalamanDetail() {
     orderdate: state.orderdate,
     setOrderdate: state.setOrderdate,
   }));
-
+  const [users, setUsers] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const [komen, setKomen] = useState([]);
 
   useEffect(() => {
@@ -82,7 +83,7 @@ function HalamanDetail() {
       service: item.service,
       pickupDate: item.pickupDate,
       price: item.price,
-      noSj : item.noSj,
+      noSj: item.noSj,
     }));
     setIsidata(semua);
     setSpDetail(semua);
@@ -93,7 +94,7 @@ function HalamanDetail() {
     detail(idmp);
   }, []);
 
-  
+
   const messagedetail = async () => {
     const isi = await axios.get(`${Baseurl}sp/get-SP-massage?id_mp=${idmp}`, {
       headers: {
@@ -101,14 +102,17 @@ function HalamanDetail() {
         Authorization: localStorage.getItem("token"),
       },
     });
+    
 
     const data = isi.data.data.map((item) => ({
       chat: item.chat,
       user: item.user,
       tgl_chat: item.tgl_chat,
     }));
+    // console.log(`ini supir`,isi.data.supir);
+    setUsers(isi.data?.supir[1]?.supir)
     setKomen(data);
-    // console.log(`test isi data apakah ada`, data);
+    // console.log(`user`, users);
   };
 
 
@@ -118,14 +122,14 @@ function HalamanDetail() {
   }, []);
 
   useEffect(() => {
-    
+
     const timeoutId = setTimeout(() => {
-    messagedetail();
+      messagedetail();
     }, 5000); // delay 5 detik
-  
+
     return () => clearTimeout(timeoutId);
   }, [komen]);
-  
+
 
 
   const memos = async () => {
@@ -151,7 +155,9 @@ function HalamanDetail() {
     setIsiDataSPSemua(data.data)
     // console.log(`asuransi`, asuransi);
   };
-// console.log(`ini log semua`,IsiDataSPSemua);
+
+
+ 
   return (
     <div>
       <Card>
@@ -177,8 +183,8 @@ function HalamanDetail() {
             {komen.map((item, index) => (
               <tr key={index}>
                 <td style={{ textAlign: "center" }}>{index + 1}</td>
-                <td style={{ textAlign: "left" }}>{item.chat}</td>
-                <td style={{ textAlign: "left" }}>{item.user}</td>
+                <td style={{ textAlign: "left" }}>{item.chat }</td>
+                <td style={{ textAlign: "left" }}>{item.user == 4 ? "admin_elogsjkt" :item.user && item.user == 2 ? "Adam" : item.user }</td>
                 <td style={{ textAlign: "center" }}>{item.tgl_chat}</td>
               </tr>
             ))}

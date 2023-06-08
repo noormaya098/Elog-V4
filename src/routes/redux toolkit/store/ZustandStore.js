@@ -38,6 +38,19 @@ const mobil = create((set, get) => ({
 
   shipmentSementara: [],
   setshipmentSementara: (shipmentSementara) => set({ shipmentSementara }),
+
+
+  mitra1: [],
+  setmitra1: (mitra1) => set({ mitra1 }),
+
+  mitra2: [],
+  setmitra2: (mitra2) => set({ mitra2 }),
+  
+  kodekendaraan1: [],
+  setkodekendaraan1: (kodekendaraan1) => set({ kodekendaraan1 }),
+  
+  namaDriver1: [],
+  setnamaDriver1: (namaDriver1) => set({ namaDriver1 }),
 }));
 
 export default mobil;
