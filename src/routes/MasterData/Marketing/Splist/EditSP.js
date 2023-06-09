@@ -432,11 +432,14 @@ function EditSP() {
       // id_customer: detailData?.idcustomer,
       // id_kendaraan_jenis: KendaraanValue,
       // service_type: detailData?.service,
-      id_muat_kota: 3172,
-      id_tujuan_kota: 3603,
-      id_customer: 11,
+      // id_muat_kota: 3172,
+      id_muat_kota: alamatMuatValue,
+      // id_tujuan_kota: 3603,
+      id_tujuan_kota: alamtBongkarValue,
+      // id_customer: 11,
+      id_customer: detailData?.idcustomer,
       id_kendaraan_jenis: KendaraanValue,
-      service_type: "Charter",
+      service_type: detailData?.service,
     },
       {
         headers: {
@@ -450,7 +453,11 @@ function EditSP() {
     // console.log(`apa ini `,KendaraanValue);
     if (valid == undefined) {
       console.log(`nama`, Namakendaraan)
-      return alert(`tidak ada harga`, valid)
+      return Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Tarif Tidak Ditemukan!',
+      })
     } else {
       console.log(`nama`, Namakendaraan)
       return (
