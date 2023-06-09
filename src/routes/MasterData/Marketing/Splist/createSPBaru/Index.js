@@ -6,8 +6,11 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import mobil from "../../../../redux toolkit/store/ZustandStore";
 import Select from 'react-select';
+import { DatePicker } from 'antd';
 
 function Index() {
+  const { RangePicker } = DatePicker;
+  // const { Item: FormItem } = Form;
   const { phZustand, setPHZustand } = mobil((state) => ({
     setPHZustand: state.setPHZustand,
     phZustand: state.phZustand
@@ -100,6 +103,12 @@ function Index() {
     }
   };
 
+  const handleDatesChange = (dates, dateStrings) => {
+    setTgl_pickup(dateStrings[0]); // nilai pertama untuk tgl_pickup
+    setTgl_bongkar(dateStrings[1]); // nilai kedua untuk tgl_bongkar
+  };
+
+
   return (
     <div>
       <Card>
@@ -142,24 +151,15 @@ function Index() {
               </FormGroup>
             </Col>
 
-            <Col sm={3}>
-              <FormGroup>
-                <Form.Label>Tanggal Pickup</Form.Label>
-                <Form.Control
-                  onChange={(e) => setTgl_pickup(e.target.value)}
-                  type="date"
-                ></Form.Control>
-              </FormGroup>
+            <Col sm>
+              <Form.Label>Tanggal Pickup - Tanggal Bongkar</Form.Label>
+              <RangePicker onChange={handleDatesChange} />
             </Col>
-            <Col sm={3}>
-              <FormGroup>
-                <Form.Label>Tanggal Bongkar</Form.Label>
-                <Form.Control
-                  onChange={(e) => setTgl_bongkar(e.target.value)}
-                  type="date"
-                ></Form.Control>
-              </FormGroup>
-            </Col>
+            {/* <Col sm={3}>
+        <Form.Label label="Tanggal Bongkar">
+          <RangePicker onChange={handleBongkarChange} />
+        </Form.Label>
+      </Col> */}
           </Row>
           <Row className="mt-2">
             <Col sm={6}>
