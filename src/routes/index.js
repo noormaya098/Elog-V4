@@ -91,15 +91,11 @@ const App = ({ match }) => (
       />
       <Route
         path={`${match.url}masterdata/purchasing/driver`}
-        component={asyncComponent(() =>
-          import("./MasterData/Purchasing/Driver/Index")
-        )}
+        component={asyncComponent(() => import("./MasterData/Driver"))}
       />
       <Route
         path={`${match.url}masterdata/purchasing/vehicle`}
-        component={asyncComponent(() =>
-          import("./MasterData/Purchasing/Vehicle/Index")
-        )}
+       component={asyncComponent(() => import("./MasterData/Vehicle"))}
       />
       <Route
         path={`${match.url}purchasing/mastermitra`}

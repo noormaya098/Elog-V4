@@ -239,7 +239,7 @@ function EditSP() {
       );
       setShipmentOptions(filteredShipments);
     }
-     else {
+    else {
       setShipmentOptions([]);
     }
   }, [selectVia, ShipmentModal]);
@@ -537,6 +537,11 @@ function EditSP() {
   console.log(`detail data`, detailDataTemp);
 
   console.log(`detail data`, detailDataTemp);
+
+  const KendaraanModalOptions = KendaraanModal.map((item) => ({
+    value: item.id,
+    label: item.type
+  }))
   // console.log(`detail data`, detailData.detail?.[0].tujuan);
   // const alamatbongkarscroll  =
   return (
@@ -596,14 +601,21 @@ function EditSP() {
                     <Row>
                       <Col sm={4}>
                         <Form.Label>* Kendaraan</Form.Label>
-                        <Form.Select
+                        <Select
+                          options={KendaraanModalOptions}
+                          onChange={(selectedOption) => {
+                            setKendaraanValue(selectedOption.value);
+                            setNameKendaraan(selectedOption.label);
+                          }}
+                        />
+                        {/* <Form.Select
                           onChange={(e) => setKendaraanValue(e.target.value)}
                         >
                           <option>Pilih Kendaraan</option>
                           {KendaraanModal.map((item, index) => (
                             <option value={item.id}>{item.type}</option>
                           ))}
-                        </Form.Select>
+                        </Form.Select> */}
                       </Col>
                       <Col sm={4}>
                         <Form.Label>* Via</Form.Label>
@@ -800,28 +812,7 @@ function EditSP() {
               <Col sm={12}>
                 <Form>
                   <Form.Group>
-                    <Form.Label>* Alamat Muat</Form.Label>
-                    <Select
-                      // defaultInputValue={detailDataTemp?.destination}
-                      options={options}
-                      onChange={(selectedOption) => setalamatMuatValue(selectedOption.value)}
-                    />
-
-                    <hr />
-                    <h5>Alamat Bongkar</h5>
-                    <Row>
-                      <Col sm={12}>
-                        <Form.Label>* Alamat Bongkar</Form.Label>
-                        <Select
-                          // defaultInputValue={detailDataTemp?.destination}
-                          options={options}
-                          label={detailDataTemp?.destination}
-                          onChange={(selectedOption) => setAlamatBongkarValue(selectedOption.value)}
-                        />
-                      </Col>
-
-                    </Row>
-                    <Row>
+                  <Row>
                       <Col sm={4}>
                         <Form.Label>* Kendaraan</Form.Label>
                         <Form.Control
@@ -847,17 +838,41 @@ function EditSP() {
                       </Col>
                       <Col sm={4}>
                         <Form.Label>* Shipment</Form.Label>
-                        <Form.Select
-                          // value={detailDataTemp?.shipmentName}
+                        <Form.Control
+                          value={detailDataTemp?.shipmentName}
+                          disabled
                           onChange={(e) => setshipmentValue(e.target.value)}
                         >
-                          <option>Pilih Shipment</option>
+                          {/* <option>Pilih Shipment</option>
                           {shipmentOptions.map((item, index) => (
                             <option value={item.id}>{item.shipment}</option>
-                          ))}
-                        </Form.Select>
+                          ))} */}
+                        </Form.Control>
                       </Col>
                     </Row>
+                   
+
+                    <hr />
+                    <Form.Label>* Alamat Muat</Form.Label>
+                    <Select
+                      // defaultInputValue={detailDataTemp?.destination}
+                      options={options}
+                      onChange={(selectedOption) => setalamatMuatValue(selectedOption.value)}
+                    />
+                    {/* <h5>Alamat Bongkar</h5> */}
+                    <Row>
+                      <Col sm={12}>
+                        <Form.Label>* Alamat Bongkar</Form.Label>
+                        <Select
+                          // defaultInputValue={detailDataTemp?.destination}
+                          options={options}
+                          label={detailDataTemp?.destination}
+                          onChange={(selectedOption) => setAlamatBongkarValue(selectedOption.value)}
+                        />
+                      </Col>
+
+                    </Row>
+                   
 
                     <Row>
                       <Col sm={3}>
@@ -1000,7 +1015,7 @@ function EditSP() {
               </Col>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
+              <Button variant="secondary" onClick={handleCloseSP}>
                 Close
               </Button>
               <Button variant="primary" onClick={() => EditSPButton()}>

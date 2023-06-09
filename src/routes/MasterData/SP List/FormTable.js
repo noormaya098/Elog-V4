@@ -78,9 +78,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const [mitraFix, setMitraFix] = useState([])
   const [NomorFix, setNomorFix] = useState([])
   const [NomorFix2, setNomorFix2] = useState([])
-  const [NamaDriverFix , setNamaDriverFix] = useState([])
-  const [NamaDriverFix2 , setNamaDriverFix2] = useState([])
-  const [KodeKendaraanOps , setKodeKendaraanOps] = useState([])
+  const [NamaDriverFix, setNamaDriverFix] = useState([])
+  const [NamaDriverFix2, setNamaDriverFix2] = useState([])
+  const [KodeKendaraanOps, setKodeKendaraanOps] = useState([])
 
 
   ////checkbox multi
@@ -112,7 +112,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     if (types.length > 0) {
       vehicle();
     }
-  }, [types, selectnomor, mitra1, selectnomor2 ]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
+  }, [types, selectnomor, mitra1, selectnomor2]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
 
   // console.log(`ini NamaDriverFix`, NomorFix2);
 
@@ -130,36 +130,36 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       setNamaDriverFix2(sleet.data.data.Driver)
       // const nomorpolisis = sleet.data.data.vehicle;
       // const drivernya = sleet.data.data.Driver;
-     
+
     };
 
     if (types.length > 0) {
       vehicle();
     }
-  }, [types, selectnomor, mitra2, selectnomor2 ]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
+  }, [types, selectnomor, mitra2, selectnomor2]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
 
   console.log(`ini NamaDriverFix2`, NamaDriverFix2);
-///// approve op
-useEffect(() => {
-  const vehicle = async () => {
-    let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&mitra=1&id=${selectnomor}`;
+  ///// approve op
+  useEffect(() => {
+    const vehicle = async () => {
+      let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&mitra=1&id=${selectnomor}`;
 
-    const sleet = await axios.get(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-    console.log(sleet.data?.data.vehicle);
-    setKodeKendaraanOps(sleet.data?.data.vehicle)
+      const sleet = await axios.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      console.log(sleet.data?.data.vehicle);
+      setKodeKendaraanOps(sleet.data?.data.vehicle)
 
-  };
+    };
 
-  if (types.length > 0) {
-    vehicle();
-  }
-}, [types, selectnomor, mitra1, selectnomor2 ]);
-  
+    if (types.length > 0) {
+      vehicle();
+    }
+  }, [types, selectnomor, mitra1, selectnomor2]);
+
 
   useEffect(() => {
     const anotherdriver = async () => {
@@ -360,25 +360,25 @@ useEffect(() => {
     mitraId: item.mitraId,
   }));
   const kodeKendaraanOptions = Array.isArray(NomorFix) ? NomorFix.map((item) => ({
-    value : item.id,
-    label : item.no_polisi,
-    kd_kendaraan : item.kd_kendaraan
+    value: item.id,
+    label: item.no_polisi,
+    kd_kendaraan: item.kd_kendaraan
   })) : [];
   const kodeKendaraanOptions2 = Array.isArray(NomorFix2) ? NomorFix2.map((item) => ({
-    value : item.id,
-    label : item.no_polisi,
-    kd_kendaraan : item.kd_kendaraan
+    value: item.id,
+    label: item.no_polisi,
+    kd_kendaraan: item.kd_kendaraan
   })) : [];
   const nomorpolisiOptions = Array.isArray(KodeKendaraanOps) ? KodeKendaraanOps.map((item) => ({
-    value : item.id,
-    label : item.no_polisi,
-    kd_kendaraan : item.kd_kendaraan
+    value: item.id,
+    label: item.no_polisi,
+    kd_kendaraan: item.kd_kendaraan
   })) : [];
-  
+
   const anotneroptionsdriver = Array.isArray(driveranother) ? driveranother.map((item) => ({
-    value : item.id,
-    label : item.name,
-    kd_kendaraan : item.kd_kendaraan
+    value: item.id,
+    label: item.name,
+    kd_kendaraan: item.kd_kendaraan
   })) : [];
   // const nomorpolisiOptions = nomorpolisi.filter(item => item.mitra === mitra1).map(item => ({
   //   value: item.driverId,
@@ -481,7 +481,7 @@ useEffect(() => {
   localStorage.setItem(`mitra1`, mitra1)
   localStorage.setItem(`kendaraan`, types[0])
   localStorage.setItem(`idkodekendaraan1`, selectnomor)
-  localStorage.setItem(`IdDriver`,  idUnit)
+  localStorage.setItem(`IdDriver`, idUnit)
   localStorage.setItem(`mitra2`, mitra2)
   localStorage.setItem(`idkodekendaraan2`, selectnomor2)
   localStorage.setItem(`IdDriver2`, idUnit2)
@@ -534,7 +534,7 @@ useEffect(() => {
                           // options={options}
                           onChange={handleSelectChange}
                         /> */}
-                          <Select
+                        <Select
                           options={nomorpolisiOptions}
                           onChange={(selectedOption) => {
                             console.log(`kode kendaraan`, selectedOption.value);
@@ -765,7 +765,7 @@ useEffect(() => {
                     {bukaanother && (
                       <>
                         <Form.Label>Select Driverssss</Form.Label>
-                        <Form.Select onChange={(e) =>  setIdunit(e.target.value)}>
+                        <Form.Select onChange={(e) => setIdunit(e.target.value)}>
                           <option>Select Driver</option>
                           {driveranother &&
                             driveranother.map((item, index) => (
@@ -1082,11 +1082,11 @@ useEffect(() => {
                   ) : null}
 
                   <br />
-                  <hr />
-
-                  <Button size="sm" onClick={() => handleAnotherDriverClick()}>
+                  {/* <hr /> */}
+                  {/* Purchasing Another Button */}
+                  {/* <Button size="sm" onClick={() => handleAnotherDriverClick()}>
                     another driver
-                  </Button>
+                  </Button> */}
                   <br />
                   {bukaanother && (
                     <>
