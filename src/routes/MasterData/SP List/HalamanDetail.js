@@ -52,6 +52,10 @@ function HalamanDetail() {
   const [users, setUsers] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [komen, setKomen] = useState([]);
+  const { IsiKomenRejectSP, setIsiKomenRejectSP } = mobil((state) => ({
+    IsiKomenRejectSP: state.IsiKomenRejectSP,
+    setIsiKomenRejectSP: state.setIsiKomenRejectSP
+  }))
 
   useEffect(() => {
     setkendarran(isidetail.map((item) => item?.kendaraan));
@@ -87,6 +91,7 @@ function HalamanDetail() {
     }));
     setIsidata(semua);
     setSpDetail(semua);
+    setIsiKomenRejectSP()
     // console.log(`ini idmp ${idmp}`, isiduit);
   };
 
@@ -102,7 +107,7 @@ function HalamanDetail() {
         Authorization: localStorage.getItem("token"),
       },
     });
-    
+
 
     const data = isi.data.data.map((item) => ({
       chat: item.chat,
@@ -122,11 +127,11 @@ function HalamanDetail() {
   }, []);
 
   useEffect(() => {
-
     const timeoutId = setTimeout(() => {
       messagedetail();
     }, 5000); // delay 5 detik
 
+    findTidakMenggunakanUnit()
     return () => clearTimeout(timeoutId);
   }, [komen]);
 
@@ -153,11 +158,16 @@ function HalamanDetail() {
     setOrderdate(orderdate);
     setAsuransi(asuransis);
     setIsiDataSPSemua(data.data)
-    // console.log(`asuransi`, asuransi);
+    console.log(`komen`, komen);
   };
 
 
- 
+  const findTidakMenggunakanUnit = () => {
+    const isicommentTidak = komen.find(item => item.chat === "Tidak Menggunakan unit");
+    if (isicommentTidak) {
+      setIsiKomenRejectSP(isicommentTidak.chat);
+    }
+  };
   return (
     <div>
       <Card>
@@ -183,12 +193,16 @@ function HalamanDetail() {
             {komen.map((item, index) => (
               <tr key={index}>
                 <td style={{ textAlign: "center" }}>{index + 1}</td>
-                <td style={{ textAlign: "left" }}>{item.chat }</td>
-                <td style={{ textAlign: "left" }}>{item.user == 4 ? "admin_elogsjkt" :item.user && item.user == 2 ? "Adam" : item.user }</td>
-                <td style={{ textAlign: "center" }}>{item.tgl_chat}</td>
-              </tr>
+                <td style={{ textAlign: "left" }}>{item.chat}</td>
+                <td style={{ textAlign: "left" }}>{item.user == 4 ? "admin_elogsjkt" : item.user && item.user == 2 ? "Adam"
+                  : item.user}</td>
+               <td style={{ textAlign: "center" }}>{item.tgl_chat.substring(0, 10)}</td>
+
+              </tr> 
             ))}
           </tbody>
+
+
         </Table>
       </Card>
     </div>

@@ -63,9 +63,6 @@ function Index() {
     );
 
     /////select driver dan mitra
-
-
-
     const currentPage = getvehiCle.data.data.currentPage;
     setPagination({
       ...pagination,
@@ -95,39 +92,50 @@ function Index() {
     setPagination({ ...pagination, currentPage: page });
     await getvehicleapi(page);
   };
+const [ JenisSIM,setJenisSIM] = useState([])
+
   const columns = [
     {
       name: "No",
       selector: (row) => row.no,
+      wrap: true,
       width: "50px"
     },
     {
       name: "Kode Kendaraan",
       selector: (row) => row.vehicleCode,
-      width: "130px"
+      wrap: true,
+      width: "150px"
     },
     {
       name: "No Polisi",
       selector: (row) => row.policeNumber,
-      width: "130px"
+      wrap: true,
+      width: "120px"
     },
     {
       name: "Pemilik Armada",
       selector: (row) => row.vendor,
-      width: "130px"
+      wrap: true,
+      width: "200px"
     },
     {
       name: "Jenis Kendaraan",
       selector: (row) => row.vehicleType,
-      width: "130px"
+      wrap: true,
+      width: "150px"
     },
     {
       name: "Nama Supir",
       selector: (row) => row.driverName,
+      wrap: true,
+      width: "200px"
     },
     {
       name: "Edit Vehicle",
-      selector: (row) => <Button onClick={() => modal(row.vehicleId)} size="sm" variant="danger">Edit</Button>
+      selector: (row) => <Button onClick={() => modal(row.vehicleId)} size="sm" variant="primary">Edit</Button>,
+      wrap: true,
+      width: "130px"
     },
   ];
 
@@ -192,18 +200,19 @@ function Index() {
       setpilihdrivers(pilihdriver);
     } catch (error) {
       console.log(error.message);
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 401) {
         Swal.fire({
           icon: "error",
-          title: "Oops...",
+          title: "Harap Login ulang",
           text: error.response.data.message,
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Sukses",
-        });
+        })
+        window.location.reload();
+        // } else {
+        //   Swal.fire({
+        //     icon: "error",
+        //     title: "Oops...",
+        //     text: "Sukses",
+        //   });
       }
     }
   };
@@ -320,6 +329,7 @@ function Index() {
       setMitraOptions(data.data.data.mitra)
       setJenisMobil(data.data.data.driverType)
       setDriverName(data.data.data.driverName)
+      setJenisSIM(data.data.data.jenisSim)
     }
     Mitra()
   }, [jenis_kendaraan])
@@ -340,7 +350,12 @@ function Index() {
     }))
     : [];
 
-  console.log("ini detailDataVehicle?.tgl_stnk", detailDataVehicle?.tgl_stnk);
+    const jenissimoptions = JenisSIM.map((item) => ({
+      value : item.value,
+      label: item.Jenis
+    }))
+
+  console.log("ini detailDataVehicle?.tgl_stnk", dataapigetvehicle);
 
   return (
     <div>
@@ -351,13 +366,26 @@ function Index() {
               Add Vehicle
             </Button>
             {/* Modal Edit Driver */}
-            <Modal show={showVehicle} size="lg" onHide={handleClose}>
+            <Modal show={showVehicle} size="lg" onHide={handleCloseVehicle}>
               <Modal.Header closeButton>
                 <Modal.Title>Edit vehicle</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={6}>
+                  <Col sm={4}>
+                    <Card>
+                      <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
+                    </Card>
+                    <Form.Label>Foto Vehicle</Form.Label>
+                    <Form.Control
+                      type="file"
+                      // value={no_polisi}
+                      onChange={(e) => setno_polisi(e.target.value)}
+                      placeholder="Masukkan no polisi"
+                      required
+                    />
+                  </Col>
+                  <Col sm={4}>
                     <Form.Group>
                       <Form.Label>Kode Kendaraan</Form.Label>
                       <Form.Control
@@ -394,6 +422,13 @@ function Index() {
                       <Form.Label>Nama Driver</Form.Label>
                       <Select
                         options={DriverNameOptionss}
+                        onChange={(selectedOption) => {
+                          setNamaDriver(selectedOption.label)
+                        }}
+                      />
+                      <Form.Label>Jenis SIM</Form.Label>
+                      <Select
+                        options={jenissimoptions}
                         onChange={(selectedOption) => {
                           setNamaDriver(selectedOption.label)
                         }}
@@ -455,7 +490,7 @@ function Index() {
 
                     </Form.Group>
                   </Col>
-                  <Col sm={6}>
+                  <Col sm={4}>
 
                     <Form.Label>No BPKB</Form.Label>
                     <Form.Control
@@ -574,7 +609,20 @@ function Index() {
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={6}>
+                <Col sm={4}>
+                    <Card>
+                      <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
+                    </Card>
+                    <Form.Label>Foto Vehicle</Form.Label>
+                    <Form.Control
+                      type="file"
+                      // value={no_polisi}
+                      onChange={(e) => setno_polisi(e.target.value)}
+                      placeholder="Masukkan no polisi"
+                      required
+                    />
+                  </Col>
+                  <Col sm={4}>
                     <Form.Group>
                       <Form.Label>Kode Kendaraan</Form.Label>
                       <Form.Control
@@ -609,6 +657,13 @@ function Index() {
                       <Form.Label>Nama Driver</Form.Label>
                       <Select
                         options={DriverNameOptionss}
+                        onChange={(selectedOption) => {
+                          setNamaDriver(selectedOption.label)
+                        }}
+                      />
+                        <Form.Label>Jenis SIM</Form.Label>
+                      <Select
+                        options={jenissimoptions}
                         onChange={(selectedOption) => {
                           setNamaDriver(selectedOption.label)
                         }}
@@ -693,8 +748,8 @@ function Index() {
                       /> */}
                     </Form.Group>
                   </Col>
-                  <Col sm={6}>
-                  <Form.Label>No BPKB</Form.Label>
+                  <Col sm={4}>
+                    <Form.Label>No BPKB</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Masukkan No BPKB"
@@ -720,8 +775,8 @@ function Index() {
                           onChange={(e) => settgl_beli(e.target.value)}
                           required
                         />
-                        </Col>
-                         <Col sm={6}>
+                      </Col>
+                      <Col sm={6}>
                         <Form.Label>Tanggal Exp Plat Nomor</Form.Label>
                         <Form.Control
                           type="date"
@@ -742,8 +797,8 @@ function Index() {
                           onChange={(e) => settgl_beli(e.target.value)}
                           required
                         />
-                        </Col>
-                         <Col sm={6}>
+                      </Col>
+                      <Col sm={6}>
                         <Form.Label>Tanggal Beli</Form.Label>
                         <Form.Control
                           type="date"
@@ -756,7 +811,7 @@ function Index() {
                     </Row>
 
 
-                   
+
 
                     <Form.Label>Kapasitas</Form.Label>
                     <Form.Control

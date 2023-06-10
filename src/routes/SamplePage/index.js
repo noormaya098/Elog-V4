@@ -6,6 +6,8 @@ import Token from "../../Api/Token";
 import axios from "axios";
 import Baseurl from "../../Api/BaseUrl";
 import Swal from "sweetalert2";
+import Card from "antd/lib/card/Card";
+import { Row, Col } from "react-bootstrap";
 const SamplePage = () => {
 
 
@@ -42,16 +44,16 @@ const SamplePage = () => {
 
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        localStorage.clear('Token'); 
-        if (localStorage.getItem(`Token`) === null) { 
+        localStorage.clear('Token');
+        if (localStorage.getItem(`Token`) === null) {
           Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Error Login, Silahkan Login Kembali '
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Error Login, Silahkan Login Kembali '
           });
           setTimeout(() => {
             window.location.reload()
-            
+
           }, 2000);
           // history.push('/signin');
         }
@@ -69,13 +71,27 @@ const SamplePage = () => {
 
   return (
     <div>
-      <h2>Halo {namaJobdesk}</h2>
-      <h5>Total Driver ada {inform.totalDriver}</h5>
-      <h5>Driver Aktif ada {inform.activeDriver}</h5>
-      <h5>Driver Off ada {inform.offDriver}</h5>
-      <h5>Total Mobil ada {inform.totalVeh}</h5>
-      <h5>Mobil Aktif ada {inform.activeVeh}</h5>
-      <h5>Mobil Off ada {inform.offVeh}</h5>
+        <Card>
+      <Row>
+          <h2>Halo {namaJobdesk}</h2>
+          <Col sm={4}>
+            <Card style={{ backgroundColor: "#dd4b39" }}>
+              <h5 style={{ color: 'white' }}>Total Driver : {inform.totalDriver}</h5>
+              <h5 style={{ color: 'white' }}>Driver Aktif : {inform.activeDriver + " / " + inform.totalDriver}</h5>
+              <h5 style={{ color: 'white' }}>Driver Off : {inform.offDriver}</h5>
+            </Card>
+          </Col>
+          <Col sm={4}>
+            <Card style={{ backgroundColor: "#00a65a" }}>
+              <h5 style={{ color: 'white' }}>Total Mobil : {inform.totalVeh}</h5>
+              <h5 style={{ color: 'white' }}>Mobil Aktif : {inform.activeVeh + " / " + inform.totalVeh}</h5>
+              <h5 style={{ color: 'white' }}>Mobil Off : {inform.offVeh}</h5>
+            </Card>
+          </Col>
+      </Row>
+        </Card>
+
+
 
       <div className="gx-d-flex justify-content-center">
         {/* <h4>Start building your app. Happy Coding!</h4> */}

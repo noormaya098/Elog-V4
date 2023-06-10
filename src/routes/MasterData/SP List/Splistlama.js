@@ -100,31 +100,37 @@ function SPListlama() {
       name: "No",
       selector: (row) => row?.no,
       width: "50px",
+      wrap: true,
     },
     {
       name: "SP ID",
       selector: (row) => row?.sp,
       width: "150px",
+      wrap: true,
     },
     {
       name: "Perusahaan",
       selector: (row) => row?.perusahaan,
       width: "150px",
+      wrap: true,
     },
     {
       name: "Marketing",
       selector: (row) => row?.salesName,
-      width: "80px",
+      width: "100px",
+      wrap: true,
     },
     {
       name: "Service",
       selector: (row) => row?.service,
       width: "100px",
+      wrap: true,
     },
     {
       name: "Vehicle",
       selector: (row) => row?.kendaraan,
       width: "100px",
+      wrap: true,
     },
     {
       name: "Pickup Date",
@@ -137,12 +143,14 @@ function SPListlama() {
         return `${year}-${month}-${day}`; // return dalam format yyyy-mm-dd
       },
       width: "100px",
+      wrap: true,
     },
     
     {
       name: "Destination",
       selector: (row) => row?.destination,
       width: "150px",
+      wrap: true,
     },
 
     // {

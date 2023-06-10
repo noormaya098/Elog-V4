@@ -153,6 +153,7 @@ function Index() {
 
             <Col sm>
               <Form.Label>Tanggal Pickup - Tanggal Bongkar</Form.Label>
+              <br/>
               <RangePicker onChange={handleDatesChange} />
             </Col>
             {/* <Col sm={3}>

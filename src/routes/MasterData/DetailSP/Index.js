@@ -238,7 +238,7 @@ function DetailSP() {
             Approve
           </Button>
           <Button size="sm" variant="danger" onClick={() => RejectBtn()}>
-            Reject Driver
+            Reject SP
           </Button>
         </div>
         <Form onSubmit={handleSubmit}>

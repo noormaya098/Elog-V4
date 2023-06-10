@@ -5,7 +5,6 @@ import { Button, Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import Baseurl from "../../../Api/BaseUrl";
 import { useHistory } from "react-router-dom";
-
 function SplistAkuntingBaru() {
   const [dataApi, setdataapi] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
@@ -43,9 +42,13 @@ function SplistAkuntingBaru() {
     
     {
       name: "Pickup Date",
-      selector: (row) => row.pickupDate,
+      selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'), // Canadian English uses the ISO format (yyyy-mm-dd)
       width:"150px"
-    },
+  },
+  
+  
+  
+  
     {
       name: "Approve By Akunting",
       cell: (row) => {

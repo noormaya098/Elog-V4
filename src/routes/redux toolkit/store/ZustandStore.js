@@ -51,6 +51,9 @@ const mobil = create((set, get) => ({
   
   namaDriver1: [],
   setnamaDriver1: (namaDriver1) => set({ namaDriver1 }),
+
+  IsiKomenRejectSP: [],
+  setIsiKomenRejectSP: (IsiKomenRejectSP) => set({ IsiKomenRejectSP }),
 }));
 
 export default mobil;

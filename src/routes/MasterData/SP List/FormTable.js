@@ -9,6 +9,7 @@ import Select from "react-select";
 import axios from "axios";
 import Token from "../../../Api/Token";
 import mobil from "../../redux toolkit/store/ZustandStore";
+import { Alert, Space } from 'antd';
 
 const jobdesk = localStorage.getItem("jobdesk");
 function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
@@ -53,7 +54,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     kodekendaraan1: state.kodekendaraan1,
     setkodekendaraan1: state.setkodekendaraan1,
   }));
-
+  const { IsiKomenRejectSP, setIsiKomenRejectSP } = mobil((state) => ({
+    IsiKomenRejectSP: state.IsiKomenRejectSP,
+    setIsiKomenRejectSP: state.setIsiKomenRejectSP
+  }))
   const { orderdate, setOrderdate, asuransi, setAsuransi } = mobil();
   useEffect(() => {
     setType(isidetail.map((item) => item?.kendaraan));
@@ -130,7 +134,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       setNamaDriverFix2(sleet.data.data.Driver)
       // const nomorpolisis = sleet.data.data.vehicle;
       // const drivernya = sleet.data.data.Driver;
-
     };
 
     if (types.length > 0) {
@@ -152,7 +155,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       });
       console.log(sleet.data?.data.vehicle);
       setKodeKendaraanOps(sleet.data?.data.vehicle)
-
     };
 
     if (types.length > 0) {
@@ -171,7 +173,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       });
       const driveranotders = another.data.data;
       setDriveranother(driveranotders);
-      // console.log(`test`, driveranother);
+      setIsiKomenRejectSP()
     };
 
     anotherdriver();
@@ -485,7 +487,8 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   localStorage.setItem(`mitra2`, mitra2)
   localStorage.setItem(`idkodekendaraan2`, selectnomor2)
   localStorage.setItem(`IdDriver2`, idUnit2)
-  console.log(`ini select id nomor dari ops`, selectnomor);
+
+  console.log(`ini IsiKomenRejectSP`, IsiKomenRejectSP);
 
   return (
     <>
@@ -797,16 +800,22 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
             </>
           )}
-          {(jobdesk != "purchasing" && jobdesk != "operasional") && (
+          {IsiKomenRejectSP === "Tidak Menggunakan unit" ? (
+            <Alert type="error" message="SP Sudah Di Reject" banner />
+          ) : (
             <>
-              <Button size="sm" onClick={() => jobdesk === "akunting" ? akuntingAprpove() : handleShow()}>
-                Approve
+              {(jobdesk !== "purchasing" && jobdesk !== "operasional") && (
+                <Button size="sm" onClick={() => jobdesk === "akunting" ? akuntingAprpove() : handleShow()}>
+                  Approve
+                </Button>
+              )}
+              <Button size="sm" variant="danger" onClick={() => jobdesk === "akunting" ? rejectspAkunting() : rejectsp()}>
+                Reject SP
               </Button>
             </>
           )}
-          <Button size="sm" variant="danger" onClick={() => jobdesk === "akunting" ? rejectspAkunting() : rejectsp()}>
-            Reject Driver
-          </Button>
+
+
         </div>
         {(jobdesk != "operasional" && (
           <>
@@ -1379,72 +1388,69 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
             </tfoot>
           </Table>
           {/* {(jobdesk === "purchasing") && ( */}
-          <>
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              Biaya Muat :{IsiDataSPSemua?.totalMuat?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              Biaya Bongkar :{IsiDataSPSemua?.totalBongkar?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              Biaya MultiDrop :{IsiDataSPSemua?.biaya_multidrop?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              Biaya Overtonase :{IsiDataSPSemua?.biaya_overtonase?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              Biaya Mel :{IsiDataSPSemua?.Totalprice?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              Biaya Inap :{IsiDataSPSemua?.Totalprice?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-            <hr />
-            <p
-              className="d-flex justify-content-end"
-              style={{ fontWeight: "bold" }}
-            >
-              TOTAL KESELURUHAN :{IsiDataSPSemua?.Totalprice?.toLocaleString("id-ID", {
-                style: "currency",
-                currency: "IDR",
-              })}
-            </p>
-          </>
+          <Table>
+            <tr>
+              <>
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Muat :{IsiDataSPSemua?.totalMuat?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Bongkar :{IsiDataSPSemua?.totalBongkar?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya MultiDrop :{IsiDataSPSemua?.biaya_multidrop?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Overtonase :{IsiDataSPSemua?.biaya_overtonase?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Mel :{IsiDataSPSemua?.Totalprice?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  Biaya Inap :{IsiDataSPSemua?.Totalprice?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+                <hr />
+                <p
+                  style={{ fontWeight: "bold" }}
+                >
+                  TOTAL KESELURUHAN :{IsiDataSPSemua?.Totalprice?.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                  })}
+                </p>
+              </>
+            </tr>
+          </Table>
           {/* )} */}
         </Col>
       </Row>

@@ -383,15 +383,15 @@ const SamplePage = () => {
                   <tr>
                     <td>1</td>
                     <td></td>
-                    <td>{item.destination}</td>
-                    <td>{item.via}</td>
-                    <td>{item.item}</td>
-                    <td>{item.berat}</td>
-                    <td>{item.service}</td>
-                    <td>{item.qty}</td>
-                    <td>{item.Price}</td>
-                    <td>{item.pickupAddress ? item.pickupAddress : ""}</td>
-                    <td>{item.kendaraan}</td>
+                    <td>{item?.destination}</td>
+                    <td>{item?.via}</td>
+                    <td>{item?.item}</td>
+                    <td>{item?.berat}</td>
+                    <td>{item?.service}</td>
+                    <td>{item?.qty}</td>
+                    <td>{item?.Price}</td>
+                    <td>{item?.pickupAddress ? item?.pickupAddress : ""}</td>
+                    <td>{item?.kendaraan}</td>
                   </tr>
                 ))}
               </tbody>

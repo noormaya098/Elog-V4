@@ -97,7 +97,7 @@ function CobaTables() {
   const GetdataDetail = async (id) => {
     const urlDataDetailDriver = await axios.get(
       `${Baseurl}driver/get-driver-detail?id=${id}`,
-      
+
       {
         headers: {
           "Content-Type": "application/json",
@@ -139,7 +139,7 @@ function CobaTables() {
           },
         }
       );
-  
+
       // Tampilkan sweet alert ketika driver berhasil dijalankan
       Swal.fire({
         icon: 'success',
@@ -178,7 +178,7 @@ function CobaTables() {
       });
       handleClose();
       ApiDriver()
-      
+
     } catch (error) {
       console.log(error.message);
     }
@@ -238,6 +238,7 @@ function CobaTables() {
     {
       name: "No",
       selector: (row) => row.no,
+      width: "50px",
     },
     {
       name: "Nama",
@@ -341,7 +342,7 @@ function CobaTables() {
       });
     }
   };
-
+  console.log(`ini gambar`, DataDalamApi);
   return (
     <>
       <Card>
@@ -351,13 +352,30 @@ function CobaTables() {
               Add Driver
             </Button>
             <Modal show={show} size="lg" onHide={handleClose}>
+
               <Modal.Header closeButton>
                 <Modal.Title>Tambah Driver</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={6}>
+                  <Col sm={4}>
+                    <Card>
+                      <div>
+                        <img src={DataDalamApi[0]?.gambar} alt="Deskripsi Gambar" />
+                      </div>
+                    </Card>
+                    <Form.Label>Photo Driver</Form.Label>
+                    <Form.Control
+                      type="file"
+                      // placeholder="Masukkan NIK"
+                      value={nik}
+                      onChange={(e) => setNik(e.target.value)}
+                      required
+                    />
+                  </Col>
+                  <Col sm={4}>
                     <Form.Group>
+
                       <Form.Label>NIK</Form.Label>
                       <Form.Control
                         type="text"
@@ -428,7 +446,7 @@ function CobaTables() {
                       />
                     </Form.Group>
                   </Col>
-                  <Col sm={6}>
+                  <Col sm={4}>
                     <Form.Group>
                       <Form.Label>Tanggal Lahir</Form.Label>
                       <Form.Control
@@ -520,15 +538,30 @@ function CobaTables() {
                   <Modal.Title>
                     Edit Driver{" "}
                     <span>
-                      <Button size="sm" onClick={()=>ondriver(selectedId)}>ON</Button>
-                      <Button size="sm" variant="danger" onClick={()=>droffiver(selectedId)}>
+                      <Button size="sm" onClick={() => ondriver(selectedId)}>ON</Button>
+                      <Button size="sm" variant="danger" onClick={() => droffiver(selectedId)}>
                         OFF
                       </Button>
                     </span>
                   </Modal.Title>
                 </Modal.Header>
                 <Row>
-                  <Col sm={6}>
+                  <Col sm={4}>
+                    <Card>
+                      <div>
+                        <img src={DataDalamApi[0]?.gambar} alt="Deskripsi Gambar" />
+                      </div>
+                    </Card>
+                    <Form.Label>Photo Driver</Form.Label>
+                    <Form.Control
+                      type="file"
+                      // placeholder="Masukkan NIK"
+                      value={nik}
+                      onChange={(e) => setNik(e.target.value)}
+                      required
+                    />
+                  </Col>
+                  <Col sm={4}>
                     <Form.Group>
                       <Form.Label>Nama Driver</Form.Label>
                       <Form.Control
@@ -600,7 +633,7 @@ function CobaTables() {
                       />
                     </Form.Group>
                   </Col>
-                  <Col sm={6}>
+                  <Col sm={4}>
                     <Form.Group>
                       <Form.Label>No SIM</Form.Label>
                       <Form.Control

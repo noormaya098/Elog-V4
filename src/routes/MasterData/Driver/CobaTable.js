@@ -238,24 +238,30 @@ function CobaTable() {
     {
       name: "No",
       selector: (row) => row.no,
+      wrap: true,
+      width: "50px",
     },
     {
       name: "Nama",
       selector: (row) => row.nama,
+      wrap: true,
     },
     {
       name: "Image",
       selector: (row) => (
         <img src={row.gambar} width="50px" alt="Foto Driver" />
       ),
+      wrap: true,
     },
     {
       name: "Kiriman (SM)",
       selector: (row) => row.kiriman,
+      wrap: true,
     },
     {
       name: "Penjualan",
       selector: (row) => row.penjualan,
+      wrap: true,
     },
     {
       name: "Status",
@@ -264,6 +270,7 @@ function CobaTable() {
           {row.status === 1 ? "Tersedia" : "Tidak tersedia"}
         </Tag>
       ),
+      wrap: true,
     },
     {
       name: "Edit",
@@ -272,6 +279,7 @@ function CobaTable() {
           Edit
         </Button>
       ),
+      wrap: true,
     },
   ];
 
@@ -686,14 +694,24 @@ function CobaTable() {
                 </Row>
               </Modal.Body>
             </Modal>
-            <DataTable
-              columns={columns}
-              data={DataDalamApi}
-              pagination
-              paginationServer
-              paginationTotalRows={pagination.totalData}
-              onChangePage={handlePageChange}
-            />
+            <div style={{ overflowX: 'auto' }}>
+      <DataTable
+        columns={columns}
+        data={DataDalamApi}
+        pagination
+        paginationServer
+        paginationTotalRows={pagination?.totalData}
+        onChangePage={handlePageChange}
+        noHeader={true}
+        customStyles={{
+          table: {
+            style: {
+              minWidth: '1000px', 
+            },
+          },
+        }}
+      />
+    </div>
           </Col>
         </Row>
       </Card>

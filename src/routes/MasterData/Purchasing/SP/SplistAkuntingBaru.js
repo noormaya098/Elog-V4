@@ -5,6 +5,7 @@ import { Button, Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { useHistory } from "react-router-dom";
 import Baseurl from "../../../../Api/BaseUrl";
+import { format } from 'date-fns';
 
 function SplistOperasional() {
   const [dataApi, setdataapi] = useState([]);
@@ -18,22 +19,25 @@ function SplistOperasional() {
   const columns = [
     {
       name: "No",
-      selector: (row) => row.no,
+      selector: (row) => row?.no,
       width: "50px",
     },
     {
       name: "No SP",
-      selector: (row) => row.sp,
+      selector: (row) => row?.sp,
+      wrap: true,
       width : "150px"
     },
     {
       name: " Perusahaan",
-      selector: (row) => row.perusahaan,
-      width : "250px"
+      selector: (row) => row?.perusahaan,
+      wrap: true,
+      width : "240px"
     },
     {
       name: "Service",
-      selector: (row) => row.service,
+      selector: (row) => row?.service,
+      wrap: true,
     },
     // {
     //   name: "Vehicle",
@@ -43,9 +47,11 @@ function SplistOperasional() {
     
     {
       name: "Pickup Date",
-      selector: (row) => row.pickupDate,
-      width:"150px"
+      selector: (row) => format(new Date(row.pickupDate), 'yyyy-MM-dd'),
+      wrap: true,
+      width:"120px"
     },
+    
     {
       name: "Approve By Akunting",
       cell: (row) => {
@@ -122,7 +128,7 @@ function SplistOperasional() {
     {
       name: "Detail",
       selector: (row) => (
-        <Button size="sm" onClick={() => buttonarahin(row.idmp)}>
+        <Button size="sm" onClick={() => buttonarahin(row?.idmp)}>
           Detail
         </Button>
       ),
@@ -147,32 +153,32 @@ function SplistOperasional() {
         }
       );
       const isi = data.data.data.order.map((item) => ({
-        no: item.no,
-        idmp: item.idmp,
-        sp: item.sp,
-        salesName: item.salesName,
-        perusahaan: item.perusahaan,
-        service: item.service,
-        pickupDate: item.pickupDate,
-        approveAct: item.approveAct,
-        dateApproveAct: item.dateApproveAct,
-        approveOps: item.approveOps,
-        idops: item.idops,
-        operationalName: item.operationalName,
-        dateApproveOps: item.dateApproveOps,
-        approvePurch: item.approvePurch,
-        dateApprovePurch: item.dateApprovePurch,
+        no: item?.no,
+        idmp: item?.idmp,
+        sp: item?.sp,
+        salesName: item?.salesName,
+        perusahaan: item?.perusahaan,
+        service: item?.service,
+        pickupDate: item?.pickupDate,
+        approveAct: item?.approveAct,
+        dateApproveAct: item?.dateApproveAct,
+        approveOps: item?.approveOps,
+        idops: item?.idops,
+        operationalName: item?.operationalName,
+        dateApproveOps: item?.dateApproveOps,
+        approvePurch: item?.approvePurch,
+        dateApprovePurch: item?.dateApprovePurch,
       }));
   
-      const detailPromises = isi.map(item => detailSP(item.idmp));
+      const detailPromises = isi?.map(item => detailSP(item?.idmp));
       const details = await Promise.all(detailPromises);
   
-      const combinedData = isi.map((item, index) => ({
+      const combinedData = isi?.map((item, index) => ({
         ...item,
         vehicles: details[index]
       }));
   
-      setTotalRows(data.data.data.total);
+      setTotalRows(data?.data?.data?.total);
       setCombinedData(combinedData);
     };
     dataapi();
@@ -194,9 +200,9 @@ function SplistOperasional() {
           },
         }
       );
-      return response.data.detail.map((item) => ({
-        kendaraan: item.kendaraan,
-        destination: item.destination
+      return response?.data?.detail?.map((item) => ({
+        kendaraan: item?.kendaraan,
+        destination: item?.destination
       }));
     } catch (error) {
       console.error(error);

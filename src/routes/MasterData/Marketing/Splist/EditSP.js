@@ -108,7 +108,7 @@ function EditSP() {
         setDetailModal(response.data.data);
         setDestinationDetail(response.data.data.destination);
         setKendaraanModal(response.data.data.type);
-        setShipmentModal(response.data.data.shipment);
+        setShipmentModal(response?.data?.data?.shipment);
         setMarketing(response.data.data.marketing)
       } catch (error) {
         console.error("Failed to fetch detail data:", error);
@@ -638,7 +638,7 @@ function EditSP() {
                         >
                           <option>Pilih Shipment</option>
                           {shipmentOptions.map((item, index) => (
-                            <option value={item.id}>{item.shipment}</option>
+                            <option value={item.id}>{item?.shipment}</option>
                           ))}
                         </Form.Select>
                       </Col>
