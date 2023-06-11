@@ -46,14 +46,16 @@ function Index() {
     currentPage: 1,
     limit: 10,
   });
+  const [JenisSIM, setJenisSIM] = useState([])
   const [MitraOptions, setMitraOptions] = useState([])
   const [MitraValue, setMitraValue] = useState([])
   const [JenisMobil, setJenisMobil] = useState([])
   const [DriverName, setDriverName] = useState([])
+  const [CariJenisKepemilikan, setCariJenisKepemilikan] = useState([])
 
-  const getvehicleapi = async (page = 1) => {
+  const getvehicleapi = async (page = 1, cari = "", CariJenisKepemilikan = "") => {
     const getvehiCle = await axios.get(
-      `${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=`,
+      `${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=${cari}&jenisKepemilikan=${CariJenisKepemilikan}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -61,6 +63,8 @@ function Index() {
         },
       }
     );
+    setCariJenisKepemilikan(getvehiCle.data.data.jenisKepemilikan)
+    console.log(`ini apa yaa `, getvehiCle.data.data.jenisKepemilikan);
 
     /////select driver dan mitra
     const currentPage = getvehiCle.data.data.currentPage;
@@ -81,9 +85,10 @@ function Index() {
       vehicleImage: item.vehicleImage,
       vendor: item.vendor,
     }));
-    console.log(dataapigetvehicle);
+    // console.log(`ini api data`,dataapigetvehicle);
     setDataapigetvehicle(dataapivehicle);
   };
+
   useEffect(() => {
     getvehicleapi();
     selectdriver();
@@ -92,7 +97,6 @@ function Index() {
     setPagination({ ...pagination, currentPage: page });
     await getvehicleapi(page);
   };
-const [ JenisSIM,setJenisSIM] = useState([])
 
   const columns = [
     {
@@ -350,21 +354,63 @@ const [ JenisSIM,setJenisSIM] = useState([])
     }))
     : [];
 
-    const jenissimoptions = JenisSIM.map((item) => ({
-      value : item.value,
-      label: item.Jenis
-    }))
+  const jenissimoptions = JenisSIM.map((item) => ({
+    value: item.value,
+    label: item.Jenis
+  }))
 
-  console.log("ini detailDataVehicle?.tgl_stnk", dataapigetvehicle);
+  // console.log("ini detailDataVehicle?.tgl_stnk", dataapigetvehicle);
 
   return (
     <div>
       <Row>
         <Col>
           <Card>
-            <Button variant="primary" size="sm" onClick={handleShow}>
-              Add Vehicle
-            </Button>
+            <Row>
+              <Col sm={6}>
+                <div className="d-flex justify-content-start">
+                  <Button variant="primary" size="sm" onClick={handleShow}>
+                    Add Vehicle
+                  </Button>
+                </div>
+              </Col>
+              <Col sm={3}>
+                <div className="d-flex justify-content-end">
+                  <Form.Group controlId="spId">
+                    <Form.Control
+                      type="text"
+                      placeholder="Cari No Kendaraan"
+                      onChange={(e) => getvehicleapi(1, e.target.value)}
+                    />
+                  </Form.Group>
+                  <br />
+                </div>
+              </Col>
+              <Col sm={3}>
+                <div className="d-flex justify-content-end">
+                  <Form.Group>
+                    <Form.Select
+                      type="text"
+                      onChange={(e) => {
+                        if (e.target.value === "Jenis Kepemilikan") {
+                          getvehicleapi();
+                        } else {
+                          getvehicleapi(1, "", e.target.value);
+                        }
+                      }}
+                    >
+                      <option>Jenis Kepemilikan</option>
+                      {CariJenisKepemilikan.map((item, index) => (
+                        <option key={index}>{item.jenis}</option>
+                      ))}
+                    </Form.Select>
+
+                  </Form.Group>
+                  <br />
+                </div>
+              </Col>
+            </Row>
+
             {/* Modal Edit Driver */}
             <Modal show={showVehicle} size="lg" onHide={handleCloseVehicle}>
               <Modal.Header closeButton>
@@ -609,7 +655,7 @@ const [ JenisSIM,setJenisSIM] = useState([])
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                <Col sm={4}>
+                  <Col sm={4}>
                     <Card>
                       <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
                     </Card>
@@ -661,7 +707,7 @@ const [ JenisSIM,setJenisSIM] = useState([])
                           setNamaDriver(selectedOption.label)
                         }}
                       />
-                        <Form.Label>Jenis SIM</Form.Label>
+                      <Form.Label>Jenis SIM</Form.Label>
                       <Select
                         options={jenissimoptions}
                         onChange={(selectedOption) => {

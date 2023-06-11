@@ -275,7 +275,7 @@ function CobaTable() {
     {
       name: "Edit",
       cell: (row) => (
-        <Button variant="danger" size="sm" onClick={() => editDriver(row.id)}>
+        <Button variant="primary" size="sm" onClick={() => editDriver(row.id)}>
           Edit
         </Button>
       ),

@@ -32,9 +32,9 @@ function CobaTables() {
 
   ///
 
-  const ApiDriver = async (page) => {
+  const ApiDriver = async (page , namadriver) => {
     const urlDataDriver = await axios.get(
-      `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=`,
+      `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${namadriver}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -269,7 +269,7 @@ function CobaTables() {
     {
       name: "Edit",
       cell: (row) => (
-        <Button variant="danger" size="sm" onClick={() => editDriver(row.id)}>
+        <Button variant="primary" size="sm" onClick={() => editDriver(row.id)}>
           Edit
         </Button>
       ),
@@ -348,10 +348,43 @@ function CobaTables() {
       <Card>
         <Row>
           <Col>
-            <Button size="sm" variant="primary" onClick={() => handleShow()}>
-              Add Driver
-            </Button>
+          <Row>
+              <Col sm={6}>
+                <div className="d-flex justify-content-start">
+                  <Button variant="primary" size="sm" onClick={handleShow}>
+                    Add Driver
+                  </Button>
+                </div>
+              </Col>
+              <Col sm={3}>
+                <div className="d-flex justify-content-end">
+                  <Form.Group controlId="spId">
+                    <Form.Control
+                      type="text"
+                      placeholder="Cari Nama Driver"
+                      onChange={(e) => ApiDriver(1, e.target.value)}
+                    />
+                  </Form.Group>
+                  <br />
+                </div>
+              </Col>
+              <Col sm={3}>
+                <div className="d-flex justify-content-end">
+                  <Form.Group>
+                    <Form.Select
+                      type="text"
+                     
+                    >
+                     
+                    </Form.Select>
+
+                  </Form.Group>
+                  <br />
+                </div>
+              </Col>
+            </Row>
             <Modal show={show} size="lg" onHide={handleClose}>
+
 
               <Modal.Header closeButton>
                 <Modal.Title>Tambah Driver</Modal.Title>

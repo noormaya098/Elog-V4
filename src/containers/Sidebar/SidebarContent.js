@@ -115,7 +115,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               {jobdesk == "operasional" && (
                 <SubMenu key="master" title="Operasional">
                   <Menu.Item key="driver">
-                    <Link to="/masterdata/driver">
+                    <Link to="/masterdata/purchasing/driver">
                       <i className="icon icon-widgets" />
                       <span>
                         <IntlMessages id="sidebar.driver" />
