@@ -100,45 +100,55 @@ function SPList() {
       name: "No",
       selector: (row) => row.no,
       width: "50px",
+      wrap: true,
     },
     {
       name: "SP ID",
       selector: (row) => row.sp,
-      width : "150px"
+      width : "150px",
+      wrap: true,
     },
     {
       name: "Perusahaan",
       selector: (row) => row.perusahaan,
+      wrap: true,
     },
     {
       name: "Marketing",
       selector: (row) => row.salesName,
-      width : "100px"
+      width : "100px",
+      wrap: true,
     },
     {
       name: "Service",
       selector: (row) => row.service,
-      width : "80px"
+      width : "80px",
+      wrap: true,
     },
     {
       name: "Vehicle",
       selector: (row) => row.kendaraan,
-      width : "80px"
+      width : "80px",
+      wrap: true,
     },
     {
       name: "Pickup Date",
-      selector: (row) => row.pickupDate,
-      width : "150px"
+      selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'),
+      width : "100px",
+      wrap: true,
     },
     {
       name: "Destination",
       selector: (row) => row.destination,
+      width : "150px",
+      wrap: true,
     },
 
     {
-      name: "Tgl Approved/Decline",
-      selector: (row) => (row.dateApproveOps === "Invalid date" ? "-" : row.dateApproveOps),
-      width: "150px"
+      name: "Tgl Approved/Decline Akunting",
+      selector: (row) =>new Date (row.dateApproveAct === "Invalid date" ? "-" : row.dateApproveAct).toLocaleDateString('en-CA'),
+      width: "210px",
+      wrap: true,
     },
     
   {

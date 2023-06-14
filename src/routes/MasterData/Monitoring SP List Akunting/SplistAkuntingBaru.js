@@ -5,6 +5,7 @@ import { Button, Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import Baseurl from "../../../Api/BaseUrl";
 import { useHistory } from "react-router-dom";
+import elogGif from "../../../assets/Loader_Elogs1.gif"
 function SplistAkuntingBaru() {
   const [dataApi, setdataapi] = useState([]);
   const [combinedData, setCombinedData] = useState([]);
@@ -13,7 +14,8 @@ function SplistAkuntingBaru() {
   const [totalRows, setTotalRows] = useState(0);
   const history = useHistory();
   const [datamobil, setDatamobil] = useState([]);
-  const [ loading , setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [AapproveActValue, setAapproveActValue] = useState("");
   const columns = [
     {
       name: "No",
@@ -23,12 +25,12 @@ function SplistAkuntingBaru() {
     {
       name: "No SP",
       selector: (row) => row?.sp,
-      width : "150px"
+      width: "150px"
     },
     {
       name: " Perusahaan",
       selector: (row) => row?.perusahaan,
-      width : "250px"
+      width: "250px"
     },
     {
       name: "Service",
@@ -39,16 +41,24 @@ function SplistAkuntingBaru() {
     //   selector: (row) => row?.vehicles.map(v => v.kendaraan).join(', '),
     //   width: "80px"
     // },
-    
+
     {
       name: "Pickup Date",
-      selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'), // Canadian English uses the ISO format (yyyy-mm-dd)
-      width:"150px"
-  },
-  
-  
-  
-  
+      selector: (row) => {
+        const formattedDate = new Date(row.pickupDate).toLocaleDateString('en-CA');
+        return (
+          <Tag color="cyan">
+            {formattedDate}
+          </Tag>
+        );
+      },
+      width: "150px"
+    },
+
+
+
+
+
     {
       name: "Approve By Akunting",
       cell: (row) => {
@@ -65,7 +75,7 @@ function SplistAkuntingBaru() {
             </Tag>
           ) : (
             <Tag color="red">
-              Reject <br /> <small>{dateApproveAct}</small>
+              Diverted <br /> <small>{dateApproveAct}</small>
             </Tag>
           );
 
@@ -89,7 +99,7 @@ function SplistAkuntingBaru() {
             </Tag>
           ) : (
             <Tag color="red">
-              Reject <br /> <small>{dateApproveAct}</small>
+              Diverted <br /> <small>{dateApproveAct}</small>
             </Tag>
           );
 
@@ -114,7 +124,7 @@ function SplistAkuntingBaru() {
             </Tag>
           ) : (
             <Tag color="red">
-              Reject <br /> <small>{dateApproveAct}</small>
+              Diverted <br /> <small>{dateApproveAct}</small>
             </Tag>
           );
 
@@ -125,24 +135,37 @@ function SplistAkuntingBaru() {
     {
       name: "Detail",
       selector: (row) => (
-        <Button size="sm" onClick={() => buttonarahin(row.idmp)}>
+        <Button size="sm" onClick={() => {
+          buttonarahin(row.idmp, row.approveAct);
+        }}>
           Detail
         </Button>
       ),
     },
+
   ];
 
-  const buttonarahin = (idmp) => {
-    console.log(`klik dong`, idmp);
+  const buttonarahin = (idmp, approveAct) => {
+    console.log(`approveAct before setting state: `, approveAct);
+    localStorage.setItem(`ApproveAct`, approveAct);
+    setAapproveActValue(localStorage.getItem(`ApproveAct`));
+    console.log(`AapproveActValue immediately after setting state: `, AapproveActValue);
     history.push(`/masterdata/purchasing/detailsp/${idmp}`);
   };
+
+
+  // useEffect(() => {
+  //   alert(`ini adalah nilai approveAct: ${AapproveActValue}`);
+  // }, [AapproveActValue]);
+
+
 
   useEffect(() => {
     setLoading(true)
     const dataapi = async () => {
-      // setLoading(true)
+      setLoading(true)
       const data = await axios.get(
-        `${Baseurl}sp/get-SP-all?limit=15&page=${page}&keyword=${filter}`,
+        `${Baseurl}sp/get-SP-all?limit=11&page=${page}&keyword=${filter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -167,15 +190,16 @@ function SplistAkuntingBaru() {
         approvePurch: item?.approvePurch,
         dateApprovePurch: item?.dateApprovePurch,
       }));
-  
+
+      console.log(`ini`, data.data.data.order.approveAct);
       const detailPromises = isi.map(item => detailSP(item.idmp));
       const details = await Promise.all(detailPromises);
-  
+
       const combinedData = isi.map((item, index) => ({
         ...item,
         vehicles: details[index]
       }));
-  
+
       setTotalRows(data.data.data.total);
       setCombinedData(combinedData);
       setLoading(false)
@@ -218,7 +242,7 @@ function SplistAkuntingBaru() {
         <Row>
           <Col>
             <Row>
-              
+
               <div className="d-flex justify-content-end">
                 <Col sm={3}>
                   <Form.Control
@@ -229,17 +253,17 @@ function SplistAkuntingBaru() {
                 </Col>
               </div>
             </Row>
-            {loading ? ( // Jika state loading bernilai true, tampilkan pesan "Loading..."
-                <p>Loading...</p>
-              ) : ( // Jika state loading bernilai false, tampilkan tabel
-            <DataTable
-              columns={columns}
-              data={combinedData}
-              pagination
-              paginationServer
-              paginationTotalRows={totalRows}
-              onChangePage={setPage}
-            />
+            {loading ? (
+              <img className="d-flex justify-content-center" src={elogGif} width="800px" />
+            ) : (
+              <DataTable
+                columns={columns}
+                data={combinedData}
+                pagination
+                paginationServer
+                paginationTotalRows={totalRows}
+                onChangePage={setPage}
+              />
             )}
           </Col>
         </Row>

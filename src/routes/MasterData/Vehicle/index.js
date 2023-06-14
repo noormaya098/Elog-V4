@@ -7,6 +7,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Select from "react-select";
+import mobil from "../../redux toolkit/store/ZustandStore";
 
 function Index() {
   const [namaDriver, setNamaDriver] = useState("");
@@ -52,6 +53,12 @@ function Index() {
   const [JenisMobil, setJenisMobil] = useState([])
   const [DriverName, setDriverName] = useState([])
   const [CariJenisKepemilikan, setCariJenisKepemilikan] = useState([])
+  const [JenisKepemilikanValue, setJenisKepemilikanValue] = useState([])
+  const [warnaPlat, setwarnaPlat] = useState([])
+  const {JenisSimZustand , setJenisSimZustand} = mobil((state)=>({
+    JenisSimZustand : state.JenisSimZustand,
+    setJenisSimZustand : state.setJenisSimZustand
+  }))
 
   const getvehicleapi = async (page = 1, cari = "", CariJenisKepemilikan = "") => {
     const getvehiCle = await axios.get(
@@ -146,36 +153,51 @@ function Index() {
   /// Create Vehicle
 
   const createvehicle = async () => {
-    const buatmobil = await axios.post(
-      `${Baseurl}vehicle/create-vehicle`,
-      {
-        kode_kendaraan: kode_kendaraan,
-        no_polisi: no_polisi,
-        vendor: MitraValue,
-        jenis_kendaraan: jenis_kendaraan,
-        merk_mobil: merk_mobil,
-        tahun_mobil: tahun_mobil,
-        warna_plat: warna_plat,
-        tgl_beli: tgl_beli,
-        panjang: panjang,
-        lebar: lebar,
-        tinggi: tinggi,
-        no_bpkb: no_bpkb,
-        stnk: stnk,
-        tgl_stnk: tgl_stnk,
-        kapasitas: kapasitas,
-        kapasitas_maks: kapasitas_maks,
-        kubikasi: kubikasi,
-        location: location,
-        id_driver: namaDriver,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token")
+    try {
+      const buatmobil = await axios.post(
+        `${Baseurl}vehicle/create-vehicle`,
+        {
+          kode_kendaraan: kode_kendaraan,
+          no_polisi: no_polisi,
+          vendor: MitraValue,
+          jenis_kendaraan: jenis_kendaraan,
+          merk_mobil: merk_mobil,
+          tahun_mobil: tahun_mobil,
+          warna_plat: warna_plat,
+          tgl_beli: tgl_beli,
+          panjang: panjang,
+          lebar: lebar,
+          tinggi: tinggi,
+          no_bpkb: no_bpkb,
+          stnk: stnk,
+          tgl_stnk: tgl_stnk,
+          kapasitas: kapasitas,
+          kapasitas_maks: kapasitas_maks,
+          kubikasi: kubikasi,
+          location: location,
+          id_driver: namaDriver,
+          jenis_kepemilikan: JenisKepemilikanValue,
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token")
+          },
+        }
+      );
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: 'Vehicle telah dibuat',
+      });
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Ada kesalahan saat membuat vehicle',
+      });
+    }
   };
   //// select driver
 
@@ -198,6 +220,7 @@ function Index() {
         driverName: item.driverName,
         driverId: item.driverId,
       }));
+      setwarnaPlat(selectdriver.data.data.warnaPlat)
 
       // console.log("ini log", pilih);
       setsebelumpilih(pilih);
@@ -329,11 +352,11 @@ function Index() {
           },
         }
       )
-      // console.log(`ini driverName`, data.data.data)
       setMitraOptions(data.data.data.mitra)
       setJenisMobil(data.data.data.driverType)
       setDriverName(data.data.data.driverName)
       setJenisSIM(data.data.data.jenisSim)
+      setJenisSimZustand(data.data.data.jenisSim)
     }
     Mitra()
   }, [jenis_kendaraan])
@@ -359,7 +382,13 @@ function Index() {
     label: item.Jenis
   }))
 
-  // console.log("ini detailDataVehicle?.tgl_stnk", dataapigetvehicle);
+  const CariJenisKepemilikanOptions = CariJenisKepemilikan.map((item) => ({
+    value: item.value,
+    label: item.jenis
+  }))
+
+
+  console.log("ini warnaPlat", warnaPlat);
 
   return (
     <div>
@@ -418,21 +447,20 @@ function Index() {
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={4}>
+                  <Col sm={3}>
                     <Card>
                       <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
                     </Card>
                     <Form.Label>Foto Vehicle</Form.Label>
                     <Form.Control
                       type="file"
-                      // value={no_polisi}
                       onChange={(e) => setno_polisi(e.target.value)}
                       placeholder="Masukkan no polisi"
                       required
                     />
                   </Col>
                   <Col sm={4}>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Kode Kendaraan</Form.Label>
                       <Form.Control
                         type="text"
@@ -441,6 +469,8 @@ function Index() {
                         placeholder="Masukkan kode kendaraan"
                         required
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No Polisi</Form.Label>
                       <Form.Control
                         type="text"
@@ -449,15 +479,17 @@ function Index() {
                         placeholder="Masukkan no polisi"
                         required
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Mitra</Form.Label>
                       <Select
                         options={MitraOptionss}
-                        // value={detailDataVehicle.vendor}
                         onChange={(selectedOption) => {
                           setMitraValue(selectedOption.label)
                         }}
                       />
-
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis Kendaraan</Form.Label>
                       <Select
                         options={MobilJenisOptionss}
@@ -465,6 +497,8 @@ function Index() {
                           setjenis_kendaraan(selectedOption.label)
                         }}
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Nama Driver</Form.Label>
                       <Select
                         options={DriverNameOptionss}
@@ -472,6 +506,8 @@ function Index() {
                           setNamaDriver(selectedOption.label)
                         }}
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis SIM</Form.Label>
                       <Select
                         options={jenissimoptions}
@@ -479,6 +515,26 @@ function Index() {
                           setNamaDriver(selectedOption.label)
                         }}
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Jenis Kepemilikan</Form.Label>
+                      <Form.Select>
+                        <option>-</option>
+                        {CariJenisKepemilikan.map((item, index) => (
+                          <option key={index}>{item.jenis}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Warna Plat</Form.Label>
+                      <Form.Select>
+                        <option>-</option>
+                        {warnaPlat.map((item, index) => (
+                          <option key={index}>{item.warna}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Merk Mobil</Form.Label>
                       <Form.Control
                         type="text"
@@ -486,6 +542,8 @@ function Index() {
                         onChange={(e) => setmerk_mobil(e.target.value)}
                         required
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Tahun Mobil</Form.Label>
                       <Form.Control
                         type="text"
@@ -493,6 +551,12 @@ function Index() {
                         onChange={(e) => settahun_mobil(e.target.value)}
                         required
                       />
+                    </Form.Group>
+                  </Col>
+
+
+                  <Col sm={5}>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Warna Plat</Form.Label>
                       <Form.Control
                         type="text"
@@ -503,66 +567,57 @@ function Index() {
                         }}
                         required
                       />
-
-                      <Row>
-                        <Col sm={4}>
-                          <Form.Label>Panjang</Form.Label>
-                          <Form.Control
-                            type="number"
-                            placeholder={detailDataVehicle?.panjang}
-                            onChange={(e) => setpanjang(e.target.value)}
-                            required
-                          />
-                        </Col>
-                        <Col sm={4}>
-                          <Form.Label>Lebar</Form.Label>
-                          <Form.Control
-                            type="text"
-                            placeholder={detailDataVehicle?.lebar}
-                            onChange={(e) => setlebar(e.target.value)}
-                            required
-                          />
-                        </Col>
-                        <Col sm={4}>
-                          <Form.Label>Tinggi</Form.Label>
-                          <Form.Control
-                            type="number"
-                            placeholder={detailDataVehicle?.tinggi}
-                            onChange={(e) => settinggi(e.target.value)}
-                            required
-                          />
-                        </Col>
-                      </Row>
-
                     </Form.Group>
-                  </Col>
-                  <Col sm={4}>
-
-                    <Form.Label>No BPKB</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder={detailDataVehicle?.no_bpkb == "" ? "Masukkan No BPKB" : detailDataVehicle.no_bpkb}
-                      onChange={(e) => setno_bpkb(e.target.value)}
-                      required
-                    />
-
-                    {/* <Form.Control
-                      type="text"
-                      placeholder={detailDataVehicle.namaDriver === "" ? "Masukkan Nama Driver" : detailDataVehicle.namaDriver}
-                      onChange={(e) => setNamaDriver(e.target.value)}
-                      required
-                    >
-                    </Form.Control> */}
-                    <Form.Label>STNK</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder={detailDataVehicle?.stnk === "" ? "Masukkan NO STNK" : detailDataVehicle.stnk}
-                      onChange={(e) => setstnk(e.target.value)}
-                      required
-                    />
-                    <Row>
+                    <Row style={{ marginTop: '10px' }}>
+                      <Col sm={4}>
+                        <Form.Label>Panjang</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder={detailDataVehicle?.panjang}
+                          onChange={(e) => setpanjang(e.target.value)}
+                          required
+                        />
+                      </Col>
+                      <Col sm={4}>
+                        <Form.Label>Lebar</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder={detailDataVehicle?.lebar}
+                          onChange={(e) => setlebar(e.target.value)}
+                          required
+                        />
+                      </Col>
+                      <Col sm={4}>
+                        <Form.Label>Tinggi</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder={detailDataVehicle?.tinggi}
+                          onChange={(e) => settinggi(e.target.value)}
+                          required
+                        />
+                      </Col>
+                    </Row>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>No BPKB</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={detailDataVehicle?.no_bpkb == "" ? "Masukkan No BPKB" : detailDataVehicle.no_bpkb}
+                        onChange={(e) => setno_bpkb(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>STNK</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={detailDataVehicle?.stnk === "" ? "Masukkan NO STNK" : detailDataVehicle.stnk}
+                        onChange={(e) => setstnk(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Row style={{ marginTop: '10px' }}>
                       <Col sm={6}>
-                        <Form.Label>Tanggal Exp STNK</Form.Label>
+                        <Form.Label>Tgl Exp STNK</Form.Label>
                         <Form.Control
                           type="date"
                           value={detailDataVehicle?.tgl_stnk}
@@ -571,7 +626,7 @@ function Index() {
                         />
                       </Col>
                       <Col sm={6}>
-                        <Form.Label>Tanggal Exp Plat Nomor</Form.Label>
+                        <Form.Label>Tgl Exp Plat Nomor</Form.Label>
                         <Form.Control
                           type="date"
                           value={tgl_plat_nomor}
@@ -580,9 +635,9 @@ function Index() {
                         />
                       </Col>
                     </Row>
-                    <Row>
+                    <Row style={{ marginTop: '10px' }}>
                       <Col sm={6}>
-                        <Form.Label>Tanggal Exp Kir</Form.Label>
+                        <Form.Label>Tgl Exp Kir</Form.Label>
                         <Form.Control
                           type="date"
                           placeholder={detailDataVehicle?.stnk === "" ? "Masukkan NO STNK" : detailDataVehicle.stnk}
@@ -591,7 +646,7 @@ function Index() {
                         />
                       </Col>
                       <Col sm={6}>
-                        <Form.Label>Tanggal Beli</Form.Label>
+                        <Form.Label>Tgl Beli</Form.Label>
                         <Form.Control
                           type="date"
                           placeholder={detailDataVehicle?.tgl_beli}
@@ -599,40 +654,44 @@ function Index() {
                           required
                         />
                       </Col>
-
                     </Row>
-
-
-
-                    <Form.Label>Kapasitas</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder={detailDataVehicle?.kapasitas == "" ? "Masukkan Kapasitas" : detailDataVehicle?.kapasitas}
-                      onChange={(e) => setkapasitas(e.target.value)}
-                      required
-                    />
-                    <Form.Label>Kapasitas Max</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder={detailDataVehicle?.kapasitas_maks == "" ? "Masukkan Kapasitas Max" : detailDataVehicle?.kapasitas_maks}
-                      onChange={(e) => setkapasitas_maks(e.target.value)}
-                      required
-                    />
-                    <Form.Label>Kubikasi</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder={detailDataVehicle?.kubikasi}
-                      onChange={(e) => setkubikasi(e.target.value)}
-                      required
-                    />
-                    <Form.Label>Location</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan Location"
-                      value={detailDataVehicle?.location}
-                      onChange={(e) => setlocation(e.target.value)}
-                      required
-                    />
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Kapasitas</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder={detailDataVehicle?.kapasitas == "" ? "Masukkan Kapasitas" : detailDataVehicle?.kapasitas}
+                        onChange={(e) => setkapasitas(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Kapasitas Max</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder={detailDataVehicle?.kapasitas_maks == "" ? "Masukkan Kapasitas Max" : detailDataVehicle?.kapasitas_maks}
+                        onChange={(e) => setkapasitas_maks(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Kubikasi</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder={detailDataVehicle?.kubikasi}
+                        onChange={(e) => setkubikasi(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Location</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Location"
+                        value={detailDataVehicle?.location}
+                        onChange={(e) => setlocation(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
                   </Col>
                 </Row>
               </Modal.Body>
@@ -655,21 +714,22 @@ function Index() {
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={4}>
-                    <Card>
-                      <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
-                    </Card>
-                    <Form.Label>Foto Vehicle</Form.Label>
-                    <Form.Control
-                      type="file"
-                      // value={no_polisi}
-                      onChange={(e) => setno_polisi(e.target.value)}
-                      placeholder="Masukkan no polisi"
-                      required
-                    />
+                  <Col sm={3}>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Card>
+                        <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
+                      </Card>
+                      <Form.Label>Foto Vehicle</Form.Label>
+                      <Form.Control
+                        type="file"
+                        onChange={(e) => setno_polisi(e.target.value)}
+                        placeholder="Masukkan no polisi"
+                        required
+                      />
+                    </Form.Group>
                   </Col>
                   <Col sm={4}>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Kode Kendaraan</Form.Label>
                       <Form.Control
                         type="text"
@@ -678,6 +738,8 @@ function Index() {
                         onChange={(e) => setkode_kendaraan(e.target.value)}
                         required
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No Polisi</Form.Label>
                       <Form.Control
                         type="text"
@@ -686,6 +748,8 @@ function Index() {
                         onChange={(e) => setno_polisi(e.target.value)}
                         required
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Mitra</Form.Label>
                       <Select
                         options={MitraOptionss}
@@ -693,6 +757,8 @@ function Index() {
                           setMitraValue(selectedOption.label)
                         }}
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis Kendaraan</Form.Label>
                       <Select
                         options={MobilJenisOptionss}
@@ -700,6 +766,8 @@ function Index() {
                           setjenis_kendaraan(selectedOption.label)
                         }}
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Nama Driver</Form.Label>
                       <Select
                         options={DriverNameOptionss}
@@ -707,6 +775,8 @@ function Index() {
                           setNamaDriver(selectedOption.label)
                         }}
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis SIM</Form.Label>
                       <Select
                         options={jenissimoptions}
@@ -714,22 +784,26 @@ function Index() {
                           setNamaDriver(selectedOption.label)
                         }}
                       />
-                      {/* <Form.Select
-                        type="text"
-                        placeholder="Masukkan Jenis Kendaraan"
-                        value={jenis_kendaraan}
-                        onChange={(e) => {
-                          setjenis_kendaraan(e.target.value);
-                          selectdriver(e.target.value);
-                        }}
-                        required
-                      >
-                        <option>Pilih Jenis Kendaraan</option>
-                        {sebelumpilih.map((item, index) => (
-                          <option key={index}>{item.tipe}</option>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Jenis Kepemilikan</Form.Label>
+                      <Form.Select onChange={(e) => setJenisKepemilikanValue(e.target.value)}>
+                        <option>-</option>
+                        {CariJenisKepemilikan.map((item, index) => (
+                          <option key={index}>{item.jenis}</option>
                         ))}
-                      </Form.Select> */}
-
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Warna Plat</Form.Label>
+                      <Form.Select>
+                        <option>-</option>
+                        {warnaPlat.map((item, index) => (
+                          <option key={index}>{item.warna}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Merk Mobil</Form.Label>
                       <Form.Control
                         type="text"
@@ -738,6 +812,8 @@ function Index() {
                         onChange={(e) => setmerk_mobil(e.target.value)}
                         required
                       />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Tahun Mobil</Form.Label>
                       <Form.Control
                         type="text"
@@ -746,6 +822,11 @@ function Index() {
                         onChange={(e) => settahun_mobil(e.target.value)}
                         required
                       />
+                    </Form.Group>
+                  </Col>
+
+                  <Col sm={5}>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Warna Plat</Form.Label>
                       <Form.Control
                         type="text"
@@ -754,8 +835,10 @@ function Index() {
                         onChange={(e) => setwarna_plat(e.target.value)}
                         required
                       />
-                      <Row>
-                        <Col sm={4}>
+                    </Form.Group>
+                    <Row>
+                      <Col sm={4}>
+                        <Form.Group style={{ marginTop: '10px' }}>
                           <Form.Label>Panjang</Form.Label>
                           <Form.Control
                             type="number"
@@ -763,8 +846,10 @@ function Index() {
                             onChange={(e) => setpanjang(e.target.value)}
                             required
                           />
-                        </Col>
-                        <Col sm={4}>
+                        </Form.Group>
+                      </Col>
+                      <Col sm={4}>
+                        <Form.Group style={{ marginTop: '10px' }}>
                           <Form.Label>Lebar</Form.Label>
                           <Form.Control
                             type="text"
@@ -772,8 +857,10 @@ function Index() {
                             onChange={(e) => setlebar(e.target.value)}
                             required
                           />
-                        </Col>
-                        <Col sm={4}>
+                        </Form.Group>
+                      </Col>
+                      <Col sm={4}>
+                        <Form.Group style={{ marginTop: '10px' }}>
                           <Form.Label>Tinggi</Form.Label>
                           <Form.Control
                             type="number"
@@ -781,117 +868,123 @@ function Index() {
                             onChange={(e) => settinggi(e.target.value)}
                             required
                           />
-                        </Col>
-                      </Row>
-
-                      {/* <Form.Label>Panjang</Form.Label>
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>No BPKB</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Contoh 12 (harus angka)"
-                        value={panjang}
-                        onChange={(e) => setpanjang(e.target.value)}
+                        placeholder="Masukkan No BPKB"
+                        value={no_bpkb}
+                        onChange={(e) => setno_bpkb(e.target.value)}
                         required
-                      /> */}
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>STNK</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan STNK"
+                        value={stnk}
+                        onChange={(e) => setstnk(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Row>
+                      <Col sm={6}>
+                        <Form.Group style={{ marginTop: '10px' }}>
+                          <Form.Label>Tgl Exp STNK</Form.Label>
+                          <Form.Control
+                            type="date"
+                            placeholder="Masukkan Tanggal Beli"
+                            value={tgl_beli}
+                            onChange={(e) => settgl_beli(e.target.value)}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col sm={6}>
+                        <Form.Group style={{ marginTop: '10px' }}>
+                          <Form.Label>Tgl Exp Plat Nomor</Form.Label>
+                          <Form.Control
+                            type="date"
+                            placeholder="Masukkan Tanggal STNK"
+                            value={tgl_stnk}
+                            onChange={(e) => settgl_stnk(e.target.value)}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col sm={6}>
+                        <Form.Group style={{ marginTop: '10px' }}>
+                          <Form.Label>Tgl Exp Kir</Form.Label>
+                          <Form.Control
+                            type="date"
+                            placeholder="Masukkan Tanggal Beli"
+                            value={tgl_beli}
+                            onChange={(e) => settgl_beli(e.target.value)}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col sm={6}>
+                        <Form.Group style={{ marginTop: '10px' }}>
+                          <Form.Label>Tgl Beli</Form.Label>
+                          <Form.Control
+                            type="date"
+                            placeholder="Masukkan Tanggal STNK"
+                            value={tgl_stnk}
+                            onChange={(e) => settgl_stnk(e.target.value)}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Kapasitas</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Kapasitas"
+                        value={kapasitas}
+                        onChange={(e) => setkapasitas(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Kapasitas Max</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Kapasitas Max"
+                        value={kapasitas_maks}
+                        onChange={(e) => setkapasitas_maks(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Kubikasi</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Kubikasi"
+                        value={kubikasi}
+                        onChange={(e) => setkubikasi(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Location</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Location"
+                        value={location}
+                        onChange={(e) => setlocation(e.target.value)}
+                        required
+                      />
                     </Form.Group>
                   </Col>
-                  <Col sm={4}>
-                    <Form.Label>No BPKB</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan No BPKB"
-                      value={no_bpkb}
-                      onChange={(e) => setno_bpkb(e.target.value)}
-                      required
-                    />
-                    <Form.Label>STNK</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan STNK"
-                      value={stnk}
-                      onChange={(e) => setstnk(e.target.value)}
-                      required
-                    />
-                    <Row>
-                      <Col sm={6}>
-                        <Form.Label>Tanggal Exp STNK</Form.Label>
-                        <Form.Control
-                          type="date"
-                          placeholder="Masukkan Tanggal Beli"
-                          value={tgl_beli}
-                          onChange={(e) => settgl_beli(e.target.value)}
-                          required
-                        />
-                      </Col>
-                      <Col sm={6}>
-                        <Form.Label>Tanggal Exp Plat Nomor</Form.Label>
-                        <Form.Control
-                          type="date"
-                          placeholder="Masukkan Tanggal STNK"
-                          value={tgl_stnk}
-                          onChange={(e) => settgl_stnk(e.target.value)}
-                          required
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={6}>
-                        <Form.Label>Tanggal Exp Kir</Form.Label>
-                        <Form.Control
-                          type="date"
-                          placeholder="Masukkan Tanggal Beli"
-                          value={tgl_beli}
-                          onChange={(e) => settgl_beli(e.target.value)}
-                          required
-                        />
-                      </Col>
-                      <Col sm={6}>
-                        <Form.Label>Tanggal Beli</Form.Label>
-                        <Form.Control
-                          type="date"
-                          placeholder="Masukkan Tanggal STNK"
-                          value={tgl_stnk}
-                          onChange={(e) => settgl_stnk(e.target.value)}
-                          required
-                        />
-                      </Col>
-                    </Row>
 
-
-
-
-                    <Form.Label>Kapasitas</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan Kapasitas"
-                      value={kapasitas}
-                      onChange={(e) => setkapasitas(e.target.value)}
-                      required
-                    />
-                    <Form.Label>Kapasitas Max</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan Kapasitas Max"
-                      value={kapasitas_maks}
-                      onChange={(e) => setkapasitas_maks(e.target.value)}
-                      required
-                    />
-                    <Form.Label>Kubikasi</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan Kubikasi"
-                      value={kubikasi}
-                      onChange={(e) => setkubikasi(e.target.value)}
-                      required
-                    />
-                    <Form.Label>Location</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Masukkan Location"
-                      value={location}
-                      onChange={(e) => setlocation(e.target.value)}
-                      required
-                    />
-                  </Col>
                 </Row>
               </Modal.Body>
               <Modal.Footer>

@@ -90,6 +90,12 @@ const App = ({ match }) => (
         )}
       />
       <Route
+        path={`${match.url}akunting/splistwaitingakunting`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/index")
+        )}
+      />
+      <Route
         path={`${match.url}masterdata/purchasing/driver`}
         component={asyncComponent(() => import("./MasterData/Driver"))}
       />

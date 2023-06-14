@@ -6,6 +6,8 @@ import axios from "axios";
 import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import Swal from "sweetalert2";
+import mobil from "../../redux toolkit/store/ZustandStore";
+import Select from "react-select";
 
 function CobaTables() {
   const [DataDalamApi, setDataDalamApi] = useState([]);
@@ -16,6 +18,18 @@ function CobaTables() {
     totalData: 1,
     totalPage: 1,
   });
+  const [JenisKepemilikan, setJenisKepemilikan] = useState([])
+  const [UkuranSeragam, setUkuranSeragam] = useState([])
+  const [JenisSimSelect, setJenisSimSelect] = useState("")
+  const [TglStnkValue, setTglStnkValue] = useState("")
+  const [VehicleOptions, setVehicleOptions] = useState([])
+  const [VehicleOptionsValue, setVehicleOptionsValue] = useState([])
+  const [RekeningBank, setRekeningBank] = useState([])
+  const [RekeningNorek, setRekeningNorek] = useState([])
+  const [UKSeragam, setUKSeragam] = useState([])
+  const [JenisKepemilikanValue, setJenisKepemilikanValue] = useState([])
+  const [TanggalSIMValue, setTanggalSIMValue] = useState([])
+  const [isLoading, setIsLoading] = useState(false);
 
   ///Modal Bootstrap
   const [show, setShow] = useState(false);
@@ -32,39 +46,44 @@ function CobaTables() {
 
   ///
 
-  const ApiDriver = async (page , namadriver) => {
-    const urlDataDriver = await axios.get(
-      `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${namadriver}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token")
-        },
-      }
-    );
-    const dataApiDriver = urlDataDriver.data.data.order.map((item, index) => ({
-      no: item.no,
-      id: item.driverId,
-      nama: item.driverName,
-      gambar: item.driverImage,
-      kiriman: `-`,
-      penjualan: item.totalPenjualan,
-    }));
+  const ApiDriver = async (page, namadriver) => {
+    setIsLoading(true);
+    try {
+      const urlDataDriver = await axios.get(
+        `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${namadriver}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token")
+          },
+        }
+      );
 
-    // Update pagination state
-    setPagination({
-      currentPage: urlDataDriver.data.data.currentPage,
-      totalData: urlDataDriver.data.data.totalData,
-      totalPage: urlDataDriver.data.data.totalPage,
-      totallimit: urlDataDriver.data.data.limit,
-    });
+      const dataApiDriver = urlDataDriver.data.data.order.map((item, index) => ({
+        no: item.no,
+        id: item.driverId,
+        nama: item.driverName,
+        gambar: item.driverImage,
+        kiriman: `-`,
+        penjualan: item.totalPenjualan,
+      }));
 
-    setDataDalamApi(dataApiDriver);
+      // Update pagination state
+      setPagination({
+        currentPage: urlDataDriver.data.data.currentPage,
+        totalData: urlDataDriver.data.data.totalData,
+        totalPage: urlDataDriver.data.data.totalPage,
+        totallimit: urlDataDriver.data.data.limit,
+      });
 
-    // Panggil GetdataDetail untuk setiap item dalam dataApiDriver
-    dataApiDriver.forEach(async (item) => {
-      await GetdataDetail(item.id);
-    });
+      setDataDalamApi(dataApiDriver);
+
+    } catch (error) {
+      console.error(`Error in ApiDriver: ${error}`);
+      // handle the error based on your application's requirement, such as setting an error state or displaying a notification to the user
+    } finally {
+      setIsLoading(false);
+    }
   };
 
 
@@ -184,12 +203,6 @@ function CobaTables() {
     }
   };
 
-
-
-
-
-
-
   ///Edit Driver APi
   const editdrivapier = async (id) => {
     try {
@@ -295,16 +308,25 @@ function CobaTables() {
       const driverAdD = await axios.post(
         `${Baseurl}driver/create-driver`,
         {
-          nik,
-          nama,
-          no_ktp,
-          divisi,
-          no_sim,
-          jenis_sim,
-          tgl_lahir,
-          agama,
-          tgl_masuk,
-          email,
+          nik: nik,
+          divisi: divisi,
+          nama: nama,
+          no_ktp: no_ktp,
+          no_sim: no_sim,
+          vehicle_type: VehicleOptionsValue,
+          jenis_sim: jenis_sim,
+          alamat: alamat,
+          tgl_lahir: tgl_lahir,
+          agama: agama,
+          no_telp: notelp1,
+          no_telp2: notelp2,
+          email: email,
+          tgl_masuk: tgl_masuk,
+          tgl_sim: TanggalSIMValue,
+          uk_seragam: UKSeragam,
+          jenis_kepemilikan: JenisKepemilikanValue,
+          rekening_bank: RekeningBank,
+          rekening_norek: RekeningNorek
         },
         {
           headers: {
@@ -343,12 +365,67 @@ function CobaTables() {
     }
   };
   console.log(`ini gambar`, DataDalamApi);
+
+  const getSelect = async () => {
+    const data = await axios.get(`${Baseurl}driver/get-select`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token")
+        }
+      }
+    )
+    console.log(`ini getselect`, data.data.jenisKepemilikan);
+    setJenisKepemilikan(data.data.jenisKepemilikan)
+    setUkuranSeragam(data.data.ukuranSeragam)
+  }
+  useEffect(() => {
+    getSelect()
+    SimVehicle()
+    VehicleType()
+  }, [])
+
+
+  ///// getselect sim
+  const SimVehicle = async () => {
+    const data = await axios.get(`${Baseurl}vehicle/get-select?vehicleType=`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token")
+        }
+      }
+    )
+    setJenisSimSelect(data.data.data.jenisSim)
+    console.log(`data`, data.data.data.jenisSim)
+  }
+
+  ///type cehicle
+  const VehicleType = async () => {
+    const data = await axios.get(`${Baseurl}vehicle/get-type?keyword=`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token")
+        }
+      }
+    )
+    setVehicleOptions(data.data.data.order)
+    console.log(`ini type`, data.data.data.order);
+  }
+
+  const VehicleOpstionsSelect = VehicleOptions.map((item) => ({
+    label: item.type,
+    value: item.id
+  }))
+
   return (
     <>
+
       <Card>
         <Row>
           <Col>
-          <Row>
+            <Row>
               <Col sm={6}>
                 <div className="d-flex justify-content-start">
                   <Button variant="primary" size="sm" onClick={handleShow}>
@@ -373,9 +450,9 @@ function CobaTables() {
                   <Form.Group>
                     <Form.Select
                       type="text"
-                     
+
                     >
-                     
+
                     </Form.Select>
 
                   </Form.Group>
@@ -384,14 +461,12 @@ function CobaTables() {
               </Col>
             </Row>
             <Modal show={show} size="lg" onHide={handleClose}>
-
-
               <Modal.Header closeButton>
                 <Modal.Title>Tambah Driver</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={4}>
+                  <Col sm={3}>
                     <Card>
                       <div>
                         <img src={DataDalamApi[0]?.gambar} alt="Deskripsi Gambar" />
@@ -401,14 +476,13 @@ function CobaTables() {
                     <Form.Control
                       type="file"
                       // placeholder="Masukkan NIK"
-                      value={nik}
-                      onChange={(e) => setNik(e.target.value)}
+                      // value={nik}
+                      // onChange={(e) => setNik(e.target.value)}
                       required
                     />
                   </Col>
                   <Col sm={4}>
-                    <Form.Group>
-
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>NIK</Form.Label>
                       <Form.Control
                         type="text"
@@ -418,7 +492,7 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Nama</Form.Label>
                       <Form.Control
                         type="text"
@@ -428,7 +502,7 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No KTP</Form.Label>
                       <Form.Control
                         type="text"
@@ -438,7 +512,7 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Divisi</Form.Label>
                       <Form.Control
                         type="text"
@@ -448,7 +522,7 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No SIM</Form.Label>
                       <Form.Control
                         type="text"
@@ -458,29 +532,33 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis SIM</Form.Label>
-                      <Form.Control
+                      <Form.Select
                         type="text"
                         placeholder="Masukkan Jenis SIM"
                         value={jenis_sim}
                         onChange={(e) => setJenisSim(e.target.value)}
                         required
-                      />
+                      >
+                        <option>-</option>
+                        {JenisSimSelect && JenisSimSelect.map((item) => (
+                          <option>{item.Jenis}</option>
+                        ))}
+                      </Form.Select>
+
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Alamat</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan Divisi"
-                        value={nik}
-                        onChange={(e) => setNik(e.target.value)}
+                        value={alamat}
+                        onChange={(e) => setalamat(e.target.value)}
                         required
                       />
                     </Form.Group>
-                  </Col>
-                  <Col sm={4}>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Tanggal Lahir</Form.Label>
                       <Form.Control
                         type="date"
@@ -490,7 +568,7 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Agama</Form.Label>
                       <Form.Control
                         type="text"
@@ -500,27 +578,30 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                  </Col>
+
+                  <Col sm={5}>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No Telp</Form.Label>
                       <Form.Control
-                        type="text"
+                        type="number"
                         placeholder="Masukkan Divisi"
-                        value={tgl_masuk}
-                        onChange={(e) => setTgl_masuk(e.target.value)}
+                        value={notelp1}
+                        onChange={(e) => setNotelp1(e.target.value)}
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No Telp 2</Form.Label>
                       <Form.Control
-                        type="text"
+                        type="number"
                         placeholder="Masukkan Divisi"
-                        value={nik}
-                        onChange={(e) => setNik(e.target.value)}
+                        value={notelp2}
+                        onChange={(e) => setNotelp2(e.target.value)}
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Email</Form.Label>
                       <Form.Control
                         type="email"
@@ -530,27 +611,83 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Tanggal Masuk</Form.Label>
                       <Form.Control
                         type="date"
                         placeholder="Masukkan Divisi"
-                        value={nik}
-                        onChange={(e) => setNik(e.target.value)}
+                        value={tgl_masuk}
+                        onChange={(e) => setTgl_masuk(e.target.value)}
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Vehicle Type</Form.Label>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Tanggal SIM</Form.Label>
                       <Form.Control
-                        type="text  "
+                        type="date"
+                        placeholder="Masukkan Divisi"
+                        value={TglStnkValue}
+                        onChange={(e) => setTanggalSIMValue(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Select
+                        options={VehicleOpstionsSelect}
+                        onChange={(select) => {
+                          setVehicleOptionsValue(select.label)
+                        }}
+                      />
+                      {/* <Form.Control
+                        type="text"
                         placeholder="Masukkan Divisi"
                         value={nik}
-                        onChange={(e) => setNik(e.target.value)}
+                        onChange={(e) => setDivisi(e.target.value)}
+                        required
+                      /> */}
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Jenis Kepemilikan</Form.Label>
+                      <Form.Select onChange={(e) => setJenisKepemilikanValue(e.target.value)}>
+                        <option>-</option>
+                        {JenisKepemilikan && JenisKepemilikan.map((item) => (
+                          <option>{item.jenis}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Ukuran Seragam</Form.Label>
+                      <Form.Select onChange={(e) => setUKSeragam(e.target.value)}>
+                        <option>-</option>
+                        {UkuranSeragam && UkuranSeragam.map((item) => (
+                          <option>{item.ukuran}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Rekening Bank</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={RekeningBank}
+                        onChange={(e) => setRekeningBank(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Nomor Rekening</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={RekeningNorek}
+                        onChange={(e) => setRekeningNorek(e.target.value)}
                         required
                       />
                     </Form.Group>
                   </Col>
+
                 </Row>
               </Modal.Body>
 
@@ -590,7 +727,7 @@ function CobaTables() {
                       type="file"
                       // placeholder="Masukkan NIK"
                       value={nik}
-                      onChange={(e) => setNik(e.target.value)}
+                      // onChange={(e) => setNik(e.target.value)}
                       required
                     />
                   </Col>
@@ -733,7 +870,7 @@ function CobaTables() {
                         type="text  "
                         placeholder="Masukkan Divisi"
                         value={nik}
-                        onChange={(e) => setNik(e.target.value)}
+                        // onChange={(e) => setNik(e.target.value)}
                         required
                       />
                       <Modal.Footer>
@@ -752,14 +889,19 @@ function CobaTables() {
                 </Row>
               </Modal.Body>
             </Modal>
-            <DataTable
-              columns={columns}
-              data={DataDalamApi}
-              pagination
-              paginationServer
-              paginationTotalRows={pagination.totalData}
-              onChangePage={handlePageChange}
-            />
+            {isLoading ? (
+              <div className="d-flex justify-content-center">Loading...</div>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={DataDalamApi}
+                pagination
+                paginationServer
+                paginationTotalRows={pagination.totalData}
+                onChangePage={handlePageChange}
+              />
+            )}
+
           </Col>
         </Row>
       </Card>

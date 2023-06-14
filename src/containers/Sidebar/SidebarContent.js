@@ -186,10 +186,16 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               )}
               {jobdesk.toLowerCase() === "akunting" ? (
                 <SubMenu key="monitoring" title="Akunting">
-                  <Menu.Item key="SP Lists">
+                  <Menu.Item key="SP Lists All">
                     <Link to="/akunting/splistakuntingbaru">
                       <i className="icon icon-widgets" />
                       <span>Approve SP</span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="SP Lists">
+                    <Link to="/akunting/splistwaitingakunting">
+                      <i className="icon icon-widgets" />
+                      <span>Waiting SP Akunting</span>
                     </Link>
                   </Menu.Item>
                 </SubMenu>

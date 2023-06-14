@@ -1,7 +1,7 @@
 // FormTable.js
 import React from "react";
 import { Col, Row, Form, Button, Table, Modal } from "react-bootstrap";
-import { Card, Checkbox } from "antd";
+import { Card, Checkbox, Tag } from "antd";
 import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
@@ -10,6 +10,7 @@ import axios from "axios";
 import Token from "../../../Api/Token";
 import mobil from "../../redux toolkit/store/ZustandStore";
 import { Alert, Space } from 'antd';
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const jobdesk = localStorage.getItem("jobdesk");
 function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
@@ -18,7 +19,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const [types, setType] = useState([]);
   const [nomorpolisi, setNomorPolisi] = useState([]);
   const [NomorPolisi2, setNomorPolisi2] = useState([])
-
+  const [isidaSementara, setIsidaSementara] = useState([])
   const [selectnomor, setSelectnomor] = useState([]);
   const [selectnomor2, setSelectnomor2] = useState([]);
   const [selectnopol, setSelectNopol] = useState([]);
@@ -85,12 +86,23 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const [NamaDriverFix, setNamaDriverFix] = useState([])
   const [NamaDriverFix2, setNamaDriverFix2] = useState([])
   const [KodeKendaraanOps, setKodeKendaraanOps] = useState([])
+  const { SJKosongModal, setSJKosongModal } = mobil((state) => ({
+    SJKosongModal: state.SJKosongModal,
+    setSJKosongModal: state.setSJKosongModal,
+  }));
+  const [Mitra1Multi, setMitra1Multi] = useState([])
+  const [StatusApproveAct, setStatusApproveAct] = useState("")
+  const [TanggalACT3, setTanggalACT3] = useState("")
+  const [StatusApproveOpt, setStatusApproveActOpt] = useState("")
 
+
+  const history = useHistory()
 
   ////checkbox multi
   const handleCheckboxChange = (event) => {
     setCheckboxValue(event.target.checked ? 1 : 0);
   };
+
 
   ///select driver
   useEffect(() => {
@@ -108,7 +120,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       setMitraFix(sleet.data.data.mitra)
       setNomorFix(sleet.data.data.vehicle)
       setNamaDriverFix(sleet.data.data.Driver)
-      console.log(`ini driver`, sleet.data.data);
+      // console.log(`ini driver`, sleet.data.data);
       setselectDriver(drivernya);
       setNomorPolisi(nomorpolisis);
     };
@@ -116,9 +128,29 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     if (types.length > 0) {
       vehicle();
     }
-  }, [types, selectnomor, mitra1, selectnomor2]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
+
+  }, [types, selectnomor, mitra1, selectnomor2,]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
 
   // console.log(`ini NamaDriverFix`, NomorFix2);
+
+  // if (isidata[0]?.via != "") {
+  //   setTimeout(() => {
+  //     return (Swal.fire({
+  //       icon: 'error',
+  //       title: 'Data SP belum Lengkap',
+  //       text: 'Silahkan Hubungi Marketing!',
+  //     }))
+  //   }, 1500);
+
+  // } else {
+  //   console.log(`ada`)
+  // }
+  // }, [isidata]);
+  const validasi = () => {
+    const iniaapa = "ksoong"
+  }
+
+
 
   useEffect(() => {
     const vehicle = async () => {
@@ -141,7 +173,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     }
   }, [types, selectnomor, mitra2, selectnomor2]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
 
-  console.log(`ini NamaDriverFix2`, NamaDriverFix2);
+  // console.log(`ini NamaDriverFix2`, NamaDriverFix2);
   ///// approve op
   useEffect(() => {
     const vehicle = async () => {
@@ -213,7 +245,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
           title: "Approval Successful",
           text: "The approval process has been completed successfully.",
         });
-        // window.location.reload()
+        window.location.reload()
         handleClose();
       })
       .catch((error) => console.error(`Error: ${error}`));
@@ -301,6 +333,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
             title: "Berhasil",
             text: "Data telah di reject",
           });
+          window.location.reload()
         } catch (error) {
           // Menampilkan SweetAlert gagal
           Swal.fire({
@@ -331,7 +364,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
           const body = {
             id_mp: idmp,
           };
-          const data = await axios.post(`${Baseurl}sp/decline-SP-akunting`, body, {
+          const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
             headers: {
               "Content-Type": "application/json",
               Authorization: localStorage.getItem("token"),
@@ -342,6 +375,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
             title: "Berhasil",
             text: "Data telah di reject",
           });
+          window.location.reload()
         } catch (error) {
           // Menampilkan SweetAlert gagal
           Swal.fire({
@@ -408,7 +442,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     HandleApproveOPS(idMpd)
     // HandleApprovePURCH(idMpd)
   }
-  // console.log(`isi idmp`, idmp);
+
 
   ////ini approve akunting
   const akuntingAprpove = async () => {
@@ -441,6 +475,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               'success'
             );
           })
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
           .catch(error => {
             Swal.fire(
               'Gagal!',
@@ -488,8 +525,64 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   localStorage.setItem(`idkodekendaraan2`, selectnomor2)
   localStorage.setItem(`IdDriver2`, idUnit2)
 
-  console.log(`ini IsiKomenRejectSP`, IsiKomenRejectSP);
+  // console.log(`isi Mitra1Multi?.driverName `, Mitra1Multi?.driverName);
+  // const [isisp , setisisp]= useState("")
+  // useEffect(()=>{
+  //   if (isidata[0] ) {
+  //     setisisp(isidata[0]?.sp)
+  //   } else {
+  //     setisisp("ksoong")
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Oops...',
+  //       text: 'SP tidak tersedia!',
+  //     });
+  //   }
+  // })
 
+
+  //// ngambil mitra 1 kalau multi 
+
+  const MitraMulti = async () => {
+    try {
+      const data = await axios.get(`${Baseurl}sp/get-SP-detail-purch?id_mp=${idmp}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+      );
+      // console.log(`ini mitra 1`, data.data.data[0]);
+      setMitra1Multi(data.data.data[0])
+
+    } catch (error) {
+
+    }
+  };
+  useEffect(() => {
+    MitraMulti()
+    AmbilStatusApprove()
+  }, [StatusApproveAct])
+
+
+  ////ambil status approve
+  const AmbilStatusApprove = async () => {
+    try {
+      const data = await axios.get(`${Baseurl}sp/get-status-approve?id_mp=${idmp}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        }
+      }
+      )
+      setStatusApproveAct(data.data.status.message.act_akunting)
+      setStatusApproveActOpt(data.data.status.message.kendaraan_operasional)
+      setTanggalACT3(data.data.status.message.tgl_act_3)
+      console.log(`ini status`, StatusApproveAct);
+    } catch (error) {
+
+    }
+  };
   return (
     <>
       <Row>
@@ -804,14 +897,22 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
             <Alert type="error" message="SP Sudah Di Reject" banner />
           ) : (
             <>
-              {(jobdesk !== "purchasing" && jobdesk !== "operasional") && (
+              {(jobdesk !== "purchasing" && jobdesk !== "operasional" && StatusApproveAct !== 'Y' && TanggalACT3 == null) && (
                 <Button size="sm" onClick={() => jobdesk === "akunting" ? akuntingAprpove() : handleShow()}>
                   Approve
                 </Button>
               )}
-              <Button size="sm" variant="danger" onClick={() => jobdesk === "akunting" ? rejectspAkunting() : rejectsp()}>
-                Reject SP
-              </Button>
+              {(StatusApproveAct !== 'Y' && TanggalACT3 === null) &&
+                <Button size="sm" variant="danger" onClick={() => jobdesk === "akunting" ? rejectspAkunting() : rejectsp()}>
+                  Reject SP
+                </Button>
+              }
+              {(StatusApproveAct === 'Y') &&
+                <Alert type="success" message="SP Telah di Approve" banner />
+              }
+              {(StatusApproveAct === 'N' &&  TanggalACT3 !== null) &&
+                 <Alert type="error" message="SP Sudah Di Reject" banner />
+              }
             </>
           )}
 
@@ -884,26 +985,31 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 {jobdesk != "operasional" && (<>
                   <Row>
                     <Col sm={3}>
-                      {jobdesk == "purchasing" ? (
+                      {jobdesk === "purchasing" && (
                         <>
                           <Form.Label>Select Mitra 1</Form.Label>
-                          <Select
-                            isDisabled
-                            options={mitraOptions}
-                            onChange={(mitraOptions) => {
-                              setmitra2(mitraOptions.value);
-                            }}
-                          />
+                          <Form.Select
+                            disabled
+                            value={Mitra1Multi?.driverName || ''}
+                            onChange={() => { }}
+                          >
+                            {Mitra1Multi && (
+                              <option value={Mitra1Multi.driverName}>
+                                {Mitra1Multi.driverName}
+                              </option>
+                            )}
+                          </Form.Select>
                         </>
-                      ) : null}
+                      )}
                     </Col>
+
 
                     <Col sm={3}>
                       <Form.Label>Vehicle Type</Form.Label>
                       <Form.Select
                         type="text"
                         disabled
-                        value={types[0] || ""}
+                        value={Mitra1Multi?.tipeKendaraan}
                         onChange={(e) => {
                           console.log(e.target.value);
                         }}
@@ -917,29 +1023,31 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                     </Col>
                     <Col sm={3}>
                       <Form.Label>Kode Kendaraan</Form.Label>
-                      <Select
-                        isDisabled
-                        // options={nomorpolisiOptions}
-                        onChange={(selectedOption) => {
-                          console.log(`kode kendaraan`, selectedOption.value);
-                          setSelectnomor(selectedOption.value);
-                          setSelectNopol(selectedOption.label);
-                        }}
-                      />
+                      <Form.Select
+                        disabled
+                        value={Mitra1Multi?.unit}
+                      >
+                        Mitra1Multi && (
+                        <option value={Mitra1Multi?.unit}>
+                          {Mitra1Multi?.unit}
+                        </option>
+                        )
+                      </Form.Select>
                     </Col>
                     <Col sm={3}>
                       <Form.Label>Select Driver</Form.Label>
                       <Form.Select
                         disabled
-                        value={selectDriver[0]?.id}
+                        value={Mitra1Multi?.driverName || ''}
                         onChange={(e) => {
-                          console.log(`awo`, e.target.value);
                           setIdunit3(e.target.value);
                         }}
                       >
-                        <option value={selectDriver[0]?.id}>
-                          {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
-                        </option>
+                        {Mitra1Multi && (
+                          <option value={Mitra1Multi.driverName}>
+                            {Mitra1Multi.driverName}
+                          </option>
+                        )}
                       </Form.Select>
                     </Col>
                     <Col sm={3}>
@@ -1138,8 +1246,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               <Form.Control
                 type="text"
                 disabled
-                value={isidata[0] ? isidata[0].sp : ""}
+                value={isidata[0] ? isidata[0].sp : SJKosongModal}
               />
+
 
               <Form.Text className="text-muted"></Form.Text>
             </Form.Group>
@@ -1149,12 +1258,12 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               <Form.Control
                 type="text"
                 disabled
-                value={isidata[0] ? isidata[0].service : ""}
+                value={isidata[0] ? isidata[0].service : SJKosongModal}
               />
             </Form.Group>
             <Form.Group>
               <Form.Label>Jenis Barang</Form.Label>
-              <Form.Control type="text" disabled value={jenisBarang} />
+              <Form.Control type="text" disabled value={jenisBarang ? jenisBarang : SJKosongModal} />
             </Form.Group>
             <Form.Group>
               <Form.Label>Customer</Form.Label>
@@ -1169,7 +1278,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               <Form.Control
                 type="text"
                 disabled
-                value={isidata[0] ? isidata[0].via : ""}
+                value={isidata[0] ? isidata[0].via : SJKosongModal}
               />
               <Form.Text></Form.Text>
             </Form.Group>
@@ -1178,7 +1287,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               <Form.Control
                 type="text"
                 disabled
-                value={isidata[0] ? (isidata[0].pickupDate === "Invalid date" ? "-" : isidata[0].pickupDate) : ""}
+                value={isidata[0] ? (isidata[0].pickupDate === "Invalid date" ? "-" : isidata[0].pickupDate) : SJKosongModal}
               />
             </Form.Group>
 
@@ -1206,7 +1315,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
           <Form.Control
             type="email"
             disabled
-            value={isidata[0] ? isidata[0].pickupAddress : ""}
+            value={isidata[0] ? isidata[0].pickupAddress : SJKosongModal}
           />
           <Form.Text className="text-muted"></Form.Text>
         </Form.Group>

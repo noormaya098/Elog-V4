@@ -5,7 +5,7 @@ import { Button, Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { useHistory } from "react-router-dom";
 import Baseurl from "../../../../Api/BaseUrl";
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 
 function SplistOperasional() {
   const [dataApi, setdataapi] = useState([]);
@@ -47,7 +47,7 @@ function SplistOperasional() {
     
     {
       name: "Pickup Date",
-      selector: (row) => format(new Date(row.pickupDate), 'yyyy-MM-dd'),
+      selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'),
       wrap: true,
       width:"120px"
     },
