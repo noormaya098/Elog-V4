@@ -1,4 +1,4 @@
-import { Card } from "antd";
+import { Alert, Card } from "antd";
 import { Col, Row, Form, Modal, Button, Table } from "react-bootstrap";
 import React from "react";
 import DataTable from "react-data-table-component";
@@ -18,6 +18,15 @@ function DetailsAkunting() {
   }));
   const { idmp } = useParams();
   const [comment, setComment] = useState([]);
+  const [ApproveAkuntingStatus, setApproveAkuntingStatus] = useState("")
+  const [ApproveAkuntingTgl, setApproveAkuntingTgl] = useState("")
+  const [Kendaraan_operasional, setkendaraan_operasional] = useState("")
+  const [tgl_act_4, settgl_act_4] = useState("")
+  const [Kendaraan_purchasing, setKendaraan_purchasing] = useState("")
+  const [tgl_act_5, settgl_act_5] = useState("")
+
+
+
   useEffect(() => {
     const getDetail = async () => {
       try {
@@ -40,7 +49,7 @@ function DetailsAkunting() {
     };
     getDetail();
     comments();
-  }, [idmp, memo]);
+  }, [idmp, memo, Kendaraan_operasional, ApproveAkuntingStatus]);
 
   const columns = [
     {
@@ -83,6 +92,8 @@ function DetailsAkunting() {
             title: "Berhasil",
             text: "Data telah disetujui.",
           });
+          window.location.reload();
+
         } catch (error) {
           Swal.fire({
             icon: "error",
@@ -124,6 +135,7 @@ function DetailsAkunting() {
             title: "Berhasil",
             text: "Telah di Reject",
           });
+          window.location.reload();
         } catch (error) {
           Swal.fire({
             icon: "error",
@@ -175,6 +187,30 @@ function DetailsAkunting() {
   });
 
   // console.log(`TOTAL KESELURUHAN : ${rupiah}`);
+  const StausApprove = async () => {
+    try {
+      const data = await axios.get(`${Baseurl}sp/get-status-approve?id_mp=${idmp}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      console.log(data.data.status.message);
+      setApproveAkuntingStatus(data.data.status.message.act_akunting)
+      setApproveAkuntingTgl(data.data.status.message.tgl_act_3)
+      setkendaraan_operasional(data.data.status.message.kendaraan_operasional)
+      settgl_act_4(data.data.status.message.tgl_act_4)
+      setKendaraan_purchasing(data.data.status.message.kendaraan_purchasing)
+      settgl_act_5(data.data.status.message.tgl_act_5)
+    } catch (error) {
+
+    }
+  }
+
+
+  useEffect(() => {
+    StausApprove()
+  }, [])
 
   return (
     <div>
@@ -192,7 +228,7 @@ function DetailsAkunting() {
           </div> */}
           <div className="d-flex justify-content-end">
             {
-              (jobdesk !== "operasional" && jobdesk !== "sales" && jobdesk !== "purchasing") ? (
+              (jobdesk !== "operasional" && jobdesk !== "sales" && jobdesk !== "purchasing" && ApproveAkuntingStatus !== "Y") ? (
                 <>
                   <Button size="sm" onClick={() => tombolApprove()}>
                     Approve
@@ -204,9 +240,44 @@ function DetailsAkunting() {
                   >
                     Reject Driver
                   </Button>
+
                 </>
               ) : (
-                <></>
+                <>
+                  {(ApproveAkuntingStatus === "Y" && ApproveAkuntingTgl !== null) ?
+                    <Alert type="success" message="Approve Akunting" banner /> :
+                    (ApproveAkuntingStatus === "N" && ApproveAkuntingTgl !== null) ?
+                      <Alert type="error" message="Diverted Akunting" banner /> :
+                      (ApproveAkuntingStatus === "N" && ApproveAkuntingTgl === null) ?
+                        <Alert type="info" message="Waiting Operasional" banner /> : null
+
+
+
+                  }
+
+                  {(Kendaraan_operasional === "Y" && tgl_act_4 != null) ?
+                    <Alert type="success" message="Approve Operasional" banner /> :
+                    (Kendaraan_operasional === "N" && tgl_act_4 != null) ?
+                      <Alert type="error" message="Diverted Operasional" banner /> :
+                      (Kendaraan_operasional === "N" && tgl_act_4 === null) ?
+                        <Alert type="info" message="Waiting Operasional" banner />
+                        : null
+                  }
+
+                  {(Kendaraan_purchasing === "Y" && tgl_act_5 !== null) ?
+                    <Alert type="success" message="Approve Purchasing" banner /> :
+                    (Kendaraan_purchasing === "N" && tgl_act_5 !== null) ?
+                      <Alert type="error" message="Diverted Purchasing" banner /> :
+                      (Kendaraan_purchasing === "N" && tgl_act_5 === null) ?
+                        <Alert type="info" message="Waiting Purchasing" banner /> :
+                        null
+
+                  }
+
+
+                </>
+
+
               )
             }
 
@@ -564,7 +635,7 @@ function DetailsAkunting() {
                       <td>{index + 1}</td>
                       <td>{data?.chat}</td>
                       <td>{data?.user}</td>
-                      <td>{data?.tgl_chat}</td>
+                      <td >{data.tgl_chat.substring(0, 10)}</td>
                     </tr>
                   ))}
               </tbody>

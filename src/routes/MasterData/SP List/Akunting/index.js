@@ -156,7 +156,7 @@ function Index() {
 
     const buttonarahin = (idmp) => {
         console.log(`klik dong`, idmp);
-        history.push(`/masterdata/purchasing/detailsp/${idmp}`);
+        history.push(`/masterdata/splistdetailakunting/${idmp}`);
     };
 
     const handlePageChange = page => {

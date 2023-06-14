@@ -91,6 +91,7 @@ function Index() {
       driverName: item.driverName,
       vehicleImage: item.vehicleImage,
       vendor: item.vendor,
+      stnkDate: item.stnkDate,
     }));
     // console.log(`ini api data`,dataapigetvehicle);
     setDataapigetvehicle(dataapivehicle);
@@ -133,6 +134,12 @@ function Index() {
     {
       name: "Jenis Kendaraan",
       selector: (row) => row.vehicleType,
+      wrap: true,
+      width: "150px"
+    },
+    {
+      name: "Tanggal STNK",
+      selector: (row) => row.stnkDate,
       wrap: true,
       width: "150px"
     },

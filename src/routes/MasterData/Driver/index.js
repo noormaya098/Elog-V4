@@ -12,12 +12,9 @@ import Select from "react-select";
 function CobaTables() {
   const [DataDalamApi, setDataDalamApi] = useState([]);
   const [driverDetails, setDriverDetails] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalData: 1,
-    totalPage: 1,
-  });
+  const [currentPage, setCurrentPage] = useState("");
+  const [totalData , setTotalData] = useState([])
+  const [pagination, setPagination] = useState(1);
   const [JenisKepemilikan, setJenisKepemilikan] = useState([])
   const [UkuranSeragam, setUkuranSeragam] = useState([])
   const [JenisSimSelect, setJenisSimSelect] = useState("")
@@ -30,6 +27,22 @@ function CobaTables() {
   const [JenisKepemilikanValue, setJenisKepemilikanValue] = useState([])
   const [TanggalSIMValue, setTanggalSIMValue] = useState([])
   const [isLoading, setIsLoading] = useState(false);
+  const [CariNamaSearch, setCariNamaSearch] = useState("")
+  const [JenisKepemilikanCari, setJenisKepemilikanCari] = useState("")
+  const [JenisKepemilikanValues, setJenisKepemilikanValues] = useState("")
+  const [nik, setNik] = useState("");
+  const [nama, setNama] = useState("");
+  const [no_ktp, setNo_ktp] = useState("");
+  const [no_sim, setNo_sim] = useState("");
+  const [divisi, setDivisi] = useState("");
+  const [jenis_sim, setJenisSim] = useState("");
+  const [tgl_lahir, setTgl_lahir] = useState("");
+  const [agama, setAgama] = useState("");
+  const [tgl_masuk, setTgl_masuk] = useState("");
+  const [email, setEmail] = useState("");
+  const [alamat, setalamat] = useState("");
+  const [notelp1, setNotelp1] = useState("");
+  const [notelp2, setNotelp2] = useState("");
 
   ///Modal Bootstrap
   const [show, setShow] = useState(false);
@@ -39,18 +52,18 @@ function CobaTables() {
     setEditShow(false);
   };
 
+
   const handleShow = () => {
     setShow(true);
-    // setEditShow(true);
   };
 
-  ///
 
-  const ApiDriver = async (page, namadriver) => {
+  ///
+  const ApiDriver = async (page) => {
     setIsLoading(true);
     try {
       const urlDataDriver = await axios.get(
-        `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${namadriver}`,
+        `${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${CariNamaSearch}&jenis_kepemilikan=${JenisKepemilikanValues}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -59,22 +72,13 @@ function CobaTables() {
         }
       );
 
-      const dataApiDriver = urlDataDriver.data.data.order.map((item, index) => ({
-        no: item.no,
-        id: item.driverId,
-        nama: item.driverName,
-        gambar: item.driverImage,
-        kiriman: `-`,
-        penjualan: item.totalPenjualan,
-      }));
+      const dataApiDriver = urlDataDriver.data.data.order
+      setDataDalamApi(dataApiDriver);
+      setTotalData(urlDataDriver.data.data.totalData)
+      // Set total rows for pagination
+      setCurrentPage(urlDataDriver.data.data.totalPage)
 
-      // Update pagination state
-      setPagination({
-        currentPage: urlDataDriver.data.data.currentPage,
-        totalData: urlDataDriver.data.data.totalData,
-        totalPage: urlDataDriver.data.data.totalPage,
-        totallimit: urlDataDriver.data.data.limit,
-      });
+
 
       setDataDalamApi(dataApiDriver);
 
@@ -89,16 +93,16 @@ function CobaTables() {
 
 
   const handlePageChange = (page) => {
-    ApiDriver(page);
+    setPagination(page);
   };
 
   useEffect(() => {
-    ApiDriver();
-  }, []);
+    ApiDriver(pagination);
+  }, [CariNamaSearch, pagination, JenisKepemilikanValues]);
 
-  useEffect(() => {
-    ApiDriver(currentPage);
-  }, [currentPage]);
+  // useEffect(() => {
+  //   ApiDriver(currentPage);
+  // }, [currentPage]);
 
   useEffect(() => {
     if (driverDetails.length > 0) {
@@ -136,11 +140,6 @@ function CobaTables() {
   //   console.log("Data detail:", driverDetails);
   // }, [driverDetails]);
 
-  useEffect(() => {
-    // ApiDriver();
-    // driveradd();
-  }, []);
-
 
 
   ///on off driver
@@ -168,7 +167,7 @@ function CobaTables() {
         timerProgressBar: true,
       });
       handleClose();
-      ApiDriver();
+      ApiDriver(pagination); 
     } catch (error) {
       console.log(error.message);
     }
@@ -196,7 +195,7 @@ function CobaTables() {
         timerProgressBar: true,
       });
       handleClose();
-      ApiDriver()
+      ApiDriver(pagination); 
 
     } catch (error) {
       console.log(error.message);
@@ -255,21 +254,25 @@ function CobaTables() {
     },
     {
       name: "Nama",
-      selector: (row) => row.nama,
+      selector: (row) => row.driverName,
     },
     {
       name: "Image",
       selector: (row) => (
-        <img src={row.gambar} width="50px" alt="Foto Driver" />
+        <img src={row.driverImage} width="30px" alt="Foto Driver" />
       ),
     },
     {
-      name: "Kiriman (SM)",
-      selector: (row) => row.kiriman,
+      name: "Jenis SIM",
+      selector: (row) => row.simType,
     },
     {
-      name: "Penjualan",
-      selector: (row) => row.penjualan,
+      name: "Jenis Kendaraan",
+      selector: (row) => row.vehicle,
+    },
+    {
+      name: "Jenis Kepemilikan",
+      selector: (row) => row.jenisKepemilikan,
     },
     {
       name: "Status",
@@ -290,19 +293,8 @@ function CobaTables() {
   ];
 
   ///// Create Driver
-  const [nik, setNik] = useState("");
-  const [nama, setNama] = useState("");
-  const [no_ktp, setNo_ktp] = useState("");
-  const [no_sim, setNo_sim] = useState("");
-  const [divisi, setDivisi] = useState("");
-  const [jenis_sim, setJenisSim] = useState("");
-  const [tgl_lahir, setTgl_lahir] = useState("");
-  const [agama, setAgama] = useState("");
-  const [tgl_masuk, setTgl_masuk] = useState("");
-  const [email, setEmail] = useState("");
-  const [alamat, setalamat] = useState("");
-  const [notelp1, setNotelp1] = useState("");
-  const [notelp2, setNotelp2] = useState("");
+ 
+
   const driveradd = async () => {
     try {
       const driverAdD = await axios.post(
@@ -366,6 +358,38 @@ function CobaTables() {
   };
   console.log(`ini gambar`, DataDalamApi);
 
+///Upload foto
+const UploadFoto = async () => {
+  try {
+    let data = new FormData();
+    data.append('id', 'nilai_id');  // ganti 'nilai_id' dengan id yang sesuai
+    // data.append('cover', file);  // ganti 'file' dengan objek file yang sesuai
+
+    const response = await axios.post(
+      `${Baseurl}driver/upload-driver-photo`,
+      data,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: localStorage.getItem("token")
+        }
+      }
+    );
+
+    // handle response here
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "ada kesalahan",
+    });
+  }
+}
+
+
+
+
+
   const getSelect = async () => {
     const data = await axios.get(`${Baseurl}driver/get-select`,
       {
@@ -378,11 +402,14 @@ function CobaTables() {
     console.log(`ini getselect`, data.data.jenisKepemilikan);
     setJenisKepemilikan(data.data.jenisKepemilikan)
     setUkuranSeragam(data.data.ukuranSeragam)
+    setJenisKepemilikanCari(data.data.jenisKepemilikan)
+    console.log(`jneis`, JenisKepemilikanCari);
   }
   useEffect(() => {
     getSelect()
     SimVehicle()
     VehicleType()
+    UploadFoto()
   }, [])
 
 
@@ -418,6 +445,10 @@ function CobaTables() {
     label: item.type,
     value: item.id
   }))
+  const resetJenisKepemilikan = () => {
+    setJenisKepemilikanValues('');
+  }
+
 
   return (
     <>
@@ -435,11 +466,12 @@ function CobaTables() {
               </Col>
               <Col sm={3}>
                 <div className="d-flex justify-content-end">
-                  <Form.Group controlId="spId">
+                  <Form.Group >
                     <Form.Control
                       type="text"
                       placeholder="Cari Nama Driver"
-                      onChange={(e) => ApiDriver(1, e.target.value)}
+                      value={CariNamaSearch}
+                      onChange={(e) => setCariNamaSearch(e.target.value)}
                     />
                   </Form.Group>
                   <br />
@@ -448,11 +480,16 @@ function CobaTables() {
               <Col sm={3}>
                 <div className="d-flex justify-content-end">
                   <Form.Group>
-                    <Form.Select
-                      type="text"
-
-                    >
-
+                    <Form.Select onChange={(e) => {
+                      setJenisKepemilikanValues(e.target.value);
+                      if (e.target.value === 'OptionToReset') { // ganti 'OptionToReset' dengan opsi yang jika dipilih akan mereset pilihan
+                        setJenisKepemilikanValues(''); // atau nilai default lain yang Anda inginkan
+                      }
+                    }}>
+                      <option value="">Jenis Kepemilikan</option>
+                      {JenisKepemilikanCari && JenisKepemilikanCari.map((item, index) => (
+                        <option key={index} value={item.jenis}>{item.jenis}</option>
+                      ))}
                     </Form.Select>
 
                   </Form.Group>
@@ -814,26 +851,6 @@ function CobaTables() {
                         required
                       />
                     </Form.Group>
-                    {/* <Form.Group>
-                      <Form.Label>Vehicle Type</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Divisi"
-                        value={tgl_masuk}
-                        onChange={(e) => setTgl_masuk(e.target.value)}
-                        required
-                      />
-                    </Form.Group> */}
-                    {/* <Form.Group>
-                      <Form.Label>Tempat Lahir</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Divisi"
-                        value={nik}
-                        onChange={(e) => setNik(e.target.value)}
-                        required
-                      />
-                    </Form.Group> */}
                     <Form.Group>
                       <Form.Label>Alamat</Form.Label>
                       <Form.Control
@@ -893,18 +910,19 @@ function CobaTables() {
               <div className="d-flex justify-content-center">Loading...</div>
             ) : (
               <DataTable
-                columns={columns}
-                data={DataDalamApi}
-                pagination
-                paginationServer
-                paginationTotalRows={pagination.totalData}
-                onChangePage={handlePageChange}
-              />
+              columns={columns}
+              data={DataDalamApi}
+              pagination
+              paginationServer
+              paginationTotalRows={totalData}
+              onChangePage={handlePageChange}
+            />
+            
             )}
 
           </Col>
-        </Row>
-      </Card>
+        </Row >
+      </Card >
     </>
   );
 }

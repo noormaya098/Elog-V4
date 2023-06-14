@@ -16,7 +16,7 @@ function SPList() {
   const history = useHistory();
   const [spId, setSpId] = useState("");
 
-  const dataapi = async (page, spId) => {
+  const dataapi = async (page) => {
     const isi = await axios.get(
       `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=${spId}`,
       {
@@ -205,8 +205,9 @@ function SPList() {
                 <Form.Group controlId="spId">
                   <Form.Control
                     type="text"
+                    value={spId}
                     placeholder="No SP "
-                    onChange={handleSpIdChange}
+                    onChange={(e)=>setSpId(e.target.value)}
                   />
                 </Form.Group>
                 <br />
