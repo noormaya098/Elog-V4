@@ -67,7 +67,8 @@ function EditSP() {
   const [isiTarif, setisiTarif] = useState("")
   const [IdmpdPerstate, setIdmpdPerstate] = useState([])
   const [NameKendaraan, setNameKendaraan] = useState("")
-
+  const [idKota, setidKota] = useState([])
+  const [IdBongkarKota, setIdBongkarKota] = useState([])
 
   const getDetail = async () => {
     try {
@@ -299,6 +300,7 @@ function EditSP() {
       }
     );
     setshipmentSementara(shipmentValue)
+    window.location.reload();
     refresh();
     handleClose();
     Swal.fire("Good job!", "Data Berhasil Di tambahkan", "success");
@@ -433,9 +435,10 @@ function EditSP() {
       // id_kendaraan_jenis: KendaraanValue,
       // service_type: detailData?.service,
       // id_muat_kota: 3172,
-      id_muat_kota: alamatMuatValue,
+      // id_muat_kota: alamatMuatValue,
+      id_muat_kota: idKota,
       // id_tujuan_kota: 3603,
-      id_tujuan_kota: alamtBongkarValue,
+      id_tujuan_kota: IdBongkarKota,
       // id_customer: 11,
       id_customer: detailData?.idcustomer,
       id_kendaraan_jenis: KendaraanValue,
@@ -453,11 +456,13 @@ function EditSP() {
     // console.log(`apa ini `,KendaraanValue);
     if (valid == undefined) {
       console.log(`nama`, Namakendaraan)
-      return Swal.fire({
+      setisiTarif(0)
+       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Tarif Tidak Ditemukan!',
+        text: 'Tarif Tidak Ditemukan Silahkan Hubungi Sales!',
       })
+
     } else {
       console.log(`nama`, Namakendaraan)
       return (
@@ -473,6 +478,7 @@ function EditSP() {
 
   const options = detaildestination.map((item, index) => ({
     value: item.id,
+    idKota: item.idKota,
     label: item.pic + "-" + item.address
   }));
 
@@ -582,7 +588,10 @@ function EditSP() {
                     <Form.Label>* Alamat Muat</Form.Label>
                     <Select
                       options={options}
-                      onChange={(selectedOption) => setalamatMuatValue(selectedOption.value)}
+                      onChange={(selectedOption) => {
+                        setalamatMuatValue(selectedOption.value)
+                        setidKota(selectedOption.idKota)
+                      }}
                     />
 
                     <hr />
@@ -592,8 +601,10 @@ function EditSP() {
                         <Form.Label>* Alamat Bongkar</Form.Label>
                         <Select
                           options={options}
-                          onChange={(selectedOption) =>
+                          onChange={(selectedOption) => {
                             setAlamatBongkarValue(selectedOption.value)
+                            { } setIdBongkarKota(selectedOption.idKota)
+                          }
                           }
                         />
                       </Col>
@@ -812,7 +823,7 @@ function EditSP() {
               <Col sm={12}>
                 <Form>
                   <Form.Group>
-                  <Row>
+                    <Row>
                       <Col sm={4}>
                         <Form.Label>* Kendaraan</Form.Label>
                         <Form.Control
@@ -850,7 +861,7 @@ function EditSP() {
                         </Form.Control>
                       </Col>
                     </Row>
-                   
+
 
                     <hr />
                     <Form.Label>* Alamat Muat</Form.Label>
@@ -872,7 +883,7 @@ function EditSP() {
                       </Col>
 
                     </Row>
-                   
+
 
                     <Row>
                       <Col sm={3}>

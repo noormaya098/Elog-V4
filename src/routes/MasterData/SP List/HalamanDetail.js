@@ -229,7 +229,7 @@ useEffect(() => {
                 <td style={{ textAlign: "center" }}>{index + 1}</td>
                 <td style={{ textAlign: "left" }}>{item.chat}</td>
                 <td style={{ textAlign: "left" }}>{item.user}</td>
-                <td style={{ textAlign: "center" }}>{item.tgl_chat.substring(0, 10)}</td>
+                <td style={{ textAlign: "center" }}>{item.tgl_chat}</td>
 
               </tr>
             ))}

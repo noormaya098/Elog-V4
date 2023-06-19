@@ -557,7 +557,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       }
       );
       // console.log(`ini mitra 1`, data.data.data[0]);
-      setMitra1Multi(data.data.data[0])
+      setMitra1Multi(data.data.data[0] )
 
     } catch (error) {
 
@@ -1425,7 +1425,8 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                             }}
                           >
 
-                            <td>No</td>
+                            <td>No </td>
+                            
 
 
                             <td>Alamat Bongkar</td>
@@ -1438,6 +1439,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                             <td>Qty</td>
                             <td width="150px">Biaya Kirim</td>
                             <td width="150px">Total</td>
+                            <td>Aksi</td>
                           </tr>
 
 
@@ -1496,7 +1498,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                                   </>)
                                 }
-                                {(StatusPurchasing === "Y") && (
+                                {/* {(StatusPurchasing === "Y") && (
                                   <>
                                     <Button
                                       size="sm"
@@ -1508,7 +1510,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                     </Button>
 
                                   </>)
-                                }
+                                } */}
                                 {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "N") && (
                                   <>
                                     <Button
@@ -1524,7 +1526,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                     </Button>
                                   </>
                                 )}
-                                {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "Y") && (
+                                {/* {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "Y") && (
                                   <>
                                     <Button
                                       disabled
@@ -1539,13 +1541,14 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                       Approved
                                     </Button>
                                   </>
-                                )}
+                                )} */}
 
 
 
 
                               </span>
                             </td>
+                            
                             <td>{data.destination}</td>
                             <td>{data.noSJ}</td>
                             <td>{data.kendaraan}</td>
@@ -1561,6 +1564,35 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                               style: "currency",
                               currency: "IDR",
                             })}</td>
+                            <td>{(jobdesk == "operasional" && Kendaraan_operasionalStatus === "Y") && (
+                                  <>
+                                    <Button
+                                      disabled
+                                      size="sm"
+                                      variant="primary"
+                                      onClick={() => {
+                                        handleShow(data.idmpd);
+                                        approvebaru(data.idmpd);
+                                      }}
+                                      className="mt-2"
+                                    >
+                                      Approved
+                                    </Button>
+                                  </>
+                                )}</td>
+                                 {(StatusPurchasing === "Y") && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      disabled
+                                      variant="primary"
+                                      className="mt-2"
+                                    >
+                                      Approved
+                                    </Button>
+
+                                  </>)
+                                }
                           </tr>
                           {/* <tr>
                             <td>No</td>

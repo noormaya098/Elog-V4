@@ -5,7 +5,9 @@ import { Button, Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { useHistory } from "react-router-dom";
 import Baseurl from "../../../../Api/BaseUrl";
+import LoadingElogGif from "../../../../assets/Loader_Elogs1.gif"
 // import { format } from 'date-fns';
+import { Pagination } from 'antd';
 
 function SplistOperasional() {
   const [dataApi, setdataapi] = useState([]);
@@ -15,24 +17,24 @@ function SplistOperasional() {
   const [totalRows, setTotalRows] = useState(0);
   const history = useHistory();
   const [datamobil, setDatamobil] = useState([]);
-  const [ loading , setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const columns = [
     {
       name: "No",
       selector: (row) => row?.no,
-      width: "50px",
+      width: "80px",
     },
     {
       name: "No SP",
       selector: (row) => row?.sp,
       wrap: true,
-      width : "150px"
+      width: "150px"
     },
     {
       name: " Perusahaan",
       selector: (row) => row?.perusahaan,
       wrap: true,
-      width : "240px"
+      width: "240px"
     },
     {
       name: "Service",
@@ -44,14 +46,14 @@ function SplistOperasional() {
     //   selector: (row) => row.vehicles.map(v => v.kendaraan).join(', '),
     //   width: "80px"
     // },
-    
+
     {
       name: "Pickup Date",
       selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'),
       wrap: true,
-      width:"120px"
+      width: "120px"
     },
-    
+
     {
       name: "Approve By Akunting",
       cell: (row) => {
@@ -144,7 +146,7 @@ function SplistOperasional() {
     const dataapi = async () => {
       setLoading(true)
       const data = await axios.get(
-        `${Baseurl}sp/get-SP-all?limit=13&page=${page}&keyword=${filter}`,
+        `${Baseurl}sp/get-SP-all?limit=10&page=${page}&keyword=${filter}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -169,17 +171,18 @@ function SplistOperasional() {
         approvePurch: item?.approvePurch,
         dateApprovePurch: item?.dateApprovePurch,
       }));
-  
+
       const detailPromises = isi?.map(item => detailSP(item?.idmp));
       const details = await Promise.all(detailPromises);
-  
+
       const combinedData = isi?.map((item, index) => ({
         ...item,
         vehicles: details[index]
       }));
-  
-      setTotalRows(data?.data?.data?.total);
+
+      setTotalRows(data?.data?.data?.totalData);
       setCombinedData(combinedData);
+      setLoading(false)
     };
     dataapi();
   }, [filter, page]);
@@ -229,14 +232,27 @@ function SplistOperasional() {
                 </Col>
               </div>
             </Row>
-            <DataTable
-              columns={columns}
-              data={combinedData}
-              pagination
-              paginationServer
-              paginationTotalRows={totalRows}
-              onChangePage={setPage}
-            />
+            {(loading ?
+              (
+                <img src={LoadingElogGif}></img>
+              ) : (<DataTable
+                columns={columns}
+                data={combinedData}
+                // pagination
+                // paginationServer
+                // paginationTotalRows={totalRows}
+                // onChangePage={setPage}
+              />))}
+              <div className="mt-3 d-flex justify-content-end">
+
+            <Pagination
+              showSizeChanger
+              onShowSizeChange={setPage}
+              onChange={setPage}
+              defaultCurrent={1}
+              total={totalRows}
+              />
+              </div>
           </Col>
         </Row>
       </Card>

@@ -38,14 +38,25 @@ const SamplePage = () => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      const data = response.data.data;
-      setinform(data);
-      console.log(response.status);
-
+      if (response.status === 200) {
+        const data = response.data.data;
+        setinform(data);
+        console.log(response.status);
+      } else if (response.status === 401) {
+        localStorage.removeItem('token');
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Error Login, Silahkan Login Kembali '
+        });
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000);
+      }
     } catch (error) {
-      if (error.response && error.response.status === 404) {
-        localStorage.clear('Token');
-        if (localStorage.getItem(`Token`) === null) {
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        if (localStorage.getItem('token') === null) {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -53,7 +64,6 @@ const SamplePage = () => {
           });
           setTimeout(() => {
             window.location.reload()
-
           }, 2000);
           // history.push('/signin');
         }
@@ -71,8 +81,8 @@ const SamplePage = () => {
 
   return (
     <div>
-        <Card>
-      <Row>
+      <Card>
+        <Row>
           <h2>Halo {namaJobdesk}</h2>
           <Col sm={4}>
             <Card style={{ backgroundColor: "#dd4b39" }}>
@@ -88,8 +98,8 @@ const SamplePage = () => {
               <h5 style={{ color: 'white' }}>Mobil Off : {inform.offVeh}</h5>
             </Card>
           </Col>
-      </Row>
-        </Card>
+        </Row>
+      </Card>
 
 
 

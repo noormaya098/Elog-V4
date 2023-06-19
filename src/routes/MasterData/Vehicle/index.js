@@ -8,8 +8,11 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import mobil from "../../redux toolkit/store/ZustandStore";
+import { Pagination } from 'antd';
+import ElogLoading from "../../../assets/Loader_Elogs1.gif"
 
 function Index() {
+  const [loading, setLoading] = useState(false)
   const [namaDriver, setNamaDriver] = useState("");
   const [kode_kendaraan, setkode_kendaraan] = useState("");
   const [no_polisi, setno_polisi] = useState("");
@@ -34,6 +37,7 @@ function Index() {
   const [pilihdrivers, setpilihdrivers] = useState([]);
   const [dataapigetvehicle, setDataapigetvehicle] = useState("");
   const [show, setShow] = useState(false);
+  const [showFotoUpload, setshowFotoUpload] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [detailDataVehicle, setDetailDataVehicle] = useState("")
@@ -47,6 +51,7 @@ function Index() {
     currentPage: 1,
     limit: 10,
   });
+  const [TglKir, setTglKir] = useState([])
   const [JenisSIM, setJenisSIM] = useState([])
   const [MitraOptions, setMitraOptions] = useState([])
   const [MitraValue, setMitraValue] = useState([])
@@ -55,56 +60,90 @@ function Index() {
   const [CariJenisKepemilikan, setCariJenisKepemilikan] = useState([])
   const [JenisKepemilikanValue, setJenisKepemilikanValue] = useState([])
   const [warnaPlat, setwarnaPlat] = useState([])
-  const {JenisSimZustand , setJenisSimZustand} = mobil((state)=>({
-    JenisSimZustand : state.JenisSimZustand,
-    setJenisSimZustand : state.setJenisSimZustand
+  const { JenisSimZustand, setJenisSimZustand } = mobil((state) => ({
+    JenisSimZustand: state.JenisSimZustand,
+    setJenisSimZustand: state.setJenisSimZustand
   }))
+  const [Pagginations, setPagginations] = useState(1)
+  const getvehicleapi = async (page, cari = "", CariJenisKepemilikan = "") => {
+    try {
+      setLoading(true)
+      const getvehiCle = await axios.get(
+        `${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=${cari}&jenisKepemilikan=${CariJenisKepemilikan}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token")
+          },
+        }
+      );
+      setCariJenisKepemilikan(getvehiCle.data.data.jenisKepemilikan)
+      console.log(`ini apa yaa `, getvehiCle.data.data.jenisKepemilikan);
 
-  const getvehicleapi = async (page = 1, cari = "", CariJenisKepemilikan = "") => {
-    const getvehiCle = await axios.get(
-      `${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=${cari}&jenisKepemilikan=${CariJenisKepemilikan}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token")
-        },
+      /////select driver dan mitra
+      const currentPage = getvehiCle.data.data.currentPage;
+      setPagination({
+        ...pagination,
+        totalData: getvehiCle.data.data.totalData,
+        totalPage: getvehiCle.data.data.totalPage,
+        currentPage: getvehiCle.data.data.currentPage,
+      });
+      const dataapivehicle = getvehiCle.data.data.order.map((item) => ({
+        no: item.no,
+        vehicleId: item.vehicleId,
+        driverId: item.driverId,
+        vehicleCode: item.vehicleCode,
+        policeNumber: item.policeNumber,
+        vehicleType: item.vehicleType,
+        driverName: item.driverName,
+        vehicleImage: item.vehicleImage,
+        vendor: item.vendor,
+        stnkDate: item.stnkDate,
+      }));
+      // console.log(`ini api data`,dataapigetvehicle);
+      setDataapigetvehicle(dataapivehicle);
+      setLoading(false)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        if (localStorage.getItem('token') === null) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Error Login, Silahkan Login Kembali '
+          });
+          setTimeout(() => {
+            window.location.reload()
+          }, 2000);
+          // history.push('/signin');
+        }
+      } else {
+        console.error(error);
       }
-    );
-    setCariJenisKepemilikan(getvehiCle.data.data.jenisKepemilikan)
-    console.log(`ini apa yaa `, getvehiCle.data.data.jenisKepemilikan);
+    }
 
-    /////select driver dan mitra
-    const currentPage = getvehiCle.data.data.currentPage;
-    setPagination({
-      ...pagination,
-      totalData: getvehiCle.data.data.totalData,
-      totalPage: getvehiCle.data.data.totalPage,
-      currentPage: getvehiCle.data.data.currentPage,
-    });
-    const dataapivehicle = getvehiCle.data.data.order.map((item) => ({
-      no: item.no,
-      vehicleId: item.vehicleId,
-      driverId: item.driverId,
-      vehicleCode: item.vehicleCode,
-      policeNumber: item.policeNumber,
-      vehicleType: item.vehicleType,
-      driverName: item.driverName,
-      vehicleImage: item.vehicleImage,
-      vendor: item.vendor,
-      stnkDate: item.stnkDate,
-    }));
-    // console.log(`ini api data`,dataapigetvehicle);
-    setDataapigetvehicle(dataapivehicle);
+  };
+
+  const onShowSizeChange = (page, pageSize) => {
+    setPagginations(page);
+  };
+  const handlePageChange = (page) => {
+    getvehicleapi(page);
   };
 
   useEffect(() => {
-    getvehicleapi();
+    getvehicleapi(Pagginations);
     selectdriver();
-  }, []);
-  const handlePageChange = async (page) => {
-    setPagination({ ...pagination, currentPage: page });
-    await getvehicleapi(page);
-  };
+  }, [Pagginations]);
+  // const handlePageChange = async (page) => {
+  //   setPagination({ ...pagination, currentPage: page });
+  //   await getvehicleapi(page);
+  // };
+
+
+  const uploadFotoo = () => {
+    setshowFotoUpload(true)
+  }
 
   const columns = [
     {
@@ -112,6 +151,12 @@ function Index() {
       selector: (row) => row.no,
       wrap: true,
       width: "50px"
+    },
+    {
+      name: "Image",
+      selector: (row) => <img src={row.vehicleImage} width="70px"></img>,
+      wrap: true,
+      width: "150px"
     },
     {
       name: "Kode Kendaraan",
@@ -184,6 +229,7 @@ function Index() {
           location: location,
           id_driver: namaDriver,
           jenis_kepemilikan: JenisKepemilikanValue,
+          warna_plat: warna_plat
         },
         {
           headers: {
@@ -282,6 +328,7 @@ function Index() {
       setno_polisi(detailDataVehicle.no_polisi || '');
       setvendor(detailDataVehicle.vendor);
       setjenis_kendaraan(detailDataVehicle.jenis_kendaraan);
+      setJenisKepemilikanValue(detailDataVehicle.jenis_kepemilikan);
       selectdriver(detailDataVehicle.jenis_kendaraan);
       setmerk_mobil(detailDataVehicle?.merk_mobil);
       settahun_mobil(detailDataVehicle.tahun_mobil);
@@ -289,6 +336,7 @@ function Index() {
       setTgl_plat_nomor(detailDataVehicle?.tgl_plat_nomor)
       settgl_beli(detailDataVehicle.tgl_beli);
       setpanjang(detailDataVehicle.panjang);
+      setTglKir(detailDataVehicle?.tgl_beli);
       setlebar(detailDataVehicle.lebar);
       settinggi(detailDataVehicle.tinggi);
       setno_bpkb(detailDataVehicle.no_bpkb === "" ? "Masukkan No BPKB" : detailDataVehicle.no_bpkb);
@@ -309,8 +357,8 @@ function Index() {
         kode_kendaraan: kode_kendaraan,
         id_driver: "",
         no_polisi: no_polisi,
-        id_vendor: "",
-        vendor: MitraValue,
+        id_vendor: idvaluemitraID === null ? detailDataVehicle.id : detailDataVehicle.id,
+        vendor: MitraValue === "" ? detailDataVehicle.vendor : detailDataVehicle.vendor,
         id_kendaraan_jenis: "",
         jenis_kendaraan: jenis_kendaraan,
         merk_mobil: merk_mobil,
@@ -327,10 +375,11 @@ function Index() {
         kapasitas: kapasitas,
         kapasitas_maks: kapasitas_maks,
         kubikasi: kubikasi,
-        tgl_kir: "tgl_kir",
+        tgl_kir: TglKir,
         foto: null,
         tgl_update: "tglupdate",
         status: "status",
+        jenis_kepemilikan: JenisKepemilikanValue === null ? JenisKepemilikanValue : detailDataVehicle?.jenis_kepemilikan
       },
         {
           headers: {
@@ -338,15 +387,39 @@ function Index() {
             Authorization: localStorage.getItem("token"),
           }
         }
-      )
+      );
+
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Kendaraan telah berhasil diperbarui.",
+        showConfirmButton: false
+      });
+      // handleClose()
+      handleCloseVehicle()
+      setTimeout(() => {
+        
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       if (error.response && error.response.status === 500) {
-        alert("Error 500: Internal Server Error");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Error 500: Internal Server Error",
+        });
       } else {
-        alert("Terjadi kesalahan");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Terjadi kesalahan",
+        });
       }
     }
   }
+
+
+  console.log(`detailDataVehicle`, detailDataVehicle);
 
   useEffect(() => {
     const Mitra = async () => {
@@ -368,6 +441,7 @@ function Index() {
     Mitra()
   }, [jenis_kendaraan])
 
+  const [idvaluemitraID, setidvaluemitraID] = useState("")
   const MitraOptionss = MitraOptions.map((item) => ({
     value: item.id,
     label: item.mitra
@@ -395,7 +469,7 @@ function Index() {
   }))
 
 
-  console.log("ini warnaPlat", warnaPlat);
+  console.log("ini warnaPlat", detailDataVehicle?.foto);
 
   return (
     <div>
@@ -456,7 +530,7 @@ function Index() {
                 <Row>
                   <Col sm={3}>
                     <Card>
-                      <img src={dataapigetvehicle[0]?.vehicleImage} alt=""></img>
+                      <img src={detailDataVehicle?.foto} alt=""></img>
                     </Card>
                     <Form.Label>Foto Vehicle</Form.Label>
                     <Form.Control
@@ -489,16 +563,20 @@ function Index() {
                     </Form.Group>
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Mitra</Form.Label>
+
                       <Select
+                        placeholder={detailDataVehicle.vendor}
                         options={MitraOptionss}
                         onChange={(selectedOption) => {
                           setMitraValue(selectedOption.label)
+                          setidvaluemitraID(selectedOption.value)
                         }}
                       />
                     </Form.Group>
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis Kendaraan</Form.Label>
                       <Select
+                        placeholder={detailDataVehicle?.jenis_kendaraan}
                         options={MobilJenisOptionss}
                         onChange={(selectedOption) => {
                           setjenis_kendaraan(selectedOption.label)
@@ -508,6 +586,7 @@ function Index() {
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Nama Driver</Form.Label>
                       <Select
+                        placeholder={detailDataVehicle?.namaDriver}
                         options={DriverNameOptionss}
                         onChange={(selectedOption) => {
                           setNamaDriver(selectedOption.label)
@@ -525,17 +604,17 @@ function Index() {
                     </Form.Group>
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Jenis Kepemilikan</Form.Label>
-                      <Form.Select>
-                        <option>-</option>
+                      <Form.Select onChange={(e) => setJenisKepemilikanValue(e.target.value)}>
+                        <option>{detailDataVehicle?.jenis_kepemilikan}</option>
                         {CariJenisKepemilikan.map((item, index) => (
-                          <option key={index}>{item.jenis}</option>
+                          <option value={item.jenis} key={index}>{item.jenis}</option>
                         ))}
                       </Form.Select>
                     </Form.Group>
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Warna Plat</Form.Label>
-                      <Form.Select>
-                        <option>-</option>
+                      <Form.Select onChange={(e) => setwarna_plat(e.target.value)}>
+                        <option>{detailDataVehicle?.warna_plat}</option>
                         {warnaPlat.map((item, index) => (
                           <option key={index}>{item.warna}</option>
                         ))}
@@ -563,7 +642,7 @@ function Index() {
 
 
                   <Col sm={5}>
-                    <Form.Group style={{ marginTop: '10px' }}>
+                    {/* <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Warna Plat</Form.Label>
                       <Form.Control
                         type="text"
@@ -574,7 +653,7 @@ function Index() {
                         }}
                         required
                       />
-                    </Form.Group>
+                    </Form.Group> */}
                     <Row style={{ marginTop: '10px' }}>
                       <Col sm={4}>
                         <Form.Label>Panjang</Form.Label>
@@ -647,8 +726,8 @@ function Index() {
                         <Form.Label>Tgl Exp Kir</Form.Label>
                         <Form.Control
                           type="date"
-                          placeholder={detailDataVehicle?.stnk === "" ? "Masukkan NO STNK" : detailDataVehicle.stnk}
-                          onChange={(e) => setstnk(e.target.value)}
+                          value={detailDataVehicle?.tgl_kir ? TglKir : TglKir}
+                          onChange={(e) => setTglKir(e.target.value)}
                           required
                         />
                       </Col>
@@ -656,7 +735,7 @@ function Index() {
                         <Form.Label>Tgl Beli</Form.Label>
                         <Form.Control
                           type="date"
-                          placeholder={detailDataVehicle?.tgl_beli}
+                          value={detailDataVehicle?.tgl_beli ? tgl_beli : tgl_beli}
                           onChange={(e) => settgl_beli(e.target.value)}
                           required
                         />
@@ -994,24 +1073,69 @@ function Index() {
 
                 </Row>
               </Modal.Body>
+
+
+              <Modal show={showFotoUpload} size="sm" onHide={handleClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Upload Foto</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Row>
+                    ini buat upload foto
+
+                  </Row>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleClose}>
+                    Close
+                  </Button>
+                  <Button variant="primary" onClick={() => uploadFotoo()}>
+                    Upload Foto
+                  </Button>
+                  {/* <Button variant="primary" onClick={() => createvehicle()}>
+                  Save Changes
+                </Button> */}
+                </Modal.Footer>
+              </Modal>
+
+
+
+
+
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                   Close
                 </Button>
-                <Button variant="primary" onClick={() => createvehicle()}>
-                  Save Changes
+                <Button variant="primary" onClick={() => uploadFotoo()}>
+                  Upload Foto
                 </Button>
+                {/* <Button variant="primary" onClick={() => createvehicle()}>
+                  Save Changes
+                </Button> */}
               </Modal.Footer>
             </Modal>
+            {(loading ? (<img src={ElogLoading}></img>) :
+              (
+                <DataTable
+                  columns={columns}
+                  data={dataapigetvehicle}
+                //   pagination
+                //   paginationServer
+                //   paginationTotalRows={pagination.totalData}
+                // // onChangePage={handlePageChange}
+                />
+              )
+            )}
 
-            <DataTable
-              columns={columns}
-              data={dataapigetvehicle}
-              pagination
-              paginationServer
-              paginationTotalRows={pagination.totalData}
-              onChangePage={handlePageChange}
-            />
+            <div className="d-flex mt-3 justify-content-end">
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={onShowSizeChange}
+                defaultCurrent={1}
+                total={pagination?.totalData}
+                onChange={handlePageChange}
+              />
+            </div>
           </Card>
         </Col>
       </Row>

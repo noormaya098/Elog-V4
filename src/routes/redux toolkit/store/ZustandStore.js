@@ -60,7 +60,11 @@ const mobil = create((set, get) => ({
   JenisSimZustand: [],
   setJenisSimZustand: (JenisSimZustand) => set({ JenisSimZustand }),
 
-
+  KodeCabang : [],
+  setJenisKodeCabang: (KodeCabang) => set({ KodeCabang}),
+  
+  NamaMitraGlobalZustand : [],
+  setNamaMitraGlobalZustand: (NamaMitraGlobalZustand) => set({ NamaMitraGlobalZustand}),
 }));
 
 export default mobil;

@@ -6,37 +6,65 @@ import axios from "axios";
 import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import { useHistory } from "react-router-dom";
+import ElogLoadingGif from "../../.././assets/Loader_Elogs1.gif"
+import Swal from "sweetalert2";
+import { Pagination } from 'antd';
 function SPListlama() {
   const [isiData, setIsiData] = useState([]);
+  const [Loading, setLoading] = useState(false);
   const [destinationData, setDestinationData] = useState([]);
   const [search, setSearch] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     limit: 10,
   });
+
+  // const [Pagginations, setPagginations] = useState(1)
   const history = useHistory();
 
   const dataapi = async (page) => {
-    const isi = await axios.get(
-      `${Baseurl}sp/get-SP-all?limit=15&page=${page}&keyword=${search}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
+    try {
+      setLoading(true)
+      const isi = await axios.get(
+        `${Baseurl}sp/get-SP-all?limit=10&page=${page}&keyword=${search}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      const isidata = isi.data.data.order;
+      setPagination({
+        currentPage: isi.data.data.currentPage,
+        totalPage: isi.data.data.totalPage,
+      });
+
+      setIsiData(isidata);
+      setLoading(false)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        if (localStorage.getItem('token') === null) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Error Login, Silahkan Login Kembali '
+          });
+          setTimeout(() => {
+            window.location.reload()
+          }, 2000);
+          // history.push('/signin');
+        }
+      } else {
+        console.error(error);
       }
-    );
-
-    const isidata = isi.data.data.order;
-    setPagination({
-      currentPage: isi.data.data.currentPage,
-      limit: isi.data.data.limit,
-    });
-
-    setIsiData(isidata);
+    }
   };
-  useEffect(() => {
+  useEffect((page) => {
     dataapi(pagination.currentPage, search);
+    // dataapi(Pagginations);
   }, [search]);
 
   useEffect(() => {
@@ -99,7 +127,7 @@ function SPListlama() {
     {
       name: "No",
       selector: (row) => row?.no,
-      width: "50px",
+      width: "80px",
       wrap: true,
     },
     {
@@ -140,12 +168,14 @@ function SPListlama() {
         let month = (1 + date.getMonth()).toString().padStart(2, '0');
         let day = date.getDate().toString().padStart(2, '0');
     
-        return `${year}-${month}-${day}`; // return dalam format yyyy-mm-dd
+        return (
+          <Tag color="green">{`${year}-${month}-${day}`}</Tag> // return dalam format yyyy-mm-dd
+        );
       },
-      width: "100px",
+      width: "120px",
       wrap: true,
     },
-    
+
     {
       name: "Destination",
       selector: (row) => row?.destination,
@@ -166,15 +196,17 @@ function SPListlama() {
     {
       name: "Akunting",
       selector: (row) => {
+        const tanggal = row.dateApproveAct
         return row?.approveAct === "Y" ? (
-          <Tag color="green">Approved</Tag>
-        ) : row?.approveAct === "Invalid date" ? (
-          <Tag color="red">Diverted</Tag>
-        ) : (
-          <Tag color="orange">Waiting</Tag>
-        );
+          <Tag color="green">Approved <br /> {tanggal}</Tag>
+        ) : (row?.approveAct === "N" && tanggal === "Invalid date") ? (
+          <Tag color="yellow">Waiting <br/> {tanggal ? "-" : tanggal}</Tag>
+        ) : (row?.approveAct === "N" && tanggal !== "Invalid date") ?
+        (
+          <Tag color="red">Diverted <br/> {tanggal }</Tag>
+        ) : ""
       },
-      width: "100px",
+      width: "170px",
     },
     {
       name: "Operasional",
@@ -183,18 +215,43 @@ function SPListlama() {
         const isValidDate = !isNaN(new Date(dateApproveOps));
         const data = isValidDate ? dateApproveOps : "-";
         if (row?.approveOps === "Y") {
-          return <Tag color="green">Approved <br/> {data}</Tag>;
+          return <Tag color="green">Approved <br /> {data}</Tag>;
         } else if (!isValidDate) {
-          return <Tag color="orange">Waiting <br/> {data}</Tag>;
+          return <Tag color="yellow">Waiting <br /> {data}</Tag>;
         } else {
-          return <Tag color="red">Diverted <br/> {data}</Tag>;
+          return <Tag color="red">Diverted <br /> {data}</Tag>;
         }
       },
+      width: "170px",
+    },
+    {
+      name: "Purchasing",
+      selector: (row) => {
+        const date = row?.dateApprovePurch
+        return (
+          <>
+            {(row.approvePurch === "Y" && date != null) ? (
+              <Tag color="green">Approved <br /> {date}</Tag>
+            ) : (
+              (row.approvePurch === "N" && date === "Invalid date") ? (
+                <Tag color="yellow">Waiting <br /> {date ? "-" : date}</Tag>
+              ) : (
+                (row.approvePurch === "N" && date != "Invalid date") ? (
+                  <Tag color="red">Diverted <br /> {date}</Tag>
+                ) : (
+                  null
+                )
+              )
+            )}
+          </>
+        )
+      },
+      width: "180px",
     },
     {
       name: "Detail",
-      selector: (row) => <><Button size="sm" onClick={()=>buttonarahin(row.idmp)}>Detail</Button></>,
-      width: "150px",
+      selector: (row) => <><Button size="sm" onClick={() => buttonarahin(row.idmp)}>Detail</Button></>,
+      width: "170px",
     },
   ];
 
@@ -204,8 +261,10 @@ function SPListlama() {
   };
 
   const handlePageChange = async (page) => {
-    setPagination({ ...pagination, currentPage: page });
-    await dataapi(page, search);
+    dataapi(page)
+    // setPagginations(page)
+    // setPagination({ ...pagination, currentPage: page });
+    // await dataapi(page, search);
   };
 
   const handleSearchChange = (e) => {
@@ -216,7 +275,7 @@ function SPListlama() {
       <Card>
         <Row>
           <Col>
-            <h1>SP List</h1>
+            {/* <h1>SP List</h1> */}
             <div className="d-flex justify-content-end">
               <Form.Group controlId="search">
                 <Form.Control
@@ -226,15 +285,27 @@ function SPListlama() {
                 />
               </Form.Group>
             </div>
-            <DataTable
-              columns={columns}
-              data={combinedData}
-              pagination
-              paginationServer
-              paginationPerPage={pagination.limit}
-              paginationTotalRows={isiData.length}
-              onChangePage={handlePageChange}
-            />
+            {(Loading ? (<img src={ElogLoadingGif}></img>) : (
+              <DataTable
+                columns={columns}
+                title="SP List"
+                data={combinedData}
+              // pagination
+              // paginationServer
+              // paginationPerPage={pagination.limit}
+              // paginationTotalRows={isiData.length}
+              // onChangePage={handlePageChange}
+              />
+            ))}
+            <div className="mt-3 d-flex justify-content-end">
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={handlePageChange}
+                onChange={handlePageChange}
+                defaultCurrent={1}
+                total={pagination.totalPage}
+              />
+            </div>
           </Col>
         </Row>
       </Card>

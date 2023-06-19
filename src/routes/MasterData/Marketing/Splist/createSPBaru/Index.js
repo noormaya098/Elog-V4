@@ -7,6 +7,9 @@ import { useHistory } from "react-router-dom";
 import mobil from "../../../../redux toolkit/store/ZustandStore";
 import Select from 'react-select';
 import { DatePicker } from 'antd';
+import Swal from "sweetalert2";
+import { notification } from 'antd';
+
 
 function Index() {
   const { RangePicker } = DatePicker;
@@ -35,6 +38,7 @@ function Index() {
   const [tgl_bongkar, setTgl_bongkar] = useState("");
   const [memoValue, setMemoValue] = useState("");
   const [JenisBarang, setJenisBarang] = useState("");
+  const [TypeMobilSelect , setTypeMobilSelect] = useState("");
   const history = useHistory();
   const dapetinnosp = async () => {
     const data = await axios.get(
@@ -57,6 +61,7 @@ function Index() {
     setDiskonSelect(data.data.data.discount);
     setServiceSelect(data.data.data.service);
     setInsuranceSelect(data.data.data.insurance);
+    setTypeMobilSelect(data.data.data.type)
     setpackingValue(data.data.data.packing);
     console.log(`jenis barang`, JenisBarang);
     console.log(`dnoSP`, alamatInvoice);
@@ -65,43 +70,58 @@ function Index() {
     dapetinnosp();
   }, [CompanyID]);
 
-  const createspAwal = async () => {
-    try {
-      const response = await axios.post(
-        `${Baseurl}sp/create-SP`,
-        {
-          ph: noPH,
-          msp: noSPawal,
-          memo: memoValue,
-          id_customer: CompanyID,
-          jenis_barang: JenisBarang,
-          packing: packingValues,
-          asuransi: insuranceSelects,
-          tgl_pickup: tgl_pickup,
-          tgl_bongkar: tgl_bongkar,
-          service: serviceSelectValue,
-          alamat_invoice: AlamatInvoiceValue,
-          diskon: diskonselectValue,
-          asuransi_fee: 0,
-          total_keseluruhan: 0,
+ const createspAwal = async () => {
+  try {
+    const response = await axios.post(
+      `${Baseurl}sp/create-SP`,
+      {
+        ph: noPH,
+        msp: noSPawal,
+        memo: memoValue,
+        id_customer: CompanyID,
+        jenis_barang: JenisBarang,
+        packing: packingValues,
+        asuransi: insuranceSelects,
+        tgl_pickup: tgl_pickup,
+        tgl_bongkar: tgl_bongkar,
+        service: serviceSelectValue,
+        alamat_invoice: AlamatInvoiceValue,
+        diskon: diskonselectValue,
+        asuransi_fee: 0,
+        total_keseluruhan: 0,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token"),
-          },
-        }
-      );
-
-      if (response.data) {
-        const idmp = response.data.idmp; // get the idmp from the response
-        console.log(idmp); // log it or do whatever you want with it
-        history.push(`/masterdata/edit-sp/${idmp}`); // redirect
       }
-    } catch (error) {
-      console.error(error); // handle the error
+    );
+
+    if (response.data) {
+      const idmp = response.data.idmp; 
+
+      // Ant Design Notification Success
+      notification.success({
+        message: 'Success',
+        description: 'SP berhasil dibuat',
+        placement: 'topRight',
+      });
+
+      history.push(`/masterdata/edit-sp/${idmp}`); 
     }
-  };
+  } catch (error) {
+    // Ant Design Notification Error
+    notification.error({
+      message: 'Error',
+      description: 'Ada kesalahan saat membuat SP',
+      placement: 'topRight',
+    });
+
+    console.error(error);
+  }
+};
+
 
   const handleDatesChange = (dates, dateStrings) => {
     setTgl_pickup(dateStrings[0]); // nilai pertama untuk tgl_pickup
@@ -157,8 +177,8 @@ function Index() {
               <RangePicker onChange={handleDatesChange} />
             </Col>
             {/* <Col sm={3}>
-        <Form.Label label="Tanggal Bongkar">
-          <RangePicker onChange={handleBongkarChange} />
+        <Form.Label label="Type Vehicle">
+        
         </Form.Label>
       </Col> */}
           </Row>

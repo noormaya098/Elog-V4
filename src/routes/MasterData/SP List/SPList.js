@@ -6,6 +6,7 @@ import axios from "axios";
 import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import { useHistory } from "react-router-dom";
+import { Pagination } from 'antd';
 function SPList() {
   const [isiData, setIsiData] = useState([]);
   const [destinationData, setDestinationData] = useState([]);
@@ -13,12 +14,14 @@ function SPList() {
     currentPage: 1,
     limit: 10,
   });
+  const [TotalPage , setTotalPage] = useState("")
   const history = useHistory();
   const [spId, setSpId] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   const dataapi = async (page) => {
     const isi = await axios.get(
-      `${Baseurl}sp/get-SP?limit=15&page=${page}&keyword=${spId}`,
+      `${Baseurl}sp/get-SP?limit=${pageSize}&page=${page}&keyword=${spId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -26,18 +29,35 @@ function SPList() {
         },
       }
     );
-
+  
     const isidata = isi.data.data.order;
+    setTotalPage(isi.data.data.totalData)
     setPagination({
       currentPage: isi.data.data.currentPage,
       limit: isi.data.data.limit,
     });
-
+  
     setIsiData(isidata);
   };
   useEffect(() => {
     dataapi(pagination.currentPage, spId);
-  }, [spId]);
+  }, [spId , pageSize]);
+
+  const onPaginationChange = (page, newPageSize) => {
+    console.log(page, newPageSize);
+    // Perbarui state pageSize dengan nilai baru
+    setPageSize(newPageSize);
+    // Panggil dataapi dengan page baru
+    dataapi(page);
+  };
+
+
+  useEffect(() => {
+    dataapi(pagination.currentPage, spId);
+  }, [pagination.currentPage, spId , TotalPage]);
+
+
+
 
   useEffect(() => {
     if (isiData && isiData.length > 0) {
@@ -99,13 +119,13 @@ function SPList() {
     {
       name: "No",
       selector: (row) => row.no,
-      width: "50px",
+      width: "70px",
       wrap: true,
     },
     {
       name: "SP ID",
       selector: (row) => row.sp,
-      width : "150px",
+      width: "150px",
       wrap: true,
     },
     {
@@ -116,55 +136,55 @@ function SPList() {
     {
       name: "Marketing",
       selector: (row) => row.salesName,
-      width : "100px",
+      width: "100px",
       wrap: true,
     },
     {
       name: "Service",
       selector: (row) => row.service,
-      width : "80px",
+      width: "80px",
       wrap: true,
     },
     {
       name: "Vehicle",
       selector: (row) => row.kendaraan,
-      width : "80px",
+      width: "80px",
       wrap: true,
     },
     {
       name: "Pickup Date",
       selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'),
-      width : "100px",
+      width: "100px",
       wrap: true,
     },
     {
       name: "Destination",
       selector: (row) => row.destination,
-      width : "150px",
+      width: "150px",
       wrap: true,
     },
 
     {
       name: "Tgl Approved/Decline Akunting",
-      selector: (row) =>new Date (row.dateApproveAct === "Invalid date" ? "-" : row.dateApproveAct).toLocaleDateString('en-CA'),
+      selector: (row) => new Date(row.dateApproveAct === "Invalid date" ? "-" : row.dateApproveAct).toLocaleDateString('en-CA'),
       width: "210px",
       wrap: true,
     },
-    
-  {
+
+    {
       name: "OPS",
       selector: (row) => {
-          return row.approveOps === "Y" ? (
-              <Tag color="green">Approved  <br/>{row.dateApproveOps}</Tag>
-          ) : row.dateApproveOps === "Invalid date" ? (
-              <Tag color="orange">Waiting <br/> {row.dateApproveOps}</Tag>
-          ) : (
-              <Tag color="red">Reject <br/> {row.dateApproveOps}</Tag>
-          );
+        return row.approveOps === "Y" ? (
+          <Tag color="green">Approved  <br />{row.dateApproveOps}</Tag>
+        ) : row.dateApproveOps === "Invalid date" ? (
+          <Tag color="orange">Waiting <br /> {row.dateApproveOps}</Tag>
+        ) : (
+          <Tag color="red">Reject <br /> {row.dateApproveOps}</Tag>
+        );
       },
-      width : "150px"
-  },
-  
+      width: "150px"
+    },
+
 
     {
       name: "Opsi",
@@ -207,7 +227,7 @@ function SPList() {
                     type="text"
                     value={spId}
                     placeholder="No SP "
-                    onChange={(e)=>setSpId(e.target.value)}
+                    onChange={(e) => setSpId(e.target.value)}
                   />
                 </Form.Group>
                 <br />
@@ -216,11 +236,19 @@ function SPList() {
             <DataTable
               columns={columns}
               data={combinedData}
-              pagination
-              paginationServer
-              paginationPerPage={pagination.limit}
-              paginationTotalRows={isiData.length}
-              onChangePage={handlePageChange}
+              // pagination
+              // paginationServer
+              // paginationPerPage={pagination.limit}
+              // paginationTotalRows={isiData.length}
+              // onChangePage={handlePageChange}
+            />
+            <Pagination
+              showSizeChanger
+              onChange={onPaginationChange}
+              // defaultPageSize={10}
+              size="default"
+              total={TotalPage}
+              defaultCurrent={1}
             />
           </Col>
         </Row>

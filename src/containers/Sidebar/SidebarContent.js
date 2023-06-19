@@ -86,7 +86,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
-                  <Menu.Item key="driver">
+                  {/* <Menu.Item key="driver">
                     <Link to="/masterdata/driver">
                       <i className="icon icon-widgets" />
                       <span>
@@ -101,7 +101,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <IntlMessages id="sidebar.vehicle" />
                       </span>
                     </Link>
-                  </Menu.Item>
+                  </Menu.Item> */}
                   <Menu.Item key="monitoringVehicle">
                     <Link to="/masterdata/monitoring">
                       <i className="icon icon-widgets" />
@@ -185,6 +185,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                 </SubMenu>
               )}
               {jobdesk.toLowerCase() === "akunting" ? (
+                <>
                 <SubMenu key="monitoring" title="Akunting">
                   <Menu.Item key="SP Lists All">
                     <Link to="/akunting/splistakuntingbaru">
@@ -199,6 +200,15 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Link>
                   </Menu.Item>
                 </SubMenu>
+                <SubMenu key="ArList" title="AR List">
+                  <Menu.Item key="SP Lists All">
+                    <Link to="/akunting/ar/ar">
+                      <i className="icon icon-widgets" />
+                      <span>AR List ALL</span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+                </>
               ) : null}
 
               {jobdesk === "purchasing" ? (

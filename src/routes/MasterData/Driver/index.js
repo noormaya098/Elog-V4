@@ -8,12 +8,15 @@ import Token from "../../../Api/Token";
 import Swal from "sweetalert2";
 import mobil from "../../redux toolkit/store/ZustandStore";
 import Select from "react-select";
-
+import elogGif from "../../.././assets/Loader_Elogs1.gif"
+import { Pagination } from 'antd';
 function CobaTables() {
+  const FormData = require('form-data');
+  const fs = require('fs');
   const [DataDalamApi, setDataDalamApi] = useState([]);
   const [driverDetails, setDriverDetails] = useState([]);
   const [currentPage, setCurrentPage] = useState("");
-  const [totalData , setTotalData] = useState([])
+  const [totalData, setTotalData] = useState([])
   const [pagination, setPagination] = useState(1);
   const [JenisKepemilikan, setJenisKepemilikan] = useState([])
   const [UkuranSeragam, setUkuranSeragam] = useState([])
@@ -46,10 +49,15 @@ function CobaTables() {
 
   ///Modal Bootstrap
   const [show, setShow] = useState(false);
+  const [showUploadFoto, setshowUploadFoto] = useState(false);
   const [editShow, setEditShow] = useState(false);
   const handleClose = () => {
     setShow(false);
     setEditShow(false);
+  };
+  const handleCloses = () => {
+    setshowUploadFoto(false);
+    // setEditShow(false);
   };
 
 
@@ -57,6 +65,9 @@ function CobaTables() {
     setShow(true);
   };
 
+  const UploadFotoTombol = () => {
+    setshowUploadFoto(true)
+  }
 
   ///
   const ApiDriver = async (page) => {
@@ -81,7 +92,7 @@ function CobaTables() {
 
 
       setDataDalamApi(dataApiDriver);
-
+      setIsLoading(false);
     } catch (error) {
       console.error(`Error in ApiDriver: ${error}`);
       // handle the error based on your application's requirement, such as setting an error state or displaying a notification to the user
@@ -93,16 +104,18 @@ function CobaTables() {
 
 
   const handlePageChange = (page) => {
-    setPagination(page);
+    ApiDriver(page);
+  };
+  const onShowSizeChange = (page, pageSize) => {
+    // console.log(page, pageSize);
+    setPagination(page)
   };
 
   useEffect(() => {
     ApiDriver(pagination);
   }, [CariNamaSearch, pagination, JenisKepemilikanValues]);
 
-  // useEffect(() => {
-  //   ApiDriver(currentPage);
-  // }, [currentPage]);
+
 
   useEffect(() => {
     if (driverDetails.length > 0) {
@@ -117,6 +130,8 @@ function CobaTables() {
     }
   }, [driverDetails]);
 
+
+  const [DetailDataDriver, setDetailDataDriver] = useState([])
   const GetdataDetail = async (id) => {
     const urlDataDetailDriver = await axios.get(
       `${Baseurl}driver/get-driver-detail?id=${id}`,
@@ -128,7 +143,9 @@ function CobaTables() {
         },
       }
     );
-    const dataDriver = urlDataDetailDriver.data.data.status;
+    const dataDriver = urlDataDetailDriver.data.data?.[0]
+    setDetailDataDriver(dataDriver)
+    console.log(`ini dataDriver`, dataDriver);
 
     setDriverDetails((prevDetails) => [...prevDetails, { id, dataDriver }]);
 
@@ -136,9 +153,12 @@ function CobaTables() {
     // console.log("Data detail:", driverDetails);
   };
 
-  // useEffect(() => {
-  //   console.log("Data detail:", driverDetails);
-  // }, [driverDetails]);
+  useEffect(() => {
+    GetdataDetail()
+    console.log("Data detail:", DetailDataDriver);
+  }, []);
+
+
 
 
 
@@ -167,7 +187,7 @@ function CobaTables() {
         timerProgressBar: true,
       });
       handleClose();
-      ApiDriver(pagination); 
+      ApiDriver(pagination);
     } catch (error) {
       console.log(error.message);
     }
@@ -195,7 +215,7 @@ function CobaTables() {
         timerProgressBar: true,
       });
       handleClose();
-      ApiDriver(pagination); 
+      ApiDriver(pagination);
 
     } catch (error) {
       console.log(error.message);
@@ -203,27 +223,30 @@ function CobaTables() {
   };
 
   ///Edit Driver APi
-  const editdrivapier = async (id) => {
+  const editdrivapier = async (selectedId) => {
     try {
+      setIsLoading(true)
       const urleditdrivapier = await axios.post(
         `${Baseurl}driver/update-driver`,
         {
-          id: id,
-          nama: nama,
-          tgl: tgl_lahir,
-          jenis_sim: jenis_sim,
-          no_ktp: no_ktp,
-          email: email,
-          tgl_masuk: tgl_masuk,
-          no_sim: no_sim,
-          agama: agama,
-          alamat: alamat,
-          agama: agama,
-          notelp1: notelp1,
-          notelp2: notelp2,
-          email: email,
-          notelp1: notelp1,
-          notelp2: notelp2,
+          id: selectedId,
+          nik: (nik === "") ? (DetailDataDriver?.nik) : (nik),
+          nama: (nama === "") ? (DetailDataDriver?.driverName) : (nama),
+          tgl: (tgl_lahir === "") ? (DetailDataDriver?.tgl_lahir) : (tgl_lahir),
+          jenis_sim: (jenis_sim === "") ? (DetailDataDriver?.jenis_sim) : (jenis_sim),
+          no_ktp: (no_ktp === "") ? (DetailDataDriver?.driverKtp) : (no_ktp),
+          divisi: (divisi === "") ? (DetailDataDriver?.division) : (divisi),
+          email: (email === "") ? (DetailDataDriver?.email) : (email),
+          no_sim: (no_sim === "") ? (DetailDataDriver?.numberSim) : (no_sim),
+          tgl_masuk: (tgl_masuk === "") ? (DetailDataDriver?.dateIn) : (tgl_masuk),
+          agama: (agama === "") ? (DetailDataDriver?.driverReligion) : (agama),
+          alamat: (alamat === "") ? (DetailDataDriver?.driverAddress) : (alamat),
+          agama: (agama === "") ? (DetailDataDriver?.driverReligion) : (agama),
+          no_telp: (notelp1 === "") ? (DetailDataDriver?.noTelp1) : (notelp1),
+          no_telp2: (notelp2 === "") ? (DetailDataDriver?.noTelp2) : (notelp2),
+          email: (email === "") ? (DetailDataDriver?.driverEmail) : (email),
+          vehicle_type: (VehicleOptionsValue === "") ? (DetailDataDriver?.vehicle) : (VehicleOptionsValue),
+          jenis_kepemilikan: (JenisKepemilikanValue === "") ? (DetailDataDriver?.jenisKepemilikan) : (JenisKepemilikanValue)
         },
         {
           headers: {
@@ -232,17 +255,33 @@ function CobaTables() {
           },
         }
       );
-      // Tangani respons dari API sesuai kebutuhan
-      DataDalamApi();
+      setIsLoading(false)
+      handleClose()
+      Swal.fire({
+        icon: 'success',
+        title: 'Edit Driver Berhasil',
+        text: 'Driver berhasil diubah.',
+        showConfirmButton: false,
+      });
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+
     } catch (error) {
       console.log(error.message);
     }
   };
-
   const [selectedId, setSelectedId] = useState(null);
+  // console.log(`ini DetailDataDriver?.driverName`,DetailDataDriver?.driverName);
+
+  ////upload foto Edit Driver
+
+
 
   const editDriver = (id) => {
+    setSelectedId(id)
     setEditShow(true);
+    GetdataDetail(id)
     setSelectedId(id);
   };
 
@@ -259,7 +298,7 @@ function CobaTables() {
     {
       name: "Image",
       selector: (row) => (
-        <img src={row.driverImage} width="30px" alt="Foto Driver" />
+        <img src={row.driverImage} width="70px" alt="Foto Driver" />
       ),
     },
     {
@@ -285,7 +324,7 @@ function CobaTables() {
     {
       name: "Edit",
       cell: (row) => (
-        <Button variant="primary" size="sm" onClick={() => editDriver(row.id)}>
+        <Button variant="primary" size="sm" onClick={() => editDriver(row.driverId)}>
           Edit
         </Button>
       ),
@@ -293,7 +332,7 @@ function CobaTables() {
   ];
 
   ///// Create Driver
- 
+
 
   const driveradd = async () => {
     try {
@@ -337,7 +376,7 @@ function CobaTables() {
           timerProgressBar: true,
         });
         handleClose();
-        DataDalamApi();
+        // DataDalamApi();
       } else {
         const belumImput = driverAdD.data.status.message;
         Swal.fire({
@@ -356,35 +395,38 @@ function CobaTables() {
       });
     }
   };
-  console.log(`ini gambar`, DataDalamApi);
+  // console.log(`ini gambar`, DataDalamApi);
+  const [GambarFoto, setGambarFoto] = useState(null)
+  ///Upload foto
+  const UploadFoto = async (id) => {
+    try {
+      setIsLoading(true)
+      let data = new FormData();
+      data.append('id', selectedId);
+      data.append('cover', GambarFoto);
 
-///Upload foto
-const UploadFoto = async () => {
-  try {
-    let data = new FormData();
-    data.append('id', 'nilai_id');  // ganti 'nilai_id' dengan id yang sesuai
-    // data.append('cover', file);  // ganti 'file' dengan objek file yang sesuai
 
-    const response = await axios.post(
-      `${Baseurl}driver/upload-driver-photo`,
-      data,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: localStorage.getItem("token")
+      const response = await axios.post(
+        `${Baseurl}driver/upload-driver-photo`,
+        data,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: localStorage.getItem("token")
+          }
         }
-      }
-    );
+      );
+      setIsLoading(false)
 
-    // handle response here
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "ada kesalahan",
-    });
+      // handle response here
+    } catch (error) {
+      // Swal.fire({
+      //   icon: "error",
+      //   title: "Oops...",
+      //   text: "ada kesalahan",
+      // });
+    }
   }
-}
 
 
 
@@ -403,7 +445,7 @@ const UploadFoto = async () => {
     setJenisKepemilikan(data.data.jenisKepemilikan)
     setUkuranSeragam(data.data.ukuranSeragam)
     setJenisKepemilikanCari(data.data.jenisKepemilikan)
-    console.log(`jneis`, JenisKepemilikanCari);
+    // console.log(`jneis`, JenisKepemilikanCari);
   }
   useEffect(() => {
     getSelect()
@@ -424,7 +466,7 @@ const UploadFoto = async () => {
       }
     )
     setJenisSimSelect(data.data.data.jenisSim)
-    console.log(`data`, data.data.data.jenisSim)
+    // console.log(`data`, data.data.data.jenisSim)
   }
 
   ///type cehicle
@@ -438,7 +480,7 @@ const UploadFoto = async () => {
       }
     )
     setVehicleOptions(data.data.data.order)
-    console.log(`ini type`, data.data.data.order);
+    // console.log(`ini type`, data.data.data.order);
   }
 
   const VehicleOpstionsSelect = VehicleOptions.map((item) => ({
@@ -503,22 +545,7 @@ const UploadFoto = async () => {
               </Modal.Header>
               <Modal.Body>
                 <Row>
-                  <Col sm={3}>
-                    <Card>
-                      <div>
-                        <img src={DataDalamApi[0]?.gambar} alt="Deskripsi Gambar" />
-                      </div>
-                    </Card>
-                    <Form.Label>Photo Driver</Form.Label>
-                    <Form.Control
-                      type="file"
-                      // placeholder="Masukkan NIK"
-                      // value={nik}
-                      // onChange={(e) => setNik(e.target.value)}
-                      required
-                    />
-                  </Col>
-                  <Col sm={4}>
+                  <Col sm={6}>
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>NIK</Form.Label>
                       <Form.Control
@@ -530,7 +557,7 @@ const UploadFoto = async () => {
                       />
                     </Form.Group>
                     <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Nama</Form.Label>
+                      <Form.Label>Nama Driver</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Masukkan Nama"
@@ -617,7 +644,7 @@ const UploadFoto = async () => {
                     </Form.Group>
                   </Col>
 
-                  <Col sm={5}>
+                  <Col sm={6}>
                     <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No Telp</Form.Label>
                       <Form.Control
@@ -663,7 +690,7 @@ const UploadFoto = async () => {
                       <Form.Control
                         type="date"
                         placeholder="Masukkan Divisi"
-                        value={TglStnkValue}
+                        value={TanggalSIMValue}
                         onChange={(e) => setTanggalSIMValue(e.target.value)}
                         required
                       />
@@ -727,14 +754,48 @@ const UploadFoto = async () => {
 
                 </Row>
               </Modal.Body>
-
+              {/* Upload Foto */}
+              <Modal show={showUploadFoto} size="sm" onHide={handleCloses}>
+                <Modal.Body>
+                  <Modal.Header closeButton>
+                  </Modal.Header>
+                  <Row>
+                    <Card>
+                      <div>
+                        <img src={DataDalamApi[0]?.gambar} alt="Deskripsi Gambar" />
+                      </div>
+                    </Card>
+                    <Form.Label>Photo Driver</Form.Label>
+                    <Form.Control
+                      type="file"
+                      // placeholder="Masukkan NIK"
+                      // value={nik}
+                      // onChange={(e) => setNik(e.target.value)}
+                      required
+                    />
+                  </Row>
+                </Modal.Body>
+                <Row >
+                  <Col className="d-flex justify-content-center">
+                    <Button variant="primary" size="sm" onClick={() => driveradd()}>
+                      Upload
+                    </Button>
+                  </Col>
+                </Row>
+              </Modal>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
                   Close
                 </Button>
-                <Button variant="primary" onClick={() => driveradd()}>
-                  Save Changes
+                <Button variant="primary" onClick={() => {
+                  // handleClose()
+                  UploadFotoTombol()
+                }}>
+                  Save
                 </Button>
+                {/* <Button variant="primary" onClick={() => driveradd()}>
+                  Upload Foto Driver
+                </Button> */}
               </Modal.Footer>
             </Modal>
 
@@ -756,50 +817,95 @@ const UploadFoto = async () => {
                   <Col sm={4}>
                     <Card>
                       <div>
-                        <img src={DataDalamApi[0]?.gambar} alt="Deskripsi Gambar" />
+                        <img src={DetailDataDriver?.driverImage} alt="Deskripsi Gambar" />
                       </div>
                     </Card>
                     <Form.Label>Photo Driver</Form.Label>
                     <Form.Control
                       type="file"
-                      // placeholder="Masukkan NIK"
-                      value={nik}
-                      // onChange={(e) => setNik(e.target.value)}
+                      onChange={(e) => setGambarFoto(e.target.files[0])}
                       required
                     />
+
                   </Col>
                   <Col sm={4}>
+                    <Form.Group>
+                      <Form.Label>NIK</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={DetailDataDriver?.nik}
+                        value={nik}
+                        onChange={(e) => setNik(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
                     <Form.Group>
                       <Form.Label>Nama Driver</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Nama"
+                        placeholder={DetailDataDriver?.driverName}
                         value={nama}
                         onChange={(e) => setNama(e.target.value)}
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Jenis Sim</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Nama"
-                        value={jenis_sim}
-                        onChange={(e) => setJenisSim(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>No KTP</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Divisi"
+                        placeholder={DetailDataDriver?.driverKtp}
                         value={no_ktp}
                         onChange={(e) => setNo_ktp(e.target.value)}
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Divisi</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={DetailDataDriver?.division}
+                        value={divisi}
+                        onChange={(e) => setDivisi(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>No SIM</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={DetailDataDriver?.numberSim}
+                        value={no_sim}
+                        onChange={(e) => setNo_sim(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Jenis SIM</Form.Label>
+                      <Form.Select
+                        type="text"
+                        // placeholder={DetailDataDriver?.simType}
+                        value={jenis_sim}
+                        onChange={(e) => setJenisSim(e.target.value)}
+                        required
+                      >
+                        <option>{DetailDataDriver?.simType}</option>
+                        {JenisSimSelect && JenisSimSelect.map((item) => (
+                          <option>{item.Jenis}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Alamat</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={DetailDataDriver?.driverAddress}
+                        value={alamat}
+                        onChange={(e) => setalamat(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Tanggal Lahir</Form.Label>
                       <Form.Control
                         type="date"
@@ -809,94 +915,146 @@ const UploadFoto = async () => {
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        type="email"
-                        placeholder="Masukkan Divisi"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>No Telp 1</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Jenis SIM"
-                        value={notelp1}
-                        onChange={(e) => setNotelp1(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Tanggal Masuk</Form.Label>
-                      <Form.Control
-                        type="date"
-                        placeholder="Masukkan Divisi"
-                        value={tgl_masuk}
-                        onChange={(e) => setTgl_masuk(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col sm={4}>
-                    <Form.Group>
-                      <Form.Label>No SIM</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Divisi"
-                        value={no_sim}
-                        onChange={(e) => setNo_sim(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Label>Alamat</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Divisi"
-                        value={alamat}
-                        onChange={(e) => setalamat(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
                       <Form.Label>Agama</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Masukkan Divisi"
+                        placeholder={DetailDataDriver?.driverReligion}
                         value={agama}
                         onChange={(e) => setAgama(e.target.value)}
                         required
                       />
                     </Form.Group>
-                    <Form.Group>
-                      <Form.Label>No Telp 2</Form.Label>
+                  </Col>
+                  <Col sm={4}>
+
+                    <Col>
+                      <Form.Group style={{ marginTop: '10px' }}>
+                        <Form.Label>No Telp</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder={DetailDataDriver?.noTelp1}
+                          value={notelp1}
+                          onChange={(e) => setNotelp1(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                      <Form.Group style={{ marginTop: '10px' }}>
+                        <Form.Label>No Telp 2</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder={DetailDataDriver?.noTelp2}
+                          value={notelp2}
+                          onChange={(e) => setNotelp2(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                      <Form.Group style={{ marginTop: '10px' }}>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          type="email"
+                          placeholder={DetailDataDriver?.driverEmail}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Tanggal Masuk</Form.Label>
+                        <Form.Control
+                          type="date"
+                          placeholder="Masukkan Divisi"
+                          value={tgl_masuk}
+                          onChange={(e) => setTgl_masuk(e.target.value)}
+                          required
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Tanggal SIM</Form.Label>
                       <Form.Control
-                        type="text  "
+                        type="date"
                         placeholder="Masukkan Divisi"
-                        value={notelp2}
-                        onChange={(e) => setNotelp2(e.target.value)}
+                        value={TglStnkValue}
+                        onChange={(e) => setTanggalSIMValue(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Vehicle Type</Form.Label>
+                      <Select
+                        placeholder={DetailDataDriver?.vehicle}
+                        options={VehicleOpstionsSelect}
+                        onChange={(select) => {
+                          setVehicleOptionsValue(select.label)
+                        }}
+                      />
+                      {/* <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={nik}
+                        onChange={(e) => setDivisi(e.target.value)}
+                        required
+                      /> */}
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Jenis Kepemilikan</Form.Label>
+                      <Form.Select onChange={(e) => setJenisKepemilikanValue(e.target.value)}>
+                        <option >{DetailDataDriver?.jenisKepemilikan}</option>
+                        {JenisKepemilikan && JenisKepemilikan.map((item) => (
+                          <option value={item.jenis}>{item.jenis}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Ukuran Seragam</Form.Label>
+                      <Form.Select onChange={(e) => setUKSeragam(e.target.value)}>
+                        <option>-</option>
+                        {UkuranSeragam && UkuranSeragam.map((item) => (
+                          <option>{item.ukuran}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Rekening Bank</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={RekeningBank}
+                        onChange={(e) => setRekeningBank(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Nomor Rekening</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Masukkan Divisi"
+                        value={RekeningNorek}
+                        onChange={(e) => setRekeningNorek(e.target.value)}
                         required
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>Keterangan</Form.Label>
+                      {/* <Form.Label>Keterangan</Form.Label>
                       <Form.Control
                         type="text  "
                         placeholder="Masukkan Divisi"
                         value={nik}
                         // onChange={(e) => setNik(e.target.value)}
                         required
-                      />
+                      /> */}
                       <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
                           Close
                         </Button>
                         <Button
                           variant="primary"
-                          onClick={() => editdrivapier(selectedId)}
+                          onClick={() => {
+                            editdrivapier(selectedId)
+                            UploadFoto(selectedId)
+                          }}
                         >
                           Save Changes
                         </Button>
@@ -906,19 +1064,26 @@ const UploadFoto = async () => {
                 </Row>
               </Modal.Body>
             </Modal>
-            {isLoading ? (
-              <div className="d-flex justify-content-center">Loading...</div>
+            {(isLoading) ? (<img src={elogGif}></img>
             ) : (
               <DataTable
-              columns={columns}
-              data={DataDalamApi}
-              pagination
-              paginationServer
-              paginationTotalRows={totalData}
-              onChangePage={handlePageChange}
-            />
-            
+                columns={columns}
+                data={DataDalamApi}
+              // pagination
+              // paginationServer
+              // paginationTotalRows={totalData}
+              // onChangePage={handlePageChange}
+              />
             )}
+            <div className="d-flex justify-content-end mt-3">
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={onShowSizeChange}
+                defaultCurrent={1}
+                total={totalData}
+                onChange={handlePageChange}
+              />
+            </div>
 
           </Col>
         </Row >
