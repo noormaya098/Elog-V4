@@ -34,6 +34,7 @@ function CobaTables() {
   const [JenisKepemilikanCari, setJenisKepemilikanCari] = useState("")
   const [JenisKepemilikanValues, setJenisKepemilikanValues] = useState("")
   const [nik, setNik] = useState("");
+  const [nik2, setNik2] = useState("");
   const [nama, setNama] = useState("");
   const [no_ktp, setNo_ktp] = useState("");
   const [no_sim, setNo_sim] = useState("");
@@ -145,6 +146,7 @@ function CobaTables() {
     );
     const dataDriver = urlDataDetailDriver.data.data?.[0]
     setDetailDataDriver(dataDriver)
+    setNik(urlDataDetailDriver.data.data?.[0]?.nik)
     console.log(`ini dataDriver`, dataDriver);
 
     setDriverDetails((prevDetails) => [...prevDetails, { id, dataDriver }]);
@@ -230,8 +232,8 @@ function CobaTables() {
         `${Baseurl}driver/update-driver`,
         {
           id: selectedId,
-          nik: (nik === "") ? (DetailDataDriver?.nik) : (nik),
-          nama: (nama === "") ? (DetailDataDriver?.driverName) : (nama),
+          nik: nik,
+          nama: nama,
           tgl: (tgl_lahir === "") ? (DetailDataDriver?.tgl_lahir) : (tgl_lahir),
           jenis_sim: (jenis_sim === "") ? (DetailDataDriver?.jenis_sim) : (jenis_sim),
           no_ktp: (no_ktp === "") ? (DetailDataDriver?.driverKtp) : (no_ktp),
@@ -263,9 +265,9 @@ function CobaTables() {
         text: 'Driver berhasil diubah.',
         showConfirmButton: false,
       });
-      setTimeout(() => {
-        window.location.reload()
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.reload()
+      // }, 2000);
 
     } catch (error) {
       console.log(error.message);
@@ -833,211 +835,213 @@ function CobaTables() {
                       <Form.Label>NIK</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder={DetailDataDriver?.nik}
                         value={nik}
-                        onChange={(e) => setNik(e.target.value)}
+                        onChange={(e) => {
+                          setNik(e.target.value);
+                        }}
+                        required
+                      />
+
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Nama Driver</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder={DetailDataDriver?.driverName}
+                      value={nama}
+                      onChange={(e) => setNama(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>No KTP</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder={DetailDataDriver?.driverKtp}
+                      value={no_ktp}
+                      onChange={(e) => setNo_ktp(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Divisi</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder={DetailDataDriver?.division}
+                      value={divisi}
+                      onChange={(e) => setDivisi(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>No SIM</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder={DetailDataDriver?.numberSim}
+                      value={no_sim}
+                      onChange={(e) => setNo_sim(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Jenis SIM</Form.Label>
+                    <Form.Select
+                      type="text"
+                      // placeholder={DetailDataDriver?.simType}
+                      value={jenis_sim}
+                      onChange={(e) => setJenisSim(e.target.value)}
+                      required
+                    >
+                      <option>{DetailDataDriver?.simType}</option>
+                      {JenisSimSelect && JenisSimSelect.map((item) => (
+                        <option>{item.Jenis}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Alamat</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder={DetailDataDriver?.driverAddress}
+                      value={alamat}
+                      onChange={(e) => setalamat(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Tanggal Lahir</Form.Label>
+                    <Form.Control
+                      type="date"
+                      placeholder="Masukkan Divisi"
+                      value={tgl_lahir}
+                      onChange={(e) => setTgl_lahir(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Agama</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder={DetailDataDriver?.driverReligion}
+                      value={agama}
+                      onChange={(e) => setAgama(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                <Col sm={4}>
+
+                  <Col>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>No Telp</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder={DetailDataDriver?.noTelp1}
+                        value={notelp1}
+                        onChange={(e) => setNotelp1(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>No Telp 2</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder={DetailDataDriver?.noTelp2}
+                        value={notelp2}
+                        onChange={(e) => setNotelp2(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group style={{ marginTop: '10px' }}>
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder={DetailDataDriver?.driverEmail}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>Nama Driver</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={DetailDataDriver?.driverName}
-                        value={nama}
-                        onChange={(e) => setNama(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>No KTP</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={DetailDataDriver?.driverKtp}
-                        value={no_ktp}
-                        onChange={(e) => setNo_ktp(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Divisi</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={DetailDataDriver?.division}
-                        value={divisi}
-                        onChange={(e) => setDivisi(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>No SIM</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={DetailDataDriver?.numberSim}
-                        value={no_sim}
-                        onChange={(e) => setNo_sim(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Jenis SIM</Form.Label>
-                      <Form.Select
-                        type="text"
-                        // placeholder={DetailDataDriver?.simType}
-                        value={jenis_sim}
-                        onChange={(e) => setJenisSim(e.target.value)}
-                        required
-                      >
-                        <option>{DetailDataDriver?.simType}</option>
-                        {JenisSimSelect && JenisSimSelect.map((item) => (
-                          <option>{item.Jenis}</option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Alamat</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={DetailDataDriver?.driverAddress}
-                        value={alamat}
-                        onChange={(e) => setalamat(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Tanggal Lahir</Form.Label>
+                      <Form.Label>Tanggal Masuk</Form.Label>
                       <Form.Control
                         type="date"
                         placeholder="Masukkan Divisi"
-                        value={tgl_lahir}
-                        onChange={(e) => setTgl_lahir(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Agama</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={DetailDataDriver?.driverReligion}
-                        value={agama}
-                        onChange={(e) => setAgama(e.target.value)}
+                        value={tgl_masuk}
+                        onChange={(e) => setTgl_masuk(e.target.value)}
                         required
                       />
                     </Form.Group>
                   </Col>
-                  <Col sm={4}>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Tanggal SIM</Form.Label>
+                    <Form.Control
+                      type="date"
+                      placeholder="Masukkan Divisi"
+                      value={TglStnkValue}
+                      onChange={(e) => setTanggalSIMValue(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
 
-                    <Col>
-                      <Form.Group style={{ marginTop: '10px' }}>
-                        <Form.Label>No Telp</Form.Label>
-                        <Form.Control
-                          type="number"
-                          placeholder={DetailDataDriver?.noTelp1}
-                          value={notelp1}
-                          onChange={(e) => setNotelp1(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                      <Form.Group style={{ marginTop: '10px' }}>
-                        <Form.Label>No Telp 2</Form.Label>
-                        <Form.Control
-                          type="number"
-                          placeholder={DetailDataDriver?.noTelp2}
-                          value={notelp2}
-                          onChange={(e) => setNotelp2(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                      <Form.Group style={{ marginTop: '10px' }}>
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          placeholder={DetailDataDriver?.driverEmail}
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Tanggal Masuk</Form.Label>
-                        <Form.Control
-                          type="date"
-                          placeholder="Masukkan Divisi"
-                          value={tgl_masuk}
-                          onChange={(e) => setTgl_masuk(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Tanggal SIM</Form.Label>
-                      <Form.Control
-                        type="date"
-                        placeholder="Masukkan Divisi"
-                        value={TglStnkValue}
-                        onChange={(e) => setTanggalSIMValue(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Vehicle Type</Form.Label>
-                      <Select
-                        placeholder={DetailDataDriver?.vehicle}
-                        options={VehicleOpstionsSelect}
-                        onChange={(select) => {
-                          setVehicleOptionsValue(select.label)
-                        }}
-                      />
-                      {/* <Form.Control
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Vehicle Type</Form.Label>
+                    <Select
+                      placeholder={DetailDataDriver?.vehicle}
+                      options={VehicleOpstionsSelect}
+                      onChange={(select) => {
+                        setVehicleOptionsValue(select.label)
+                      }}
+                    />
+                    {/* <Form.Control
                         type="text"
                         placeholder="Masukkan Divisi"
                         value={nik}
                         onChange={(e) => setDivisi(e.target.value)}
                         required
                       /> */}
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Jenis Kepemilikan</Form.Label>
-                      <Form.Select onChange={(e) => setJenisKepemilikanValue(e.target.value)}>
-                        <option >{DetailDataDriver?.jenisKepemilikan}</option>
-                        {JenisKepemilikan && JenisKepemilikan.map((item) => (
-                          <option value={item.jenis}>{item.jenis}</option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Ukuran Seragam</Form.Label>
-                      <Form.Select onChange={(e) => setUKSeragam(e.target.value)}>
-                        <option>-</option>
-                        {UkuranSeragam && UkuranSeragam.map((item) => (
-                          <option>{item.ukuran}</option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Rekening Bank</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Divisi"
-                        value={RekeningBank}
-                        onChange={(e) => setRekeningBank(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group style={{ marginTop: '10px' }}>
-                      <Form.Label>Nomor Rekening</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Masukkan Divisi"
-                        value={RekeningNorek}
-                        onChange={(e) => setRekeningNorek(e.target.value)}
-                        required
-                      />
-                    </Form.Group>
-                    <Form.Group>
-                      {/* <Form.Label>Keterangan</Form.Label>
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Jenis Kepemilikan</Form.Label>
+                    <Form.Select onChange={(e) => setJenisKepemilikanValue(e.target.value)}>
+                      <option >{DetailDataDriver?.jenisKepemilikan}</option>
+                      {JenisKepemilikan && JenisKepemilikan.map((item) => (
+                        <option value={item.jenis}>{item.jenis}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Ukuran Seragam</Form.Label>
+                    <Form.Select onChange={(e) => setUKSeragam(e.target.value)}>
+                      <option>-</option>
+                      {UkuranSeragam && UkuranSeragam.map((item) => (
+                        <option>{item.ukuran}</option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Rekening Bank</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Masukkan Divisi"
+                      value={RekeningBank}
+                      onChange={(e) => setRekeningBank(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group style={{ marginTop: '10px' }}>
+                    <Form.Label>Nomor Rekening</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Masukkan Divisi"
+                      value={RekeningNorek}
+                      onChange={(e) => setRekeningNorek(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group>
+                    {/* <Form.Label>Keterangan</Form.Label>
                       <Form.Control
                         type="text  "
                         placeholder="Masukkan Divisi"
@@ -1045,49 +1049,49 @@ function CobaTables() {
                         // onChange={(e) => setNik(e.target.value)}
                         required
                       /> */}
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                          Close
-                        </Button>
-                        <Button
-                          variant="primary"
-                          onClick={() => {
-                            editdrivapier(selectedId)
-                            UploadFoto(selectedId)
-                          }}
-                        >
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Form.Group>
-                  </Col>
-                </Row>
-              </Modal.Body>
-            </Modal>
-            {(isLoading) ? (<img src={elogGif}></img>
-            ) : (
-              <DataTable
-                columns={columns}
-                data={DataDalamApi}
-              // pagination
-              // paginationServer
-              // paginationTotalRows={totalData}
-              // onChangePage={handlePageChange}
-              />
-            )}
-            <div className="d-flex justify-content-end mt-3">
-              <Pagination
-                showSizeChanger
-                onShowSizeChange={onShowSizeChange}
-                defaultCurrent={1}
-                total={totalData}
-                onChange={handlePageChange}
-              />
-            </div>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleClose}>
+                        Close
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          editdrivapier(selectedId)
+                          UploadFoto(selectedId)
+                        }}
+                      >
+                        Save Changes
+                      </Button>
+                    </Modal.Footer>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Modal.Body>
+          </Modal>
+          {(isLoading) ? (<img src={elogGif}></img>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={DataDalamApi}
+            // pagination
+            // paginationServer
+            // paginationTotalRows={totalData}
+            // onChangePage={handlePageChange}
+            />
+          )}
+          <div className="d-flex justify-content-end mt-3">
+            <Pagination
+              showSizeChanger
+              onShowSizeChange={onShowSizeChange}
+              defaultCurrent={1}
+              total={totalData}
+              onChange={handlePageChange}
+            />
+          </div>
 
-          </Col>
-        </Row >
-      </Card >
+        </Col>
+      </Row >
+    </Card >
     </>
   );
 }

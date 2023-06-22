@@ -205,6 +205,7 @@ useEffect(() => {
   return (
     <div>
       <Card>
+        
         <FormTable IsiDataSPSemua={IsiDataSPSemua} isidata={isidata} idmp={idmp}></FormTable>
         <Form>
           <Form.Group controlId="inputText">

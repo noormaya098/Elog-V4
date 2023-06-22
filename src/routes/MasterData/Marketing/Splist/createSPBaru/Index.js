@@ -200,7 +200,7 @@ function Index() {
                 <Form.Control
                   value={JenisBarang}
                   type="text"
-                  disabled
+                  onChange={(e)=>setJenisBarang(e.target.value)}
                 ></Form.Control>
               </FormGroup>
             </Col>

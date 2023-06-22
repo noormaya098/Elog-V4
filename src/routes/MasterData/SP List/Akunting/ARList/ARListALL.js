@@ -2,14 +2,17 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component';
 import Baseurl from '../../../../../Api/BaseUrl';
-import { Pagination } from 'antd';
+import { Pagination , Card } from 'antd';
 import { defaultThemes } from 'react-data-table-component';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function ARListALL() {
     const [DataAwal, setDataAwal] = useState([])
     const [TotalData, setTotalData] = useState('')
     const [TotalPage, setTotalPage] = useState('')
     const [selectedRow, setSelectedRow] = useState(null);
+    const history = useHistory()
+
     const columns = [
         {
             name: 'No',
@@ -63,7 +66,7 @@ function ARListALL() {
     ];
     const handleRowClicked = (row) => {
         setSelectedRow(row);
-        alert(`Clicked: ` + (row.no));
+        history.push(`/akunting/ar/detailar/${row.no}`)
     }
 
     
@@ -100,6 +103,7 @@ function ARListALL() {
       
     return (
         <div>
+            <Card>
             <DataTable
                 columns={columns}
                 title="AR List All"
@@ -120,6 +124,7 @@ function ARListALL() {
                     highlightOnHover
                 />
             </div>
+            </Card>
         </div>
     )
 }

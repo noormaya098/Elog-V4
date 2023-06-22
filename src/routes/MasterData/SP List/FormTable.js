@@ -1,7 +1,7 @@
 // FormTable.js
 import React from "react";
 import { Col, Row, Form, Button, Table, Modal } from "react-bootstrap";
-import { Card, Checkbox, Tag } from "antd";
+import { Card, Checkbox, Tag, Spin } from "antd";
 import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
@@ -33,6 +33,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const [idUnit2, setIdunit2] = useState([]);
   const [idUnit3, setIdunit3] = useState([]);
   const [bukaanother, setBukaanother] = useState(false);
+  const [LoadingMuterMuter, setLoadingMuterMuter] = useState(false)
   const [driveranother, setDriveranother] = useState([]);
   const [selectanotherrvalue, setSelectanotherrvalue] = useState([]);
   const { isidetail, setSpDetail } = mobil((state) => ({
@@ -105,6 +106,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     setCheckboxValue(event.target.checked ? 1 : 0);
   };
 
+  console.log(`ini adlaah IsiDataSPSemua`, IsiDataSPSemua.detail);
 
   ///select driver
   useEffect(() => {
@@ -215,42 +217,49 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
   ///tombol approve
   const HandleApproveOPS = (idmpd) => {
-    const body = {
-      id_mpd: IDMPD,
-      id_mp: idmp,
-      id_unit: selectnomor,
-      id_supir: selectDriver[0]?.idUnit ? selectDriver[0]?.idUnit : idUnit,
-      nama_supir: selectDriver[0]?.name ? selectDriver[0]?.name : idUnit,
-      id_mitra: 1,
-      id_mitra_pickup: 1,
-      id_mitra_2: 1,
-      plat_nomor: selectnopol,
-      merk: types[0],
-      is_multi: checkboxValue,
-    };
+    try {
+      setLoadingMuterMuter(true)
+      const body = {
+        id_mpd: IDMPD,
+        id_mp: idmp,
+        id_unit: selectnomor,
+        id_supir: selectDriver[0]?.idUnit ? selectDriver[0]?.idUnit : idUnit,
+        nama_supir: selectDriver[0]?.name ? selectDriver[0]?.name : idUnit,
+        id_mitra: 1,
+        id_mitra_pickup: 1,
+        id_mitra_2: 1,
+        plat_nomor: selectnopol,
+        merk: types[0],
+        is_multi: checkboxValue,
+      };
 
-    axios
-      .post(`${Baseurl}sp/approve-SP`, body, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      })
-      .then((response) => {
-        const isidata = response.data.status;
-        setApproved(isidata);
-        console.log(`data approve`, approved);
+      axios
+        .post(`${Baseurl}sp/approve-SP`, body, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+          const isidata = response.data.status;
+          setApproved(isidata);
+          console.log(`data approve`, approved);
 
-        // Display success alert
-        Swal.fire({
-          icon: "success",
-          title: "Approval Successful",
-          text: "The approval process has been completed successfully.",
-        });
-        window.location.reload()
-        handleClose();
-      })
-      .catch((error) => console.error(`Error: ${error}`));
+          // Display success alert
+          Swal.fire({
+            icon: "success",
+            title: "Approval Successful",
+            text: "The approval process has been completed successfully.",
+          });
+          setLoadingMuterMuter(false)
+          window.location.reload()
+          handleClose();
+        })
+        .catch((error) => console.error(`Error: ${error}`));
+    } catch (error) {
+
+    }
+
   };
   // console.log(`ini idUnit`, idUnit);
 
@@ -410,7 +419,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   })) : [];
   const nomorpolisiOptions = Array.isArray(KodeKendaraanOps) ? KodeKendaraanOps.map((item) => ({
     value: item.id,
-    label: item.no_polisi,
+    label: item.kd_kendaraan + " - " + item.no_polisi,
     kd_kendaraan: item.kd_kendaraan
   })) : [];
 
@@ -442,7 +451,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const approvebaru = (idMpd) => {
     setIDMPD(idMpd)
     handleShow()
-    HandleApproveOPS(idMpd)
+    // HandleApproveOPS(idMpd)
     // HandleApprovePURCH(idMpd)
   }
 
@@ -557,7 +566,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       }
       );
       // console.log(`ini mitra 1`, data.data.data[0]);
-      setMitra1Multi(data.data.data[0] )
+      setMitra1Multi(data.data.data[0])
 
     } catch (error) {
 
@@ -592,6 +601,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
     }
   };
+
+
+
+
   return (
     <>
       <Row>
@@ -894,10 +907,12 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         ? HandleApproveOPS()
                         : HandleApprovePURCH()
                     }
+                    disabled={LoadingMuterMuter}
                   >
-                    Save Changes
+                    {LoadingMuterMuter ? "Loading..." : "Save Changes"}
                   </Button>
                 </Modal.Footer>
+
               </Modal>
 
             </>
@@ -1426,7 +1441,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                           >
 
                             <td>No </td>
-                            
+
 
 
                             <td>Alamat Bongkar</td>
@@ -1439,7 +1454,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                             <td>Qty</td>
                             <td width="150px">Biaya Kirim</td>
                             <td width="150px">Total</td>
-                            <td>Aksi</td>
+                            <td colSpan={2}>Aksi</td>
                           </tr>
 
 
@@ -1511,7 +1526,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                                   </>)
                                 } */}
-                                {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "N") && (
+                                {/* {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "N") && (
                                   <>
                                     <Button
                                       size="sm"
@@ -1522,10 +1537,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                       }}
                                       className="mt-2"
                                     >
-                                      Approve
+                                      Approves
                                     </Button>
                                   </>
-                                )}
+                                )} */}
                                 {/* {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "Y") && (
                                   <>
                                     <Button
@@ -1548,7 +1563,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                               </span>
                             </td>
-                            
+
                             <td>{data.destination}</td>
                             <td>{data.noSJ}</td>
                             <td>{data.kendaraan}</td>
@@ -1565,8 +1580,8 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                               currency: "IDR",
                             })}</td>
                             <td>{(jobdesk == "operasional" && Kendaraan_operasionalStatus === "Y") && (
-                                  <>
-                                    <Button
+                              <>
+                                {/* <Button
                                       disabled
                                       size="sm"
                                       variant="primary"
@@ -1577,22 +1592,67 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                       className="mt-2"
                                     >
                                       Approved
-                                    </Button>
-                                  </>
-                                )}</td>
-                                 {(StatusPurchasing === "Y") && (
+                                    </Button> */}
+                              </>
+                            )}</td>
+
+                            {(data.supirId == 0 && data.unitId === 0) ?
+                              <Button
+                                size="sm"
+                                variant="primary"
+                                onClick={() => {
+                                  handleShow(data.idmpd);
+                                  approvebaru(data.idmpd);
+                                }}
+                                className="mt-2"
+                                disabled={LoadingMuterMuter}
+                              >
+                                Approve
+                              </Button> :
+                              <Button
+                                disabled
+                                size="sm"
+                                variant="primary"
+                                onClick={() => {
+                                  handleShow(data.idmpd);
+                                  approvebaru(data.idmpd);
+                                }}
+                                className="mt-2"
+                              >
+                              Approved
+                              </Button>
+                            }
+
+
+                            {/* {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "N") && (
                                   <>
                                     <Button
                                       size="sm"
-                                      disabled
                                       variant="primary"
+                                      onClick={() => {
+                                        handleShow(data.idmpd);
+                                        approvebaru(data.idmpd);
+                                      }}
                                       className="mt-2"
                                     >
-                                      Approved
+                                      Approve
                                     </Button>
+                                  </>
+                                    )}*/}
+                            {(StatusPurchasing === "Y") && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  disabled
+                                  variant="primary"
+                                  className="mt-2"
+                                >
+                                  Approved
+                                </Button>
 
-                                  </>)
-                                }
+                              </>)
+                            }
+
                           </tr>
                           {/* <tr>
                             <td>No</td>

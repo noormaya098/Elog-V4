@@ -207,6 +207,39 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       <span>AR List ALL</span>
                     </Link>
                   </Menu.Item>
+                  <Menu.Item key="SP Lists All">
+                    <Link to="/akunting/ar/ar">
+                      <i className="icon icon-widgets" />
+                      <span>List Invoice AR</span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="SP Lists All">
+                    <Link to="/akunting/ar/ar">
+                      <i className="icon icon-widgets" />
+                      <span>SJ no AR</span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="SP Lists All">
+                    <Link to="/akunting/ar/ar">
+                      <i className="icon icon-widgets" />
+                      <span>Penerimaan SJ</span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="SP Lists All">
+                    <Link to="/akunting/ar/ar">
+                      <i className="icon icon-widgets" />
+                      <span>Report Pembayaran Customer</span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+                <SubMenu key="Payment" title="Payment">
+                  <Menu.Item key="Payment">
+                    <Link to="/akunting/ar/reportpartners/reportpenerimaaninvoice">
+                      <i className="icon icon-widgets" />
+                      <span>Penerimaan INV</span>
+                    </Link>
+                  </Menu.Item>
+                 
                 </SubMenu>
                 </>
               ) : null}

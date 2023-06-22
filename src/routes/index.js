@@ -90,6 +90,24 @@ const App = ({ match }) => (
         )}
       />
       <Route
+        path={`${match.url}akunting/ar/detailar/:no`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/ARList/DetailAR")
+        )}
+      />
+      <Route
+        path={`${match.url}akunting/ar/edits/:no`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/ARList/EditARDetail")
+        )}
+      />
+      <Route
+        path={`${match.url}akunting/ar/reportpartners/reportpenerimaaninvoice`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/ARList/Payment/PenerimaanINV")
+        )}
+      />
+      <Route
         path={`${match.url}akunting/splistakuntingbaru`}
         component={asyncComponent(() =>
           import("./MasterData/Monitoring SP List Akunting/SplistAkuntingBaru")
@@ -106,8 +124,16 @@ const App = ({ match }) => (
         component={asyncComponent(() => import("./MasterData/Driver"))}
       />
       <Route
+        path={`${match.url}masterdata/driverbaru`}
+        component={asyncComponent(() => import("./MasterData/Driver/DriverTableBaru"))}
+      />
+      <Route
         path={`${match.url}masterdata/purchasing/vehicle`}
-       component={asyncComponent(() => import("./MasterData/Vehicle"))}
+        component={asyncComponent(() => import("./MasterData/Vehicle"))}
+      />
+      <Route
+        path={`${match.url}masterdata/vehiclebaru`}
+        component={asyncComponent(() => import("./MasterData/Purchasing/Vehicle/VehicleBaru"))}
       />
       <Route
         path={`${match.url}purchasing/mastermitra`}
