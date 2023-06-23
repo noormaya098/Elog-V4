@@ -13,6 +13,7 @@ import {
 import IntlMessages from "../../util/IntlMessages";
 import { useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
+import  {CarTwoTone , SmileTwoTone , ScheduleTwoTone ,ProfileTwoTone ,CheckSquareTwoTone}  from '@ant-design/icons';
 const { SubMenu } = Menu;
 
 const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
@@ -116,42 +117,33 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                 <SubMenu key="master" title="Operasional">
                   <Menu.Item key="driver">
                     <Link to="/masterdata/purchasing/driver">
-                      <i className="icon icon-widgets" />
-                      <span>
+                      {/* <i className="icon icon-widgets" /> */}
+                      <SmileTwoTone />
                         <IntlMessages id="sidebar.driver" />
-                      </span>
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="vehicle">
                     <Link to="/masterdata/vehicle">
-                      <i className="icon icon-widgets" />
-                      <span>
+                    <CarTwoTone />
                         <IntlMessages id="sidebar.vehicle" />
-                      </span>
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="monitoringVehicle">
                     <Link to="/masterdata/monitoring">
-                      <i className="icon icon-widgets" />
-                      <span>
+                    <ScheduleTwoTone />
                         <IntlMessages id="Monitoring Vehicle" />
-                      </span>
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="New SP">
                     <Link to="/masterdata/newsplist">
-                      <i className="icon icon-widgets" />
-                      <span>
+                    <CheckSquareTwoTone />
                         <IntlMessages id="Approve SP" />
-                      </span>
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="SP List">
                     <Link to="/masterdata/splist">
-                      <i className="icon icon-widgets" />
-                      <span>
+                    <ProfileTwoTone />
                         <IntlMessages id="SP List" />
-                      </span>
                     </Link>
                   </Menu.Item>
                 </SubMenu>
