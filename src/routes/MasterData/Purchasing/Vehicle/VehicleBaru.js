@@ -7,6 +7,7 @@ import moment from 'moment';
 import { UploadOutlined } from '@ant-design/icons';
 import * as Yup from 'yup';
 import { useFormik } from 'formik'
+import Swal from 'sweetalert2';
 import { Col, Row } from 'react-bootstrap';
 import useMitraStore from '../../../../zustand/Store/MitraStore';
 import ZustandStore from '../../../../zustand/Store/JenisKepemilikanOptions';
@@ -52,22 +53,20 @@ function VehicleBaru() {
 
 
     const validationSchema = Yup.object().shape({
-        // kode_kendaraan: Yup.string()
-        //     .required('Kode Kendaraan wajib diisi'),
-        // no_polisi: Yup.string()
-        //     .required('No Polisi wajib diisi'),
-        // jenis_kepemilikan: Yup.string()
-        //     .required('Jenis Kepemilikan wajib diisi'),
-        // jenis_kendaraan: Yup.string()
-        //     .required('Jenis Kendaraan wajib diisi'),
-        // vendor: Yup.string()
-        //     .required('Vendor Kendaraan wajib diisi'),
-        // nama_driver: Yup.string()
-        //     .required('Nama Driver wajib diisi'),
-        //     warna_plat: Yup.string()
-        //     .required('Warna Plat Driver wajib diisi'),
-        //     merk_mobil: Yup.string()
-        //     .required('Warna Plat Driver wajib diisi'),
+        kode_kendaraan: Yup.string()
+            .required('Kode Kendaraan wajib diisi'),
+        no_polisi: Yup.string()
+            .required('No Polisi wajib diisi'),
+        jenis_kepemilikan: Yup.string()
+            .required('Jenis Kepemilikan wajib diisi'),
+        jenis_kendaraan: Yup.string()
+            .required('Jenis Kendaraan wajib diisi'),
+        vendor: Yup.string()
+            .required('Vendor Kendaraan wajib diisi'),
+        warna_plat: Yup.string()
+            .required('Warna Plat Driver wajib diisi'),
+        merk_mobil: Yup.string()
+            .required('Warna Plat Driver wajib diisi'),
 
 
     });
@@ -186,7 +185,8 @@ function VehicleBaru() {
             const data = await axios.post(`${Baseurl}vehicle/edit-vehicle`,
                 {
                     ...values,
-                    id: IdDriver
+                    id: IdDriver,
+                    id_driver:formik.values.id_driver,
                 },
                 {
                     headers: {
@@ -195,11 +195,21 @@ function VehicleBaru() {
                     }
                 }
             )
-        } catch (error) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data berhasil diedit',
+            });
 
+        } catch (error) {
+            // Tampilkan SweetAlert untuk error
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Terjadi kesalahan saat edit data kendaraan',
+            });
         }
     }
-
 
     const handleRowClick = (row) => {
         showModal(row.vehicleId);
@@ -233,15 +243,20 @@ function VehicleBaru() {
                 tahun_mobil: data.data.data[0].vehilceYear,
                 setFotoDriver: data.data.data[0].vehicleImage,
                 vendor: data.data.data[0].vendor,
-                id_driver: data.data.data[0].idDriver,
+                id_driver: data.data.data[0].driverId,
                 jenis_SIM: data.data.data[0]?.jenis_SIM,
                 no_bpkb: data.data.data[0]?.bpkbNumber,
                 stnk: data.data.data[0]?.stnk,
                 tgl_stnk: data.data.data[0]?.stnkDate,
                 tgl_kir: data.data.data[0]?.kirDate,
                 tgl_beli: data.data.data[0]?.buyDate,
+                tgl_plat_nomor: data.data.data[0]?.expiredPlat,
                 kapasitas: data.data.data[0]?.capacity,
                 kubikasi: data.data.data[0]?.cubication,
+                panjang: data.data.data[0]?.vehicleLentgth,
+                lebar: data.data.data[0]?.vehicleWidth,
+                tinggi: data.data.data[0]?.vehicleHeight,
+                kapasitas_maks : data.data.data[0]?.maxCapacity
 
 
 
@@ -263,8 +278,19 @@ function VehicleBaru() {
                         Authorization: localStorage.getItem("token"),
                     }
                 });
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data kendaraan berhasil ditambahkan',
+            });
+
         } catch (error) {
-            // Handle error here
+            // Tampilkan SweetAlert untuk error
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Terjadi kesalahan saat menambahkan data kendaraan',
+            });
         }
     }
 
@@ -295,10 +321,13 @@ function VehicleBaru() {
 
                 <>
                     <Row>
-                        <Col sm={6}>
+                        <Col sm={8}>
                             <Button
-                                type="primary" onClick={showModal} >
-                                Open Modal
+                                type="primary" onClick={()=>{showModal()
+                                    setIdDriver(null)
+                                    setFotoDriver(null)
+                                }} >
+                               Tambah Vehicle
                             </Button>
                         </Col>
                         <Col sm={2}>
@@ -307,16 +336,17 @@ function VehicleBaru() {
                                 onChange={(e) => setCariNoKendaraan(e.target.value)}
                                 placeholder="Cari No Kendaraan" />
                         </Col>
-                        <Col sm={4}>
+                        <Col sm={2}>
                             <Select
                                 showSearch
                                 placeholder="Jenis Kepemilikan"
                                 optionFilterProp="children"
-                                value={CariJenisKepemilikan}
+                                style={{ width: "150px" }}
+                                // value={CariJenisKepemilikan}
                                 onChange={(value) => setCariJenisKepemilikan(value)}
 
                             >
-                                <Select.Option>-</Select.Option>
+                                <Select.Option value="">-</Select.Option>
                                 {jenisKepemilikan.map((option) => (
                                     <Select.Option key={option.label} value={option.jenis}>
                                         {option.jenis}
@@ -412,7 +442,7 @@ function VehicleBaru() {
                                             value={formik.values.vendor || ''}
                                         >
                                             {NamaMitraOptions.map((option) => (
-                                                <Select.Option key={option.value} value={option.value}>
+                                                <Select.Option key={option.value} value={option.label}>
                                                     {option.label}
                                                 </Select.Option>
                                             ))}
@@ -476,7 +506,7 @@ function VehicleBaru() {
                                             ))}
                                         </Select>
                                     </AntForm.Item>
-                                    <AntForm.Item
+                                    {/* <AntForm.Item
                                         label="Jenis SIM"
                                         showSearch
                                         optionFilterProp="children"
@@ -506,7 +536,7 @@ function VehicleBaru() {
                                             ))}
 
                                         </Select>
-                                    </AntForm.Item>
+                                    </AntForm.Item> */}
                                     <AntForm.Item
                                         label="Jenis Kepemilikan"
                                         required

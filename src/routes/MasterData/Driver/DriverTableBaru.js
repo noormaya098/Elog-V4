@@ -1,89 +1,41 @@
-import { Card, DatePicker, Form, Input, Upload,Space  , Modal} from 'antd';
+import { Button, Card, Modal, Form, Input, Pagination, Upload, DatePicker, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react'
-import { Button, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import axios from 'axios';
 import Baseurl from '../../../Api/BaseUrl';
-import Select from 'react-select';
-import ZustandStore from '../../../zustand/Store/JenisKepemilikanOptions';
 import Swal from 'sweetalert2';
-import { Pagination } from 'antd';
-// import { colors } from 'react-select/dist/declarations/src/theme';
+import ZustandStore from '../../../zustand/Store/JenisKepemilikanOptions';
+
+
 function DriverTableBaru() {
-    // const FetchTipeKendaraan = ZustandStore((state) => state.FetchTipeKendaraan)
-    // const TipeKendaraan = ZustandStore((state) => state.TipeKendaraan)
-    const { TipeKendaraan, FetchTipeKendaraan } = ZustandStore((state) => ({
-        FetchTipeKendaraan: state.FetchTipeKendaraan,
-        TipeKendaraan: state.TipeKendaraan
-    }))
+    const [modalOpen, setModalOpen] = useState(false);
+    const [DataAwal, setDataAwal] = useState("");
+    const [DetailId, setDetailId] = useState("")
+    const [loading, setLoading] = useState(false);
+    const [CariDriver, setCariDriver] = useState("")
     const { jenisKepemilikan, setjenisKepemilikan } = ZustandStore((state) => ({
         jenisKepemilikan: state.jenisKepemilikan,
         setjenisKepemilikan: state.setjenisKepemilikan
     }))
-    const { UkuranSeragam, setUkuranSeragam } = ZustandStore((state) => ({
-        UkuranSeragam: state.UkuranSeragam,
-        setUkuranSeragam: state.setUkuranSeragam
+    const { JenisSim, setJenisSim } = ZustandStore((item) => ({
+        JenisSim: item.JenisSim,
+        setJenisSim: item.setJenisSim
     }))
-    const { JenisSim, setJenisSim } = ZustandStore((state) => ({
-        JenisSim: state.JenisSim,
-        setJenisSim: state.setJenisSim
+    const { UkuranSeragam, setUkuranSeragam } = ZustandStore((item) => ({
+        UkuranSeragam: item.UkuranSeragam,
+        setUkuranSeragam: item.setUkuranSeragam
     }))
-    useEffect(() => {
-        FetchTipeKendaraan()
-        setjenisKepemilikan()
-        setUkuranSeragam()
-        setJenisSim()
-    }, [])
-
-    const [open, setOpen] = useState(false);
-    const showModal = () => {
-      setOpen(true);
-    };
-    const handleOk = (e) => {
-      console.log(e);
-      setOpen(false);
-    };
-    const handleCancel = (e) => {
-      console.log(e);
-      setOpen(false);
-    };
-
-
-    console.log(`ini adalah JenisSim`, JenisSim);
-    const [form] = Form.useForm();
-    const [FileUpload, setFileUpload] = useState(null)
-    const [driverImage, setdriverImage] = useState(null)
-    const [DataAwal, setDataAwal] = useState("")
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const [showAdd, setShowADD] = useState(false);
-    const handleCloseAdd = () => setShowADD(false);
-    const handleShowAdd = () => setShowADD(true);
-    const [DataDetail, setDataDetail] = useState('')
-    const [DriverId, setDriverId] = useState('')
-    const [NIKValue, setNIKValue] = useState("")
-    const [NamaDriverValue, setNamaDriverValue] = useState("")
-    const [NoKTPValue, setNoKTPValue] = useState("")
-    const [DivisiValue, setDivisiValue] = useState("")
-    const [NoSIMValue, setNoSIMValue] = useState("")
-    const [JenisSIMValue, setJenisSIMValue] = useState("")
-    const [AlamatValue, setAlamatValue] = useState("")
-    const [TanggalLahirValue, setTanggalLahirValue] = useState("")
-    const [AgamaValue, setAgamaValue] = useState("")
-    const [NoTelpValue, setNoTelpValue] = useState("")
-    const [Notelp2Value, setNotelp2Value] = useState("")
-    const [EmailValue, setEmailValue] = useState("")
-    const [TanggalMasukValue, setTanggalMasukValue] = useState("")
-    const [TanggalSIMValue, setTanggalSIMValue] = useState("")
-    const [VehicleTypeValue, setVehicleTypeValue] = useState("")
-    const [JenisKepemilikanValue, setJenisKepemilikanValue] = useState("")
-    const [UkuranSeragamValue, setUkuranSeragamValue] = useState("")
-    const [RekeningBankValue, setRekeningBankValue] = useState("")
-    const [NoMorRekeningValue, setNoMorRekeningValue] = useState("")
-
-
+    const { DriverType, setDriverType } = ZustandStore((item) => ({
+        DriverType: item.DriverType,
+        setDriverType: item.setDriverType
+    }))
+    const [CariJenisKepemilikan, setCariJenisKepemilikan] = useState("")
+    const [success, setSuccess] = useState(false);
     const columns = [
         {
             name: 'No',
@@ -96,7 +48,7 @@ function DriverTableBaru() {
         },
         {
             name: 'Image',
-            selector: row => <img src={row.driverImage} style={{ width: "50px" }}></img>,
+            selector: row => <img src={row.driverImage} height="108px" width="158px"></img>,
         },
         {
             name: 'Jenis SIM',
@@ -112,732 +64,784 @@ function DriverTableBaru() {
         },
         {
             name: 'Status',
-            selector: row => row.driverStatus === 1 ? "Driver Tersedia" : "Driver Tidak Tersedia",
-        },
-        {
-            name: 'Edit',
-            selector: row =>
-                <>
-                    <Button size='sm' onClick={() => {
-                        handleShow(row.driverId)
-                        setDriverId(row.driverId)
-                        DetailDriver(row.driverId)
-                    }}>Edit</Button>
-                </>,
-        },
-    ];
-    const ApiAwal = async (page = 1) => {
-        try {
-            const response = await axios.get(`${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=&jenis_kepemilikan=`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: localStorage.getItem("token"),
-                }
-            });
+            selector: row => row.driverStatus === 1 ? "Tersedia" : "Tidak Tersedia",
+            cell: row => (
+                <div>
+                    {row.driverStatus === 1 ? (
+                        <>
+                            <Button
+                                size="small"
+                                type="primary"
+                                className="mt-3"
 
-            console.log("isi data", response.data.data.order);
-            setDataAwal(response.data.data.order);
+                                onClick={() => ModalOFFDriver(row.driverId)}
+                            >
+                                Driver Ready
+                            </Button>
+                        </>
+                    ) :
+                        <>
+                            <Button
+                                size="small"
+                                type="danger"
+                                className="mt-2"
+                                onClick={() => ModalONDriver(row.driverId)}
+                            >
+                                Driver Tidak Ready
+                            </Button>
+
+                        </>}
+                </div>
+            )
+        },
+
+    ];
+
+
+    const ModalONDriver = async (driverId) => {
+        try {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin mengubah status driver menjadi "Ready"?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak',
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const data = await axios.post(
+                        `${Baseurl}driver/ready-driver`,
+                        {
+                            id: driverId,
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: localStorage.getItem('token'),
+                            },
+                        }
+                    );
+                }
+                ApiAwal()
+            });
         } catch (error) {
-            localStorage.removeItem(`token`)
-            window.location.reload()
+            // Handle error
         }
     };
 
-    useEffect(() => {
-        ApiAwal();
-    }, []);
-
-    const DetailDriver = async (driverId) => {
+    const ModalOFFDriver = async (driverId) => {
         try {
-            const data = await axios.get(`${Baseurl}driver/get-driver-detail?id=${driverId}`,
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin mengubah status driver menjadi "Tidak Ready"?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak',
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const data = await axios.post(
+                        `${Baseurl}driver/off-driver`,
+                        {
+                            id: driverId,
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: localStorage.getItem('token'),
+                            },
+                        }
+                    );
+                }
+                ApiAwal()
+            });
+        } catch (error) {
+            // Handle error
+        }
+    };
 
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: localStorage.getItem("token"),
-                    }
-                });
-            setDataDetail(data.data.data?.[0])
-            console.log(`data detail`, data.data.data?.[0]);
-            setNamaDriverValue(data.data.data?.[0].driverName)
-            setNIKValue(data.data.data?.[0].nik)
-            setNoKTPValue(data.data.data?.[0].driverKtp)
-            setDivisiValue(data.data.data?.[0].division)
-            setNoSIMValue(data.data.data?.[0].numberSim)
-            setJenisSIMValue(data.data.data?.[0].simType)
-            setAlamatValue(data.data.data?.[0].driverAddress)
-            setTanggalLahirValue(data.data.data?.[0].dateBirth)
-            setAgamaValue(data.data.data?.[0].driverReligion)
-            setNoTelpValue(data.data.data?.[0].noTelp1)
-            setNotelp2Value(data.data.data?.[0].noTelp2)
-            setEmailValue(data.data.data?.[0].driverEmail)
-            setTanggalMasukValue(data.data.data?.[0].dateIn)
-            setTanggalSIMValue(data.data.data?.[0].simDate)
-            setVehicleTypeValue(data.data.data?.[0].vehicle)
-            setJenisKepemilikanValue(data.data.data?.[0].jenisKepemilikan)
-            setUkuranSeragamValue(data.data.data?.[0].ukuranSeragam)
-            setRekeningBankValue(data.data.data?.[0].BankRekening)
-            setNoMorRekeningValue(data.data.data?.[0].Norek)
-            setdriverImage(data.data.data?.[0].driverImage)
+    const ApiAwal = async (page = 1) => {
+        try {
+            const data = await axios.get(`${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${CariDriver}&jenis_kepemilikan=${CariJenisKepemilikan}`, {
+
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: localStorage.getItem("token"),
+
+                }
+            }
+            )
+            setDataAwal(data.data.data.order)
+            console.log(data.data.data);
         } catch (error) {
 
         }
     }
 
-    const onChanges = (date, dateString) => {
-        console.log(date, dateString);
-      };
-    const UpdateDriver = async (driverId) => {
+    console.log(`inijenis jenisKepemilikan`, jenisKepemilikan);
+
+    useEffect(() => {
+        ApiAwal()
+        setjenisKepemilikan()
+        setUkuranSeragam()
+        setJenisSim()
+        setDriverType()
+    }, [CariDriver, CariJenisKepemilikan])
+
+    const onShowSizeChange = async (page) => {
+        ApiAwal(page)
+    }
+    const DetailRow = (row) => {
+        console.log(row)
+        setDetailId(row.driverId)
+        setModalOpen(true)
+
+        DetailDriver(row.driverId)
+    }
+
+
+
+    const [GambarDriver, setGambarDriver] = useState("")
+    const DetailDriver = async (driverId) => {
         try {
-            const data = await axios.post(`${Baseurl}driver/update-driver`,
+            const data = await axios.get(`${Baseurl}driver/get-driver-detail?id=${driverId}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: localStorage.getItem("token"),
+
+                }
+            })
+            setGambarDriver(data.data.data[0]?.driverImage)
+            console.log(data.data.data[0]);
+            formik.setValues({
+                nik: data.data.data[0]?.nik,
+                namadriver: data.data.data[0]?.driverName,
+                noktp: data.data.data[0]?.driverKtp,
+                divisi: data.data.data[0]?.division,
+                nosim: data.data.data[0]?.numberSim,
+                jenissim: data.data.data[0]?.simType,
+                alamat: data.data.data[0]?.driverAddress,
+                tgllahir: data.data.data[0]?.dateBirth,
+                agama: data.data.data[0]?.driverReligion,
+                notelp1: data.data.data[0]?.noTelp1,
+                notelp2: data.data.data[0]?.noTelp2,
+                email: data.data.data[0]?.driverEmail,
+                tglmasuk: data.data.data[0]?.dateIn,
+                tglsim: data.data.data[0]?.simDate,
+                vehicletype: data.data.data[0]?.vehicle,
+                jeniskepemilikan: data.data.data[0]?.jenisKepemilikan,
+                ukseragam: data.data.data[0]?.ukuranSeragam,
+                rekeningbank: data.data.data[0]?.BankRekening,
+                norekening: data.data.data[0]?.Norek
+
+            })
+        } catch (error) {
+
+        }
+    }
+
+    const EditDriver = async (driverId) => {
+        setLoading(true);
+        try {
+            const data = await axios.post(
+                `${Baseurl}driver/update-driver`,
                 {
-                    nama: NamaDriverValue,
-                    id: driverId,
-                    nik: NIKValue,
-                    no_ktp: NoKTPValue,
-                    no_sim: NoSIMValue,
-                    divisi: DivisiValue,
-                    jenis_sim: JenisSIMValue,
-                    alamat: AlamatValue,
-                    tgl_lahir: TanggalLahirValue,
-                    agama: AgamaValue,
-                    notelp: NoTelpValue,
-                    notelp2: Notelp2Value,
-                    email: EmailValue,
-                    tgl_masuk: TanggalMasukValue,
-                    tgl_sim: TanggalSIMValue,
-                    vehicle_type: VehicleTypeValue,
-                    jenis_kepemilikan: JenisKepemilikanValue,
-                    uk_seragam: UkuranSeragamValue,
-                    rekening_bank: RekeningBankValue,
-                    rekening_norek: NoMorRekeningValue
-
-
+                    id: DetailId,
+                    nik: formik.values.nik,
+                    divisi: formik.values.divisi,
+                    nama: formik.values.namadriver,
+                    no_ktp: formik.values.noktp,
+                    no_sim: formik.values.nosim,
+                    vehicle_type: formik.values.vehicletype,
+                    jenis_sim: formik.values.jenissim,
+                    alamat: formik.values.alamat,
+                    tgl_lahir: formik.values.tgllahir,
+                    agama: formik.values.agama,
+                    notelp: formik.values.notelp1,
+                    notelp2: formik.values.notelp2,
+                    email: formik.values.email,
+                    tgl_masuk: formik.values.tglmasuk,
+                    tgl_sim: formik.values.tglsim,
+                    uk_seragam: formik.values.ukseragam,
+                    jenis_kepemilikan: formik.values.jeniskepemilikan,
+                    rekening_bank: formik.values.rekeningbank,
+                    rekening_norek: formik.values.norekening,
                 },
                 {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: localStorage.getItem("token"),
-                    }
-                });
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Sukses',
-                text: 'Data driver berhasil diperbarui.'
-            });
-            handleClose()
-        } catch (error) {
-            // Menampilkan SweetAlert error
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Terjadi kesalahan saat memperbarui data driver.'
-            });
-        }
-    }
-    const onFinish = (values) => {
-        console.log('Success:', values);
-        UpdateDriver(DriverId)
-        // Lalu Anda bisa menggunakan fungsi update driver Anda di sini
-    };
-
-    const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-    console.log(`setNamaDriverValue`, NamaDriverValue);
-
-    const UploadGambar = async (file) => {
-        const formData = new FormData();
-        formData.append('cover', file);
-        formData.append('id', DriverId);
-
-        try {
-            const response = await axios.post(
-                `${Baseurl}driver/upload-driver-photo`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: localStorage.getItem('token'),
                     },
                 }
             );
+            ApiAwal()
+            setSuccess(true);
+            // Display SweetAlert success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Driver updated successfully',
+            });
 
-            // Handle response here
+            // Perform other actions after success
+        } catch (error) {
+            // Handle errors
+            console.error(error);
+
+            // Display SweetAlert error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update driver',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const BuatDriver = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('cover', formik.values.cover);
+            formData.append('id', DetailId);
+            formData.append('nik', formik.values.nik);
+            formData.append('divisi', formik.values.divisi);
+            formData.append('nama', formik.values.namadriver);
+            formData.append('no_ktp', formik.values.noktp);
+            formData.append('no_sim', formik.values.nosim);
+            formData.append('vehicle_type', formik.values.vehicletype);
+            formData.append('jenis_sim', formik.values.jenissim);
+            formData.append('alamat', formik.values.alamat);
+            formData.append('tgl_lahir', formik.values.tgllahir);
+            formData.append('agama', formik.values.agama);
+            formData.append('notelp', formik.values.notelp1);
+            formData.append('notelp2', formik.values.notelp2);
+            formData.append('email', formik.values.email);
+            formData.append('tgl_masuk', formik.values.tglmasuk);
+            formData.append('tgl_sim', formik.values.tglsim);
+            formData.append('uk_seragam', formik.values.ukseragam);
+            formData.append('jenis_kepemilikan', formik.values.jeniskepemilikan);
+            formData.append('rekening_bank', formik.values.rekeningbank);
+            formData.append('rekening_norek', formik.values.norekening);
+
+            const response = await axios.post(`${Baseurl}driver/create-driver`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: localStorage.getItem("token"),
+                }
+            });
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Driver created successfully',
+            });
+            ApiAwal()
+
+
             console.log(response.data);
-
-            return response; // return response
-
         } catch (error) {
             console.error(error);
-        }
-    }
 
-
-    const onChange = info => {
-        if (info.file.status !== 'uploading') {
-            console.log(info.file, info.fileList);
-        }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            setdriverImage(URL.createObjectURL(info.file.originFileObj));
-        } else if (info.file.status === 'error') {
-            console.log(`${info.file.name} file upload failed.`);
+            // Display SweetAlert error message
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to create driver',
+            });
         }
     };
 
 
-    const TipeKendaraanOptions = TipeKendaraan.map((item) => ({
-        label: item.tipe
-    }))
-
-
-    const jenisKepemilikanOptions = jenisKepemilikan.map((item) => ({
-        label: item.jenis
-    }))
-    const UkuranSeragamOptions = UkuranSeragam.map((item) => ({
-        label: item.ukuran
-    }))
-
-    const JenisSimOptions = JenisSim && JenisSim.map((item) => ({
-        label: item.Jenis
-    }))
-
-    const onShowSizeChange = (page, pageSize) => {
-        ApiAwal(page)
-    };
-
-
-
-    // Create Driver
-    const CreateDriver = async (file) => {
-        const formData = new FormData();
-        formData.append('cover', driverImage);
-        formData.append('nama', NamaDriverValue);
-        formData.append('divisi', DivisiValue);
-        formData.append('no_ktp', NoKTPValue);
-        formData.append('no_sim', NoSIMValue);
-        formData.append('vehicle_type', VehicleTypeValue);
-        formData.append('jenis_sim', JenisSIMValue);
-        formData.append('alamat', AlamatValue);
-        formData.append('tgl_lahir', TanggalLahirValue);
-        formData.append('agama', AgamaValue);
-        formData.append('notelp', Notelp2Value);
-        formData.append('notelp2', Notelp2Value);
-        formData.append('tgl_masuk', TanggalMasukValue);
-        formData.append('uk_seragam', UkuranSeragamValue);
-        formData.append('nik', NIKValue);
-        formData.append('email', EmailValue);
-        formData.append('jenis_kepemilikan', JenisKepemilikanValue);
+    const UploadFoto = async () => {
         try {
-            const data = await axios.post(`${Baseurl}driver/create-driver`, formData,
+            const formData = new FormData();
+            formData.append('cover', formik.values.cover);
+            formData.append('id', DetailId);
+            const data = await axios.post(`${Baseurl}vehicle/upload-vehicle-photo`, formData,
                 {
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "multipart/form-data",
                         Authorization: localStorage.getItem("token"),
                     }
-                })
+                }
+            )
         } catch (error) {
 
         }
     }
 
+
+
+    const JenisSimOptions = JenisSim.map((item) => ({
+        label: item.Jenis,
+        value: item.mitraId
+    }))
+    const UkuranSeragamOptions = UkuranSeragam.map((item) => ({
+        label: item.ukuran,
+        value: item.mitraId
+    }))
+    const DriverTypeOptions = DriverType.map((item) => ({
+        label: item.tipe,
+        value: item.mitraId
+    }))
+
+
+
+    const formik = useFormik({
+        initialValues: {
+            nik: '',
+            namadriver: '',
+            noktp: '',
+            jenis_SIM: '',
+            tglsim: '',
+        },
+        validationSchema: Yup.object({
+            nik: Yup.string().required('Nik harus diisi'),
+            noktp: Yup.number().required('No KTP harus diisi').integer('Nik harus berupa angka'),
+            namadriver: Yup.string().required('Nama Driver harus diisi'),
+            email: Yup.string().email('Format email tidak valid').required('Email harus diisi'),
+            divisi: Yup.string().required('Divisi Driver harus diisi'),
+            nosim: Yup.number().required('No SIM harus diisi').integer('Nik harus berupa angka'),
+            jenissim: Yup.string().required('Jenis SIM harus diisi'),
+            alamat: Yup.string().required('Alamat harus diisi'),
+            tgllahir: Yup.date().required('Tanggal Lahir harus diisi'),
+            agama: Yup.string().required('Agama harus diisi'),
+            notelp1: Yup.number().required('No Telp 1 harus diisi'),
+            // notelp2: Yup.number().required('No Telp 2 harus diisi'),
+            tglmasuk: Yup.date().nullable().required('Tanggal Masuk harus diisi'),
+            tglsim: Yup.date().nullable().required('Tanggal SIM harus diisi'),
+            vehicletype: Yup.string().required('Vehicle Type harus diisi'),
+            jeniskepemilikan: Yup.string().required('Jenis Kepemilikan harus diisi'),
+            ukseragam: Yup.string().required('Ukuran Seragam harus diisi'),
+            rekeningbank: Yup.string().required('Rekening Bank harus diisi'),
+            norekening: Yup.string().required('Nomor Rekening harus diisi'),
+        }),
+        onSubmit: values => {
+            console.log(values);
+            setModalOpen(false);
+            // EditDriver(values.driverId)
+            // BuatDriver()
+            if (DetailId === null) {
+                return BuatDriver()
+            } else {
+                EditDriver(values.driverId)
+                UploadFoto(values.driverId)
+
+            }
+        },
+    });
     return (
+
         <div>
             <Card>
-                <Button size='sm' onClick={() => {
-                    showModal()
-                    setNamaDriverValue(null)
-                    setNIKValue(null)
-                    setNoKTPValue(null)
-                    setDivisiValue(null)
-                    setNoSIMValue(null)
-                    setJenisSIMValue(null)
-                    setAlamatValue(null)
-                    setTanggalLahirValue(null)
-                    setAgamaValue(null)
-                    setNoTelpValue(null)
-                    setNotelp2Value(null)
-                    setEmailValue(null)
-                    setTanggalMasukValue(null)
-                    setTanggalSIMValue(null)
-                    setVehicleTypeValue(null)
-                    setJenisKepemilikanValue(null)
-                    setUkuranSeragamValue(null)
-                    setRekeningBankValue(null)
-                    setNoMorRekeningValue(null)
-                    setdriverImage(null)
-
-                }}>Add Driver</Button>
-                <Modal show={show} size='lg' onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form
-                            form={form}
-                            name="basic"
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
-                            initialValues={{
-                                alamat: AlamatValue // Mengisi initialValues dengan nilai dari state AlamatValue
-                            }}
-                        >
-                            <Row>
-                                <Col sm={4}>
-                                    <Card>
-                                        <img src={driverImage} style={{ width: "200px" }} alt="driver" />
-                                        <Form.Item
-                                            name="upload"
-                                            label="Upload File"
-                                            valuePropName="fileList"
-                                            rules={[{ required: true, message: 'Silahkan upload file!' }]}
-                                        >
-                                            <br />
-                                            <Upload
-                                                name="logo"
-                                                customRequest={({ file }) => UploadGambar(file)}
-                                                onChange={onChange}
-                                                listType="picture"
-                                            >
-                                                <Button icon={<UploadOutlined />}>Click to upload</Button>
-                                            </Upload>
-                                        </Form.Item>
-                                    </Card>
-                                </Col>
-                                <Col sm={4}>
-                                    <Form.Item
-                                        label="NIK"
-                                        rules={[{ required: true, message: 'Masukkan NIK!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NIKValue} onChange={(e) => setNIKValue(e.target.value)} placeholder="Masukkan NIK" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nama Driver"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-
-                                    >
-                                        <Input value={NamaDriverValue} onChange={(e) => setNamaDriverValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="No KTP"
-                                        rules={[{ required: true, message: 'Masukkan NO KTP Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoKTPValue} onChange={(e) => setNoKTPValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Divisi"
-                                        rules={[{ required: true, message: 'Masukkan Divisi Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={DivisiValue} onChange={(e) => setDivisiValue(e.target.value)} placeholder="Masukkan Divisi Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="No SIM"
-                                        rules={[{ required: true, message: 'Masukkan No SIM!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoSIMValue} onChange={(e) => setNoSIMValue(e.target.value)} placeholder="Masukkan No SIM" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Jenis SIM"
-                                        // name="jenissim"
-                                        rules={[{ required: true, message: 'Masukkan Jenis SIM!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        {/* <Input value={JenisSIMValue} onChange={(e) => setJenisSIMValue(e.target.value)} placeholder="Masukkan No SIM" /> */}
-                                        <Select value={JenisSIMValue} placeholder={JenisSIMValue} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Alamat"
-                                        // name="alamat"
-                                        rules={[{ required: true, message: 'Masukkan Alamat Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input
-                                            value={AlamatValue} // Menggunakan nilai alamat dari state
-                                            onChange={(e) => setAlamatValue(e.target.value)} // Mengubah nilai alamat dalam state
-                                            placeholder="Masukkan Alamat Driver"
-                                        />
-                                    </Form.Item>
-
-
-                                    <Form.Item
-                                        label="Tanggal Lahir"
-                                        // name="tgllahir"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={TanggalLahirValue} onChange={(e) => setTanggalLahirValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Agama"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={AgamaValue} onChange={(e) => setAgamaValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                </Col>
-                                <Col sm={4}>
-                                    <Form.Item
-                                        label="No Telp"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoTelpValue} onChange={(e) => setNoTelpValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="No Telp2"
-
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={Notelp2Value} onChange={(e) => setNotelp2Value(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Email"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={EmailValue} onChange={(e) => setEmailValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal Masuk"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={TanggalMasukValue} onChange={(e) => setTanggalMasukValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal SIM"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={TanggalSIMValue} onChange={(e) => setTanggalSIMValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Vehicle Type"
-                                        rules={[{ required: true, message: 'Masukkan Vehicle Type!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Select placeholder={VehicleTypeValue} options={TipeKendaraanOptions} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Jenis Kepemilikan"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Select placeholder={JenisKepemilikanValue} options={jenisKepemilikanOptions}
-                                            onChange={(options) => {
-                                                setJenisKepemilikanValue(options.label)
-                                                console.log(jenisKepemilikan)
-                                            }}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Ukuran Seragam"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={UkuranSeragamValue} onChange={(e) => setUkuranSeragamValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Rekening Bank"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={RekeningBankValue} onChange={(e) => setRekeningBankValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nomor Rekening"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoMorRekeningValue} onChange={(e) => setNoMorRekeningValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={() => {
-                            form.submit();
-                            UpdateDriver(DriverId);
-                        }}>
-                            Save Changes
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-
-                {/* Modal Add Driver */}    
-
-                <Modal
-        title="Basic Modal"
-        open={open}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okButtonProps={{
-          disabled: true,
-        }}
-        cancelButtonProps={{
-          disabled: true,
-        }}
-      >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form
-                            form={form}
-                            name="basic"
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
-                            initialValues={{
-                                alamat: AlamatValue // Mengisi initialValues dengan nilai dari state AlamatValue
-                            }}
-                        >
-                            <Row>
-                                <Col sm={4}>
-                                    <Card>
-                                        <img src={driverImage} style={{ width: "200px" }} alt="driver" />
-                                        <Form.Item
-                                            name="upload"
-                                            label="Upload File"
-                                            valuePropName="fileList"
-                                            rules={[{ required: true, message: 'Silahkan upload file!' }]}
-                                        >
-                                            <br />
-                                            <Upload
-                                                name="logo"
-                                                customRequest={({ file }) => setdriverImage(file)}
-                                                onChange={onChange}
-                                                listType="picture"
-                                            >
-                                                <Button icon={<UploadOutlined />}>Click to upload</Button>
-                                            </Upload>
-                                        </Form.Item>
-                                    </Card>
-                                </Col>
-                                <Col sm={4}>
-                                    <Form.Item
-                                        label="NIK"
-                                        rules={[{ required: true, message: 'Masukkan NIK!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NIKValue} onChange={(e) => setNIKValue(e.target.value)} placeholder="Masukkan NIK" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nama Driver"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-
-                                    >
-                                        <Input value={NamaDriverValue} onChange={(e) => setNamaDriverValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="No KTP"
-                                        rules={[{ required: true, message: 'Masukkan NO KTP Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoKTPValue} onChange={(e) => setNoKTPValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Divisi"
-                                        rules={[{ required: true, message: 'Masukkan Divisi Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={DivisiValue} onChange={(e) => setDivisiValue(e.target.value)} placeholder="Masukkan Divisi Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="No SIM"
-                                        rules={[{ required: true, message: 'Masukkan No SIM!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoSIMValue} onChange={(e) => setNoSIMValue(e.target.value)} placeholder="Masukkan No SIM" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Jenis SIM"
-                                        // name="jenissim"
-                                        rules={[{ required: true, message: 'Masukkan Jenis SIM!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Select options={JenisSimOptions} onChange={(option) => setJenisSIMValue(option.label)} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Alamat"
-                                        // name="alamat"
-                                        rules={[{ required: true, message: 'Masukkan Alamat Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input
-                                            value={AlamatValue} // Menggunakan nilai alamat dari state
-                                            onChange={(e) => setAlamatValue(e.target.value)} // Mengubah nilai alamat dalam state
-                                            placeholder="Masukkan Alamat Driver"
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal Lahir"
-                                         require={true}
-                                        rules={[{ required: true, message: 'Masukkan Tanggal Lahir!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                           <Space direction="hotizontal" >
-                                     <DatePicker onChange={onChange} style={{zIndex:99999999999999999999999999, display:'-ms-inline-flexbox'  }} />
-  
-  </Space>  
-                                        {/* <DatePicker onChange={(date, dateString) => setTanggalLahirValue(dateString)} /> */}
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Agama"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={AgamaValue} onChange={(e) => setAgamaValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                </Col>
-                                <Col sm={4}>
-                                    <Form.Item
-                                        label="No Telp"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoTelpValue} onChange={(e) => setNoTelpValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="No Telp2"
-
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={Notelp2Value} onChange={(e) => setNotelp2Value(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Email"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={EmailValue} onChange={(e) => setEmailValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal Masuk"
-                                        rules={[{ required: false, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-
-                                    >
-                                        <Input value={TanggalMasukValue} onChange={(e) => setTanggalMasukValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal SIM"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={TanggalSIMValue} onChange={(e) => setTanggalSIMValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Vehicle Type"
-                                        rules={[{ required: true, message: 'Masukkan Vehicle Type!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Select options={TipeKendaraanOptions} onChange={(value) => setVehicleTypeValue(value.label)} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Jenis Kepemilikan"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Select options={jenisKepemilikanOptions}
-                                            onChange={(options) => setJenisKepemilikanValue(options.label)} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Ukuran Seragam"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Select options={UkuranSeragamOptions} onChange={(options) => setUkuranSeragamValue(options.label)} />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Rekening Bank"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={RekeningBankValue} onChange={(e) => setRekeningBankValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nomor Rekening"
-                                        rules={[{ required: true, message: 'Masukkan Nama Driver!' }]}
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                    >
-                                        <Input value={NoMorRekeningValue} onChange={(e) => setNoMorRekeningValue(e.target.value)} placeholder="Masukkan Nama Driver" />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={() => {
-                            form.submit();
-                            CreateDriver();
-                            UploadGambar()
-                        }}>
-                            Save Changes
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
                 <Row>
+                    <Col sm={8}>
+                        <Button size='default'
+                            onClick={() => {
+                                setModalOpen(true); formik.resetForm(); setGambarDriver(null); setDetailId(null)
+                            }} type="primary">Add Driver</Button>
+                    </Col>
+                    <Col sm={2}>
+                        <Input onChange={(e) => { setCariDriver(e.target.value) }} placeholder='Cari Driver'></Input>
+                    </Col>
+
+                    <Col>
+                        <Select
+                            showSearch
+                            placeholder="Jenis Kepemilikan"
+                            optionFilterProp="children"
+                            style={{ width: "150px" }}
+                            // value={CariJenisKepemilikan}
+                            onChange={(value) => setCariJenisKepemilikan(value)}
+
+                        >
+
+                            <Select.Option value="">-</Select.Option>
+                            {jenisKepemilikan.map((option) => (
+                                <Select.Option key={option.label} value={option.jenis}>
+                                    {option.jenis}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Col>
+
+                    <Modal
+                        title="Modal Driver"
+                        style={{ top: 20 }}
+                        width='800px'
+                        visible={modalOpen}
+                        onOk={formik.handleSubmit}
+                        onCancel={() => setModalOpen(false)}
+                    >
+                        <Form layout="vertical" onSubmitCapture={formik.handleSubmit}>
+                            <Row>
+                                <Col sm={4}>
+                                    <Card style={{ height: "200px" }}>
+                                        <div style={{ width: "100%", height: "100%" }}>
+                                            <img
+                                                src={GambarDriver}
+                                                alt="Gambar Driver"
+                                                style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                                            />
+                                        </div>
+                                    </Card>
+                                    <Form.Item
+                                        label="Upload Gambar"
+                                        help={formik.touched.cover && formik.errors.cover ? formik.errors.cover : null}
+                                        validateStatus={formik.touched.cover && formik.errors.cover ? 'error' : undefined}
+                                    >
+                                        <Upload
+                                            name="cover"
+                                            beforeUpload={(file) => {
+                                                formik.setFieldValue('cover', file);
+                                                return false; // Prevent upload immediately
+                                            }}
+                                            fileList={formik.values.cover ? [formik.values.cover] : []}
+                                        >
+                                            <Button icon={<UploadOutlined />}>Pilih Gambar</Button>
+                                        </Upload>
+                                    </Form.Item>
+                                </Col>
+                                <Col sm={4}>
+                                    <Form.Item
+                                        label="NIK"
+                                        help={formik.touched.nik && formik.errors.nik ? formik.errors.nik : null}
+                                        validateStatus={formik.touched.nik && formik.errors.nik ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input nik"
+                                            name="nik"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.nik}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Nama Driver"
+                                        help={formik.touched.namadriver && formik.errors.namadriver ? formik.errors.namadriver : null}
+                                        validateStatus={formik.touched.namadriver && formik.errors.namadriver ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="namadriver"
+                                            name="namadriver"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.namadriver}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="No KTP"
+                                        help={formik.touched.noktp && formik.errors.noktp ? formik.errors.noktp : null}
+                                        validateStatus={formik.touched.noktp && formik.errors.noktp ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input no ktp"
+                                            name="noktp"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.noktp}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Divisi"
+                                        help={formik.touched.divisi && formik.errors.divisi ? formik.errors.divisi : null}
+                                        validateStatus={formik.touched.divisi && formik.errors.divisi ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input divisi"
+                                            name="divisi"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.divisi}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="No SIM"
+                                        help={formik.touched.nosim && formik.errors.nosim ? formik.errors.nosim : null}
+                                        validateStatus={formik.touched.nosim && formik.errors.nosim ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input no sim"
+                                            name="nosim"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.nosim}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Jenis SIM"
+                                        help={formik.touched.jenissim && formik.errors.jenissim ? formik.errors.jenissim : null}
+                                        validateStatus={formik.touched.jenissim && formik.errors.jenissim ? 'error' : undefined}
+                                    >
+                                        <Select
+                                            showSearch
+                                            optionFilterProp="children"
+                                            id="jenissim"
+                                            name="jenissim"
+                                            type="text"
+                                            defaultValue="Pilih Jenis SIM"
+                                            // onChange={formik.handleChange}
+                                            onChange={(value) => formik.setFieldValue('jenissim', value)}
+                                            value={formik.values.jenissim}
+                                            onBlur={formik.handleBlur}
+
+                                        >
+                                            {JenisSimOptions.map((option) => (
+                                                <Select.Option key={option.label} value={option.jenis}>
+                                                    {option.jenis}
+                                                </Select.Option>
+                                            ))}
+
+                                        </Select>
+                                        {/* <Input
+                                            placeholder="input jenissim"
+                                            name="jenissim"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.jenissim}
+                                        /> */}
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Alamat"
+                                        help={formik.touched.alamat && formik.errors.alamat ? formik.errors.alamat : null}
+                                        validateStatus={formik.touched.alamat && formik.errors.alamat ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input alamat"
+                                            name="alamat"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.alamat}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Tanggal Lahir"
+                                        help={formik.touched.tgllahir && formik.errors.tgllahir ? formik.errors.tgllahir : null}
+                                        validateStatus={formik.touched.tgllahir && formik.errors.tgllahir ? 'error' : undefined}
+                                    >
+                                        <DatePicker
+                                            placeholder="input tgl lahir"
+                                            name="tgllahir"
+                                            onChange={(date, dateString) => formik.setFieldValue('tgllahir', dateString)}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.tgllahir ? moment(formik.values.tgllahir) : null}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Agama"
+                                        help={formik.touched.agama && formik.errors.agama ? formik.errors.agama : null}
+                                        validateStatus={formik.touched.agama && formik.errors.agama ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input agama"
+                                            name="agama"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.agama}
+                                        />
+                                    </Form.Item>
+                                    {/* <Form.Item
+                                        label="Agama"
+                                        help={formik.touched.nik && formik.errors.nik ? formik.errors.nik : null}
+                                        validateStatus={formik.touched.nik && formik.errors.nik ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input nik"
+                                            name="nik"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.nik}
+                                        />
+                                    </Form.Item> */}
+                                </Col>
+                                <Col sm={4}>
+
+                                    <Form.Item
+                                        label="No Telp"
+                                        help={formik.touched.notelp1 && formik.errors.notelp1 ? formik.errors.notelp1 : null}
+                                        validateStatus={formik.touched.notelp1 && formik.errors.notelp1 ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input notelp1"
+                                            name="notelp1"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.notelp1}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="No Telp 2"
+                                        help={formik.touched.notelp2 && formik.errors.notelp2 ? formik.errors.notelp2 : null}
+                                        validateStatus={formik.touched.notelp2 && formik.errors.notelp2 ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input notelp2"
+                                            name="notelp2"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.notelp2}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Email"
+                                        help={formik.touched.email && formik.errors.email ? formik.errors.email : null}
+                                        validateStatus={formik.touched.email && formik.errors.email ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input email"
+                                            name="email"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.email}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Tanggal Masuk"
+                                        help={formik.touched.tglmasuk && formik.errors.tglmasuk ? formik.errors.tglmasuk : null}
+                                        validateStatus={formik.touched.tglmasuk && formik.errors.tglmasuk ? 'error' : undefined}
+                                    >
+                                        <DatePicker
+                                            name="tglmasuk"
+                                            onChange={(date, dateString) => formik.setFieldValue('tglmasuk', dateString)}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.tglmasuk ? moment(formik.values.tglmasuk) : null}
+                                            placeholder="Pilih tanggal masuk"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Tanggal SIM"
+                                        help={formik.touched.tglsim && formik.errors.tglsim ? formik.errors.tglsim : null}
+                                        validateStatus={formik.touched.tglsim && formik.errors.tglsim ? 'error' : undefined}
+                                    >
+                                        <DatePicker
+                                            placeholder="input tgl sim"
+                                            name="tglsim"
+                                            id='tglsim'
+                                            onChange={(date, dateString) => formik.setFieldValue('tglsim', dateString)}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.tglsim ? moment(formik.values.tglsim) : null}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Vehicle Type"
+                                        help={formik.touched.vehicletype && formik.errors.vehicletype ? formik.errors.vehicletype : null}
+                                        validateStatus={formik.touched.vehicletype && formik.errors.vehicletype ? 'error' : undefined}
+                                    >
+                                        <Select
+                                            showSearch
+                                            name="vehicletype"
+                                            id='vehicletype'
+                                            optionFilterProp="children"
+
+                                            value={formik.values.vehicletype}
+                                            onChange={(value) => formik.setFieldValue('vehicletype', value)}
+                                        >
+                                            {DriverTypeOptions.map((option) => (
+                                                <Select.Option key={option.label} value={option.jenis}>
+                                                    {option.label}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                        {/* <Input
+                                            placeholder="input vehicle type"
+                                            name="vehicletype"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.vehicletype}
+                                        /> */}
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Jenis Kepemilikan"
+                                        help={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? formik.errors.jeniskepemilikan : null}
+                                        validateStatus={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? 'error' : undefined}
+                                    >
+                                        <Select
+
+                                            name="jeniskepemilikan"
+                                            id='jeniskepemilikan'
+                                            // onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.jeniskepemilikan}
+                                            onChange={(value) => formik.setFieldValue('jeniskepemilikan', value)}
+                                        >
+
+                                            {jenisKepemilikan.map((item) => (
+                                                <Select.Option key={item.label} value={item.jenis}>
+                                                    {item.jenis}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                        {/* <Input
+                                            placeholder="input jenis kepemilikan"
+                                            name="jeniskepemilikan"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.jeniskepemilikan}
+                                        /> */}
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Ukuran Seragam"
+                                        help={formik.touched.ukseragam && formik.errors.ukseragam ? formik.errors.ukseragam : null}
+                                        validateStatus={formik.touched.ukseragam && formik.errors.ukseragam ? 'error' : undefined}
+                                    >
+                                        <Select
+                                            name="ukseragam"
+                                            id="ukseragam"
+                                            onChange={(value) => {
+                                                formik.setFieldValue('ukseragam', value);
+                                            }}
+                                            defaultValue="Pilih Ukuran Seragam"
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.ukseragam}
+                                        >
+                                            {UkuranSeragam.map((item) => (
+                                                <Select.Option value={item.ukuran}>{item.ukuran}</Select.Option>
+                                            ))}
+                                        </Select>
+                                        {/* <Input
+                                            placeholder="input ukuran seragam"
+                                            name="ukseragam"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.ukseragam}
+                                        /> */}
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Rekening Bank"
+                                        help={formik.touched.rekeningbank && formik.errors.rekeningbank ? formik.errors.rekeningbank : null}
+                                        validateStatus={formik.touched.rekeningbank && formik.errors.rekeningbank ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input rekening bank"
+                                            name="rekeningbank"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.rekeningbank}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Nomor Rekening"
+                                        help={formik.touched.norekening && formik.errors.norekening ? formik.errors.norekening : null}
+                                        validateStatus={formik.touched.norekening && formik.errors.norekening ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input nomor rekening"
+                                            name="norekening"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.norekening}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Modal>
                     <DataTable
                         columns={columns}
                         data={DataAwal}
+                        onRowClicked={DetailRow}
                     />
-                    <div className='mt-3 d-flex justify-content-end'>
-
+                    <div className='d-flex justify-content-end mt-3'>
                         <Pagination
                             showSizeChanger
                             onChange={onShowSizeChange}
