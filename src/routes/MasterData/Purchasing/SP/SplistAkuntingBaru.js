@@ -127,14 +127,14 @@ function SplistOperasional() {
       },
       width: "150px",
     },
-    {
-      name: "Detail",
-      selector: (row) => (
-        <Button size="sm" onClick={() => buttonarahin(row?.idmp)}>
-          Detail
-        </Button>
-      ),
-    },
+    // {
+    //   name: "Detail",
+    //   selector: (row) => (
+    //     <Button size="sm" onClick={() => buttonarahin(row?.idmp)}>
+    //       Detail
+    //     </Button>
+    //   ),
+    // },
   ];
 
   const buttonarahin = (idmp) => {
@@ -238,6 +238,7 @@ function SplistOperasional() {
               ) : (<DataTable
                 columns={columns}
                 data={combinedData}
+                onRowClicked={buttonarahin}
                 // pagination
                 // paginationServer
                 // paginationTotalRows={totalRows}

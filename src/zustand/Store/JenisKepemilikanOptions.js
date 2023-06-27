@@ -93,6 +93,22 @@ const ZustandStore = create((set) => ({
       console.error(error);
     }
   },
+
+  StatusDriverAktif:[],
+  setStatusDriverAktif: async () => {
+    try {
+      const data = await axios.get(`${Baseurl}vehicle/get-filter`, {
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("token"),
+          }
+      });
+      set({ StatusDriverAktif: data.data.filterStatus });
+      console.log(`ni status driver`,data.data.filterStatus);
+    } catch (error) {
+      console.error(error);
+    }
+  },
 }));
 
 export default ZustandStore;

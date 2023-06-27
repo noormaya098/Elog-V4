@@ -148,6 +148,27 @@ function DetailsAkunting() {
     });
   };
 
+  const RejectSP = async () => {
+    try {
+      const data = await axios.post(`${Baseurl}sp/cancel-sp`,
+        {
+          id_mp: idmp,
+          id_massage_do: comment.user,
+          keterangan: "canceled haha do"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+
+        })
+    } catch (error) {
+
+    }
+
+  }
+
   const comments = async () => {
     const api = await axios.get(`${Baseurl}sp/get-SP-massage?id_mp=${idmp}`, {
       headers: {
@@ -238,7 +259,7 @@ function DetailsAkunting() {
                     variant="danger"
                     onClick={() => rejectbutton()}
                   >
-                    Reject Driver
+                    Reject SP
                   </Button>
 
                 </>
@@ -288,9 +309,14 @@ function DetailsAkunting() {
 
 
             {jobdesk === "sales" && (
-              <Button size="sm" onClick={pindahedit} variant="danger">
-                Edit SJ
-              </Button>
+              <>
+                <Button size="sm" onClick={RejectSP} variant="danger">
+                  Reject SP
+                </Button>
+                <Button size="sm" onClick={pindahedit} variant="primary">
+                  Edit SJ
+                </Button>
+              </>
             )}
           </div>
 

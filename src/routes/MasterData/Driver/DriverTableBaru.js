@@ -11,13 +11,13 @@ import Baseurl from '../../../Api/BaseUrl';
 import Swal from 'sweetalert2';
 import ZustandStore from '../../../zustand/Store/JenisKepemilikanOptions';
 
-
 function DriverTableBaru() {
     const [modalOpen, setModalOpen] = useState(false);
     const [DataAwal, setDataAwal] = useState("");
     const [DetailId, setDetailId] = useState("")
     const [loading, setLoading] = useState(false);
     const [CariDriver, setCariDriver] = useState("")
+    const [CariDriverAktif, setCariDriverAktif] = useState("")
     const { jenisKepemilikan, setjenisKepemilikan } = ZustandStore((state) => ({
         jenisKepemilikan: state.jenisKepemilikan,
         setjenisKepemilikan: state.setjenisKepemilikan
@@ -34,6 +34,11 @@ function DriverTableBaru() {
         DriverType: item.DriverType,
         setDriverType: item.setDriverType
     }))
+    const { StatusDriverAktif, setStatusDriverAktif } = ZustandStore((item) => ({
+        StatusDriverAktif: item.StatusDriverAktif,
+        setStatusDriverAktif: item.setStatusDriverAktif
+    }))
+
     const [CariJenisKepemilikan, setCariJenisKepemilikan] = useState("")
     const [success, setSuccess] = useState(false);
     const columns = [
@@ -162,7 +167,7 @@ function DriverTableBaru() {
 
     const ApiAwal = async (page = 1) => {
         try {
-            const data = await axios.get(`${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${CariDriver}&jenis_kepemilikan=${CariJenisKepemilikan}`, {
+            const data = await axios.get(`${Baseurl}driver/get-driver?limit=10&page=${page}&keyword=${CariDriver}&jenis_kepemilikan=${CariJenisKepemilikan}&status=${CariDriverAktif}`, {
 
                 headers: {
                     "Content-Type": "application/json",
@@ -186,7 +191,8 @@ function DriverTableBaru() {
         setUkuranSeragam()
         setJenisSim()
         setDriverType()
-    }, [CariDriver, CariJenisKepemilikan])
+        setStatusDriverAktif()
+    }, [CariDriver, CariJenisKepemilikan, CariDriverAktif])
 
     const onShowSizeChange = async (page) => {
         ApiAwal(page)
@@ -335,6 +341,7 @@ function DriverTableBaru() {
                 title: 'Success',
                 text: 'Driver created successfully',
             });
+            UploadFoto(formik.values.cover)
             ApiAwal()
 
 
@@ -366,7 +373,12 @@ function DriverTableBaru() {
                 }
             )
         } catch (error) {
-
+            // console.error(error);
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Error',
+            //     text: `Failed to upload photo: ${error.message}`,
+            // });
         }
     }
 
@@ -435,7 +447,7 @@ function DriverTableBaru() {
         <div>
             <Card>
                 <Row>
-                    <Col sm={8}>
+                    <Col sm={6}>
                         <Button size='default'
                             onClick={() => {
                                 setModalOpen(true); formik.resetForm(); setGambarDriver(null); setDetailId(null)
@@ -460,6 +472,24 @@ function DriverTableBaru() {
                             {jenisKepemilikan.map((option) => (
                                 <Select.Option key={option.label} value={option.jenis}>
                                     {option.jenis}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Col>
+                    <Col sm={2}>
+                        <Select
+                            showSearch
+                            placeholder="Status"
+                            optionFilterProp="children"
+                            style={{ width: "150px" }}
+                            // value={CariJenisKepemilikan}
+                            onChange={(value) => setCariDriverAktif(value)}
+
+                        >
+                            <Select.Option value="">-</Select.Option>
+                            {StatusDriverAktif.map((option) => (
+                                <Select.Option key={option.label} value={option.value}>
+                                    {option.status}
                                 </Select.Option>
                             ))}
                         </Select>
@@ -501,8 +531,77 @@ function DriverTableBaru() {
                                             <Button icon={<UploadOutlined />}>Pilih Gambar</Button>
                                         </Upload>
                                     </Form.Item>
+                                    <Form.Item
+                                        label="Tanggal Masuk"
+                                        help={formik.touched.tglmasuk && formik.errors.tglmasuk ? formik.errors.tglmasuk : null}
+                                        validateStatus={formik.touched.tglmasuk && formik.errors.tglmasuk ? 'error' : undefined}
+                                    >
+                                        <DatePicker
+                                            name="tglmasuk"
+                                            onChange={(date, dateString) => formik.setFieldValue('tglmasuk', dateString)}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.tglmasuk ? moment(formik.values.tglmasuk) : null}
+                                            placeholder="Pilih tanggal masuk"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Tanggal SIM"
+                                        help={formik.touched.tglsim && formik.errors.tglsim ? formik.errors.tglsim : null}
+                                        validateStatus={formik.touched.tglsim && formik.errors.tglsim ? 'error' : undefined}
+                                    >
+                                        <DatePicker
+                                            placeholder="input tgl sim"
+                                            name="tglsim"
+                                            id='tglsim'
+                                            onChange={(date, dateString) => formik.setFieldValue('tglsim', dateString)}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.tglsim ? moment(formik.values.tglsim) : null}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Tanggal Lahir"
+                                        help={formik.touched.tgllahir && formik.errors.tgllahir ? formik.errors.tgllahir : null}
+                                        validateStatus={formik.touched.tgllahir && formik.errors.tgllahir ? 'error' : undefined}
+                                    >
+                                        <DatePicker
+                                            placeholder="input tgl lahir"
+                                            name="tgllahir"
+                                            onChange={(date, dateString) => formik.setFieldValue('tgllahir', dateString)}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.tgllahir ? moment(formik.values.tgllahir) : null}
+                                        />
+                                    </Form.Item>
                                 </Col>
                                 <Col sm={4}>
+                                <Form.Item
+                                        label="Jenis Kepemilikan"
+                                        help={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? formik.errors.jeniskepemilikan : null}
+                                        validateStatus={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? 'error' : undefined}
+                                    >
+                                        <Select
+
+                                            name="jeniskepemilikan"
+                                            id='jeniskepemilikan'
+                                            // onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.jeniskepemilikan}
+                                            onChange={(value) => formik.setFieldValue('jeniskepemilikan', value)}
+                                        >
+
+                                            {jenisKepemilikan.map((item) => (
+                                                <Select.Option key={item.label} value={item.jenis}>
+                                                    {item.jenis}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                        {/* <Input
+                                            placeholder="input jenis kepemilikan"
+                                            name="jeniskepemilikan"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.jeniskepemilikan}
+                                        /> */}
+                                    </Form.Item>
                                     <Form.Item
                                         label="NIK"
                                         help={formik.touched.nik && formik.errors.nik ? formik.errors.nik : null}
@@ -601,32 +700,8 @@ function DriverTableBaru() {
                                             value={formik.values.jenissim}
                                         /> */}
                                     </Form.Item>
-                                    <Form.Item
-                                        label="Alamat"
-                                        help={formik.touched.alamat && formik.errors.alamat ? formik.errors.alamat : null}
-                                        validateStatus={formik.touched.alamat && formik.errors.alamat ? 'error' : undefined}
-                                    >
-                                        <Input
-                                            placeholder="input alamat"
-                                            name="alamat"
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.alamat}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal Lahir"
-                                        help={formik.touched.tgllahir && formik.errors.tgllahir ? formik.errors.tgllahir : null}
-                                        validateStatus={formik.touched.tgllahir && formik.errors.tgllahir ? 'error' : undefined}
-                                    >
-                                        <DatePicker
-                                            placeholder="input tgl lahir"
-                                            name="tgllahir"
-                                            onChange={(date, dateString) => formik.setFieldValue('tgllahir', dateString)}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.tgllahir ? moment(formik.values.tgllahir) : null}
-                                        />
-                                    </Form.Item>
+                                    
+
                                     <Form.Item
                                         label="Agama"
                                         help={formik.touched.agama && formik.errors.agama ? formik.errors.agama : null}
@@ -695,33 +770,7 @@ function DriverTableBaru() {
                                             value={formik.values.email}
                                         />
                                     </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal Masuk"
-                                        help={formik.touched.tglmasuk && formik.errors.tglmasuk ? formik.errors.tglmasuk : null}
-                                        validateStatus={formik.touched.tglmasuk && formik.errors.tglmasuk ? 'error' : undefined}
-                                    >
-                                        <DatePicker
-                                            name="tglmasuk"
-                                            onChange={(date, dateString) => formik.setFieldValue('tglmasuk', dateString)}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.tglmasuk ? moment(formik.values.tglmasuk) : null}
-                                            placeholder="Pilih tanggal masuk"
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Tanggal SIM"
-                                        help={formik.touched.tglsim && formik.errors.tglsim ? formik.errors.tglsim : null}
-                                        validateStatus={formik.touched.tglsim && formik.errors.tglsim ? 'error' : undefined}
-                                    >
-                                        <DatePicker
-                                            placeholder="input tgl sim"
-                                            name="tglsim"
-                                            id='tglsim'
-                                            onChange={(date, dateString) => formik.setFieldValue('tglsim', dateString)}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.tglsim ? moment(formik.values.tglsim) : null}
-                                        />
-                                    </Form.Item>
+
                                     <Form.Item
                                         label="Vehicle Type"
                                         help={formik.touched.vehicletype && formik.errors.vehicletype ? formik.errors.vehicletype : null}
@@ -750,35 +799,7 @@ function DriverTableBaru() {
                                             value={formik.values.vehicletype}
                                         /> */}
                                     </Form.Item>
-                                    <Form.Item
-                                        label="Jenis Kepemilikan"
-                                        help={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? formik.errors.jeniskepemilikan : null}
-                                        validateStatus={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? 'error' : undefined}
-                                    >
-                                        <Select
-
-                                            name="jeniskepemilikan"
-                                            id='jeniskepemilikan'
-                                            // onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.jeniskepemilikan}
-                                            onChange={(value) => formik.setFieldValue('jeniskepemilikan', value)}
-                                        >
-
-                                            {jenisKepemilikan.map((item) => (
-                                                <Select.Option key={item.label} value={item.jenis}>
-                                                    {item.jenis}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                        {/* <Input
-                                            placeholder="input jenis kepemilikan"
-                                            name="jeniskepemilikan"
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.jeniskepemilikan}
-                                        /> */}
-                                    </Form.Item>
+                                    
                                     <Form.Item
                                         label="Ukuran Seragam"
                                         help={formik.touched.ukseragam && formik.errors.ukseragam ? formik.errors.ukseragam : null}
@@ -830,6 +851,19 @@ function DriverTableBaru() {
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             value={formik.values.norekening}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Alamat"
+                                        help={formik.touched.alamat && formik.errors.alamat ? formik.errors.alamat : null}
+                                        validateStatus={formik.touched.alamat && formik.errors.alamat ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input alamat"
+                                            name="alamat"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.alamat}
                                         />
                                     </Form.Item>
                                 </Col>

@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import DataTable from "react-data-table-component";
 import Baseurl from '../../../../Api/BaseUrl';
-import { Card, Tag } from 'antd';
+import { Card, Tag, Pagination } from 'antd';
 import { Button, Row, Form, Col } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function Index() {
     const [DataAwal, setDataAwal] = useState([]);
     const [Loading, Isloading] = useState(false)
-    const[search , setSearch] = useState("")
-    const [page, setPage] = useState(1);  
+    const [search, setSearch] = useState("")
+    // const [page, setPage] = useState(1);
     const [totalRows, setTotalRows] = useState(20);
 
 
     const history = useHistory()
-    const fetchData = async () => {
+    const fetchData = async (page = 1) => {
         Isloading(true)
         try {
             const response = await axios.get(`${Baseurl}sp/get-SP-akunting?limit=10&page=${page}&keyword=${search}`, {
@@ -33,12 +33,12 @@ function Index() {
     };
     useEffect(() => {
         fetchData();
-    }, [search , page]);
-// const limit = 10
+    }, [search]);
+    // const limit = 10
     const columns = [
         {
             name: "No",
-            selector: (row, index) => row.no +1,
+            selector: (row, index) => row.no,
             width: "50px",
             wrap: true,
         },
@@ -96,14 +96,14 @@ function Index() {
             },
             width: "150px",
         },
-        {
-            name: "Detail",
-            selector: (row) => (
-                <Button size="sm" onClick={() => buttonarahin(row?.idmp)}>
-                    Detail
-                </Button>
-            ),
-        },
+        // {
+        //     name: "Detail",
+        //     selector: (row) => (
+        //         <Button size="sm" onClick={() => buttonarahin(row?.idmp)}>
+        //             Detail
+        //         </Button>
+        //     ),
+        // },
         //   {
         //     name: "Approve By Ops",
         //     selector: (row) => {
@@ -154,14 +154,15 @@ function Index() {
         //   },
     ];
 
-    const buttonarahin = (idmp) => {
-        console.log(`klik dong`, idmp);
-        history.push(`/masterdata/splistdetailakunting/${idmp}`);
+    const buttonarahin = (row) => {
+        history.push(`/masterdata/splistdetailakunting/${row.idmp}`);
     };
 
-    const handlePageChange = page => {
-        setPage(page);
+    const handlePageChange = (page) => {
+        fetchData(page);
     }
+
+
 
     return (
         <div>
@@ -182,13 +183,24 @@ function Index() {
                 </Row>
                 <Col>
                     {Loading ? "loading gan" : (
-                        <DataTable columns={columns} data={DataAwal} 
-                        pagination // activate pagination
-                        paginationServer // pagination on server side
-                        onChangePage={handlePageChange} // handle page change
-                        paginationTotalRows={totalRows} // total number of rows
+                        <DataTable columns={columns} data={DataAwal}
+                            // pagination // activate pagination
+                            // paginationServer // pagination on server side
+                            onChangePage={handlePageChange} // handle page change
+                            paginationTotalRows={totalRows} // total number of rows
+                            onRowClicked={buttonarahin}
                         />
                     )}
+                    <div className='d-flex justify-content-end mt-3'>
+
+                    <Pagination
+                        showSizeChanger
+                        // onShowSizeChange={onShowSizeChange}
+                        onChange={handlePageChange}
+                        defaultCurrent={1}
+                        total={500}
+                        />
+                        </div>
                 </Col>
             </Card>
         </div>

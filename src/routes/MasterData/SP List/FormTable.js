@@ -106,7 +106,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     setCheckboxValue(event.target.checked ? 1 : 0);
   };
 
-  console.log(`ini adlaah IsiDataSPSemua`, IsiDataSPSemua.detail);
+  console.log(`ini adlaah StatusApproveOpt`, StatusApproveOpt);
 
   ///select driver
   useEffect(() => {
@@ -971,7 +971,8 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                     <Alert type="error" message="Diverted Purchasing" banner /> :
                     null}
 
-
+              {(jobdesk === "operasional")}
+              <Button size="sm" variant="danger" onClick={rejectsp}>Reject SP</Button>
 
               {/* {(StatusPurchasing === 'Y') &&
                 <Alert type="success" message="Approve Purchasing" banner /> */}
@@ -1584,7 +1585,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                               </>
                             )}</td>
 
-                            {(jobdesk == "operasional") && (data.supirId === 0) && (data.unitId === 0) ? (
+                            {(jobdesk == "operasional" && data.supirId === 0 && data.unitId === 0) ? (
                               <Button
                                 size="sm"
                                 variant="primary"
@@ -1610,9 +1611,14 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                               >
                                 Approved
                               </Button>
-                            ) : null}
+                            ) :
+                             ""
+                            }
 
-
+                            {(jobdesk == "operasional" && data.supirId === 0 && data.unitId === 0
+                              ? <p>belum di approve</p> : (jobdesk === "operasional" && StatusApproveOpt === "N" && ("Reject")) )
+                            }
+                            {/* {StatusApproveOpt === "N" && <p>approve</p>} */}
 
 
                             {/* {(jobdesk == "operasional" && Kendaraan_operasionalStatus === "N") && (
@@ -1644,7 +1650,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                             ) : null} */}
 
                             {/* Approve Purchasing */}
-                            {(jobdesk == "purchasing" && jobdesk != "akunting" && jobdesk != "operasional" ) && (
+                            {(jobdesk == "purchasing" && jobdesk != "akunting" && jobdesk != "operasional") && (
                               <>
                                 <Button
                                   size="sm"

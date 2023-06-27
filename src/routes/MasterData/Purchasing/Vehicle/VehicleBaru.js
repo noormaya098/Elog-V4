@@ -18,6 +18,7 @@ function VehicleBaru() {
     const [NamaSupir, setNamaSupir] = useState("")
     const [CariNoKendaraan, setCariNoKendaraan] = useState("")
     const [CariJenisKepemilikan, setCariJenisKepemilikan] = useState("")
+    const [CariDriverAktif, setCariDriverAktif] = useState("")
     const { NamaMitra, fetchMitra } = useMitraStore((item) => ({
         NamaMitra: item.NamaMitra,
         fetchMitra: item.fetchMitra
@@ -38,6 +39,10 @@ function VehicleBaru() {
         jenisKepemilikan: item.jenisKepemilikan,
         setjenisKepemilikan: item.setjenisKepemilikan
     }))
+    const { StatusDriverAktif, setStatusDriverAktif } = ZustandStore((item) => ({
+        StatusDriverAktif: item.StatusDriverAktif,
+        setStatusDriverAktif: item.setStatusDriverAktif
+    }))
 
     const NamaMitraOptions = NamaMitra.map((item) => ({
         label: item.NamaMitra,
@@ -50,7 +55,7 @@ function VehicleBaru() {
     const jenisKepemilikanOptions = jenisKepemilikan.map((item) => ({
         label: item.jenis,
     }))
-
+    console.log(`StatusDriverAktif`, StatusDriverAktif);
 
     const validationSchema = Yup.object().shape({
         kode_kendaraan: Yup.string()
@@ -159,7 +164,7 @@ function VehicleBaru() {
 
     const ApiAwal = async (page = 1) => {
         try {
-            const data = await axios.get(`${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=${CariNoKendaraan}&jenisKepemilikan=${CariJenisKepemilikan}`, {
+            const data = await axios.get(`${Baseurl}vehicle/get-vehicle?limit=10&page=${page}&keyword=${CariNoKendaraan}&jenisKepemilikan=${CariJenisKepemilikan}&status=${CariDriverAktif}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: localStorage.getItem("token"),
@@ -178,7 +183,8 @@ function VehicleBaru() {
         setJenisSim()
         setDriverType()
         setWarnaPlat()
-    }, [CariNoKendaraan, CariJenisKepemilikan])
+        setStatusDriverAktif()
+    }, [CariNoKendaraan, CariJenisKepemilikan, CariDriverAktif])
 
     const EditVehicle = async (values) => {
         try {
@@ -186,7 +192,7 @@ function VehicleBaru() {
                 {
                     ...values,
                     id: IdDriver,
-                    id_driver:formik.values.id_driver,
+                    id_driver: formik.values.id_driver,
                 },
                 {
                     headers: {
@@ -256,7 +262,7 @@ function VehicleBaru() {
                 panjang: data.data.data[0]?.vehicleLentgth,
                 lebar: data.data.data[0]?.vehicleWidth,
                 tinggi: data.data.data[0]?.vehicleHeight,
-                kapasitas_maks : data.data.data[0]?.maxCapacity
+                kapasitas_maks: data.data.data[0]?.maxCapacity
 
 
 
@@ -314,6 +320,14 @@ function VehicleBaru() {
 
     console.log(`ini foto driver`, FotoDriver);
 
+    const title = () => {
+        if (formik.values.jenis_kepemilikan === "") {
+            return "Create Vehicle";
+        } else {
+            return "Edit Vehicle";
+        }
+    }
+
     return (
 
         <div>
@@ -321,13 +335,14 @@ function VehicleBaru() {
 
                 <>
                     <Row>
-                        <Col sm={8}>
+                        <Col sm={6}>
                             <Button
-                                type="primary" onClick={()=>{showModal()
+                                type="primary" onClick={() => {
+                                    showModal()
                                     setIdDriver(null)
                                     setFotoDriver(null)
                                 }} >
-                               Tambah Vehicle
+                                Tambah Vehicle
                             </Button>
                         </Col>
                         <Col sm={2}>
@@ -354,9 +369,28 @@ function VehicleBaru() {
                                 ))}
                             </Select>
                         </Col>
+                        <Col sm={2}>
+                            <Select
+                                showSearch
+                                placeholder="Status"
+                                optionFilterProp="children"
+                                style={{ width: "150px" }}
+                                // value={CariJenisKepemilikan}
+                                onChange={(value) => setCariDriverAktif(value)}
+
+                            >
+                                <Select.Option value="">-</Select.Option>
+                                {StatusDriverAktif.map((option) => (
+                                    <Select.Option key={option.label} value={option.value}>
+                                        {option.status}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </Col>
                     </Row>
 
-                    <Modal title="Basic Modal" style={{ top: 10 }} visible={isModalOpen} onOk={formik.handleSubmit}
+                    <Modal
+                        title={title()} style={{ top: 10 }} visible={isModalOpen} onOk={formik.handleSubmit}
                         width={800}
                         onCancel={handleCancel}>
 
@@ -365,27 +399,131 @@ function VehicleBaru() {
                                 <Col sm={4}>
                                     <Card>
                                         <img src={FotoDriver}></img>
-                                        <Upload
-                                            beforeUpload={file => {
-                                                // Mencegah upload default
-                                                return false;
-                                            }}
-                                            onChange={({ fileList }) => {
-                                                // Ambil file asli dari fileList terakhir dan simpan dalam state
-                                                if (fileList.length > 0) {
-                                                    const { originFileObj } = fileList[fileList.length - 1];
-                                                    setFotoDriver(originFileObj);
-                                                } else {
-                                                    setFotoDriver(null);
-                                                }
-                                            }}
-                                        >
-                                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                                        </Upload>
 
                                     </Card>
+                                    <Upload
+                                        beforeUpload={file => {
+                                            // Mencegah upload default
+                                            return false;
+                                        }}
+                                        onChange={({ fileList }) => {
+                                            // Ambil file asli dari fileList terakhir dan simpan dalam state
+                                            if (fileList.length > 0) {
+                                                const { originFileObj } = fileList[fileList.length - 1];
+                                                setFotoDriver(originFileObj);
+                                            } else {
+                                                setFotoDriver(null);
+                                            }
+                                        }}
+                                    >
+                                        <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                    </Upload>
+                                    <AntForm.Item
+                                        label="Tgl EXP STNK"
+                                        required
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        help={formik.touched.tgl_stnk && formik.errors.tgl_stnk}
+                                        validateStatus={formik.touched.tgl_stnk && formik.errors.tgl_stnk ? 'error' : 'success'}
+                                        style={{ marginBottom: 2 }}
+                                    >
+                                        <DatePicker
+                                            id="tgl_stnk"
+                                            name="tgl_stnk"
+                                            onChange={(date) => {
+                                                formik.setFieldValue("tgl_stnk", date ? date.format("YYYY-MM-DD") : "");
+                                            }}
+                                            value={formik.values.tgl_stnk ? moment(formik.values.tgl_stnk) : null}
+                                            onBlur={formik.handleBlur}
+                                        />
+                                    </AntForm.Item>
+
+
+                                    <AntForm.Item
+                                        label="Tgl Exp Plat Nomor"
+                                        required
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        help={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan}
+                                        validateStatus={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan ? 'error' : 'success'}
+                                        style={{ marginBottom: 2 }}
+                                    >
+                                        <DatePicker
+                                            id="tgl_plat_nomor"
+                                            name="tgl_plat_nomor"
+                                            onChange={(date) => {
+                                                formik.setFieldValue("tgl_plat_nomor", date ? date.format("YYYY-MM-DD") : "");
+                                            }}
+                                            value={formik.values.tgl_plat_nomor ? moment(formik.values.tgl_plat_nomor) : null}
+                                            onBlur={formik.handleBlur}
+                                        />
+                                    </AntForm.Item>
+                                    <AntForm.Item
+                                        label="Tgl Exp Kir"
+                                        required
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        help={formik.touched.tgl_kir && formik.errors.tgl_kir}
+                                        validateStatus={formik.touched.tgl_kir && formik.errors.tgl_kir ? 'error' : 'success'}
+                                        style={{ marginBottom: 2 }}
+                                    >
+                                        <DatePicker
+                                            id="tgl_kir"
+                                            name="tgl_kir"
+                                            onChange={(date) => {
+                                                formik.setFieldValue("tgl_kir", date ? date.format("YYYY-MM-DD") : "");
+                                            }}
+                                            value={formik.values.tgl_kir ? moment(formik.values.tgl_kir) : null}
+                                            onBlur={formik.handleBlur}
+                                        />
+                                    </AntForm.Item>
+
+                                    <AntForm.Item
+                                        label="Tgl Beli"
+                                        required
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        help={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan}
+                                        validateStatus={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan ? 'error' : 'success'}
+                                        style={{ marginBottom: 2 }}
+                                    >
+                                        <DatePicker
+                                            id="tgl_beli"
+                                            name="tgl_beli"
+                                            onChange={(date) => {
+                                                formik.setFieldValue("tgl_beli", date ? date.format("YYYY-MM-DD") : "");
+                                            }}
+                                            value={formik.values.tgl_beli ? moment(formik.values.tgl_beli) : null}
+                                            onBlur={formik.handleBlur}
+                                        />
+                                    </AntForm.Item>
                                 </Col>
                                 <Col sm={4}>
+                                    <AntForm.Item
+                                        label="Jenis Kepemilikan"
+                                        required
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        help={formik.touched.jenis_kepemilikan && formik.errors.jenis_kepemilikan}
+                                        validateStatus={formik.touched.jenis_kepemilikan && formik.errors.jenis_kepemilikan ? 'error' : 'success'}
+                                        style={{ marginBottom: 2 }}
+                                    >
+                                        <Select
+                                            showSearch
+                                            optionFilterProp="children"
+                                            id="jenis_kepemilikan"
+                                            name="jenis_kepemilikan"
+                                            onChange={(value) => formik.setFieldValue('jenis_kepemilikan', value)}
+                                            value={formik.values.jenis_kepemilikan || ""}
+                                            onBlur={formik.handleBlur}
+                                        >
+                                            {jenisKepemilikan.map((option) => (
+                                                <Select.Option key={option.label} value={option.jenis}>
+                                                    {option.jenis}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </AntForm.Item>
                                     <AntForm.Item
                                         label="Kode Kendaraan"
                                         required
@@ -497,6 +635,7 @@ function VehicleBaru() {
                                                 formik.setFieldValue('id_driver', value);
                                             }}
                                             value={formik.values.id_driver}
+
                                             onBlur={formik.handleBlur}
                                         >
                                             {NamaSupir && NamaSupir.map((item) => (
@@ -537,31 +676,7 @@ function VehicleBaru() {
 
                                         </Select>
                                     </AntForm.Item> */}
-                                    <AntForm.Item
-                                        label="Jenis Kepemilikan"
-                                        required
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                        help={formik.touched.jenis_kepemilikan && formik.errors.jenis_kepemilikan}
-                                        validateStatus={formik.touched.jenis_kepemilikan && formik.errors.jenis_kepemilikan ? 'error' : 'success'}
-                                        style={{ marginBottom: 2 }}
-                                    >
-                                        <Select
-                                            showSearch
-                                            optionFilterProp="children"
-                                            id="jenis_kepemilikan"
-                                            name="jenis_kepemilikan"
-                                            onChange={(value) => formik.setFieldValue('jenis_kepemilikan', value)}
-                                            value={formik.values.jenis_kepemilikan || ""}
-                                            onBlur={formik.handleBlur}
-                                        >
-                                            {jenisKepemilikan.map((option) => (
-                                                <Select.Option key={option.label} value={option.jenis}>
-                                                    {option.jenis}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </AntForm.Item>
+
 
 
                                     <AntForm.Item
@@ -606,6 +721,10 @@ function VehicleBaru() {
                                             onBlur={formik.handleBlur}
                                         />
                                     </AntForm.Item>
+
+
+                                </Col>
+                                <Col sm={4}>
                                     <AntForm.Item
                                         label="Tahun Mobil"
                                         required
@@ -624,9 +743,6 @@ function VehicleBaru() {
                                             onBlur={formik.handleBlur}
                                         />
                                     </AntForm.Item>
-
-                                </Col>
-                                <Col sm={4}>
                                     {/* <AntForm.Item
                                     label="Warna Plat"
                                     required
@@ -743,97 +859,7 @@ function VehicleBaru() {
                                             onBlur={formik.handleBlur}
                                         />
                                     </AntForm.Item>
-                                    <Row>
-                                        <Col sm={6}>
 
-                                            <AntForm.Item
-                                                label="Tgl EXP STNK"
-                                                required
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                help={formik.touched.tgl_stnk && formik.errors.tgl_stnk}
-                                                validateStatus={formik.touched.tgl_stnk && formik.errors.tgl_stnk ? 'error' : 'success'}
-                                                style={{ marginBottom: 2 }}
-                                            >
-                                                <DatePicker
-                                                    id="tgl_stnk"
-                                                    name="tgl_stnk"
-                                                    onChange={(date) => {
-                                                        formik.setFieldValue("tgl_stnk", date ? date.format("YYYY-MM-DD") : "");
-                                                    }}
-                                                    value={formik.values.tgl_stnk ? moment(formik.values.tgl_stnk) : null}
-                                                    onBlur={formik.handleBlur}
-                                                />
-                                            </AntForm.Item>
-
-                                        </Col>
-                                        <Col sm={6}>
-                                            <AntForm.Item
-                                                label="Tgl Exp Plat Nomor"
-                                                required
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                help={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan}
-                                                validateStatus={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan ? 'error' : 'success'}
-                                                style={{ marginBottom: 2 }}
-                                            >
-                                                <DatePicker
-                                                    id="tgl_plat_nomor"
-                                                    name="tgl_plat_nomor"
-                                                    onChange={(date) => {
-                                                        formik.setFieldValue("tgl_plat_nomor", date ? date.format("YYYY-MM-DD") : "");
-                                                    }}
-                                                    value={formik.values.tgl_plat_nomor ? moment(formik.values.tgl_plat_nomor) : null}
-                                                    onBlur={formik.handleBlur}
-                                                />
-                                            </AntForm.Item>
-
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm={6}>
-                                            <AntForm.Item
-                                                label="Tgl Exp Kir"
-                                                required
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                help={formik.touched.tgl_kir && formik.errors.tgl_kir}
-                                                validateStatus={formik.touched.tgl_kir && formik.errors.tgl_kir ? 'error' : 'success'}
-                                                style={{ marginBottom: 2 }}
-                                            >
-                                                <DatePicker
-                                                    id="tgl_kir"
-                                                    name="tgl_kir"
-                                                    onChange={(date) => {
-                                                        formik.setFieldValue("tgl_kir", date ? date.format("YYYY-MM-DD") : "");
-                                                    }}
-                                                    value={formik.values.tgl_kir ? moment(formik.values.tgl_kir) : null}
-                                                    onBlur={formik.handleBlur}
-                                                />
-                                            </AntForm.Item>
-                                        </Col>
-                                        <Col sm={6}>
-                                            <AntForm.Item
-                                                label="Tgl Beli"
-                                                required
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                help={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan}
-                                                validateStatus={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan ? 'error' : 'success'}
-                                                style={{ marginBottom: 2 }}
-                                            >
-                                                <DatePicker
-                                                    id="tgl_beli"
-                                                    name="tgl_beli"
-                                                    onChange={(date) => {
-                                                        formik.setFieldValue("tgl_beli", date ? date.format("YYYY-MM-DD") : "");
-                                                    }}
-                                                    value={formik.values.tgl_beli ? moment(formik.values.tgl_beli) : null}
-                                                    onBlur={formik.handleBlur}
-                                                />
-                                            </AntForm.Item>
-                                        </Col>
-                                    </Row>
                                     <AntForm.Item
                                         label="Kapasitas"
                                         required

@@ -36,11 +36,11 @@ function SJ() {
   const [NamaMitraValue, setNamaMitraValue] = useState("")
   const [NamaMitraValue2, setNamaMitraValue2] = useState("")
 
-  const dataapi = async (page) => {
+  const dataapi = async (page = 1, size = 10) => {
     try {
       setLoading(true)
       const isi = await axios.get(
-        `${Baseurl}sm/get-sm?limit=10&page=${page}&keyword=${search}&kodeCabang=${KodeCabangValue}&mitra1=${NamaMitraValue[0]}&mitra2=${NamaMitraValue[1]}&mitra3=${NamaMitraValue[2]}`,
+        `${Baseurl}sm/get-sm?limit=${size}&page=${page}&keyword=${search}&kodeCabang=${KodeCabangValue}&mitra1=${NamaMitraValue[0]}&mitra2=${NamaMitraValue[1]}&mitra3=${NamaMitraValue[2]}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -56,7 +56,7 @@ function SJ() {
       setPagination({
         currentPage: isi.data.data.currentPage,
         limit: isi.data.data.limit,
-        totalPage: isi.data.data.totalPage
+        totalPage: isi.data.data.totalData
       });
       setLoading(false)
       setIsiData(isidata);
@@ -80,7 +80,7 @@ function SJ() {
     }
   };
   useEffect((page) => {
-    dataapi(page)
+    dataapi()
     // dataapi(pagination.currentPage);
     SMFilter()
   }, [search, KodeCabangValue]);
@@ -216,9 +216,9 @@ function SJ() {
     await dataapi(page, search);
   };
 
-  const onShowSizeChange = (page, pageSize) => {
-    console.log(page, pageSize);
-    dataapi(page)
+  const onShowSizeChange = (page, size) => {
+    console.log(page, size);
+    dataapi(page, size)
   };
 
   const SMFilter = async () => {
@@ -332,7 +332,9 @@ function SJ() {
 
               <Pagination
                 showSizeChanger
+
                 onChange={onShowSizeChange}
+                onShowSizeChange={onShowSizeChange}
                 defaultCurrent={1}
                 total={pagination.totalPage}
               // disabled

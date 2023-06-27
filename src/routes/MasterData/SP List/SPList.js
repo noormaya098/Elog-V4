@@ -115,10 +115,13 @@ function SPList() {
       setCombinedData(combined);
     }
   }, [isiData, destinationData]);
+
+  let counter = 1
+
   const columns = [
     {
       name: "No",
-      selector: (row) => row.no,
+      selector: (row) => counter ++,
       width: "70px",
       wrap: true,
     },
@@ -132,6 +135,7 @@ function SPList() {
       name: "Perusahaan",
       selector: (row) => row.perusahaan,
       wrap: true,
+      width: "120px",
     },
     {
       name: "Marketing",
@@ -165,9 +169,9 @@ function SPList() {
     },
 
     {
-      name: "Tgl Approved/Decline Akunting",
+      name: `Approved/Decline Act`,
       selector: (row) => new Date(row.dateApproveAct === "Invalid date" ? "-" : row.dateApproveAct).toLocaleDateString('en-CA'),
-      width: "210px",
+      width: "160px",
       wrap: true,
     },
 
@@ -186,19 +190,24 @@ function SPList() {
     },
 
 
-    {
-      name: "Opsi",
-      selector: (row) => (
-        <Button
-          size="sm"
-          variant="primary"
-          onClick={() => buttonarahin(row.idmp)}
-        >
-          Detail
-        </Button>
-      ),
-    },
+    // {
+    //   name: "Opsi",
+    //   selector: (row) => (
+    //     <Button
+    //       size="sm"
+    //       variant="primary"
+    //       onClick={() => buttonarahin(row.idmp)}
+    //     >
+    //       Detail
+    //     </Button>
+    //   ),
+    // },
   ];
+
+  const RowClick = (row) => {
+    console.log("RowClick", row);
+    history.push(`/masterdata/purchasing/detailsp/${row.idmp}`);
+  }
 
   const buttonarahin = (idmp) => {
     history.push(`/masterdata/purchasing/detailsp/${idmp}`);
@@ -236,6 +245,7 @@ function SPList() {
             <DataTable
               columns={columns}
               data={combinedData}
+              onRowClicked={RowClick}
               // pagination
               // paginationServer
               // paginationPerPage={pagination.limit}

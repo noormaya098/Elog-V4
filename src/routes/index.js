@@ -129,7 +129,7 @@ const App = ({ match }) => (
       />
       <Route
         path={`${match.url}masterdata/purchasing/vehicle`}
-        component={asyncComponent(() => import("./MasterData/Vehicle"))}
+        component={asyncComponent(() => import("./MasterData/Purchasing/Vehicle/VehicleBaru"))}
       />
       <Route
         path={`${match.url}masterdata/vehiclebaru`}
@@ -184,6 +184,12 @@ const App = ({ match }) => (
         path={`${match.url}masterdata/edit-sp/:idmp`}
         component={asyncComponent(() =>
           import("./MasterData/Marketing/Splist/EditSP")
+        )}
+      />
+      <Route
+        path={`${match.url}masterdata/edit-spNew/:idmp`}
+        component={asyncComponent(() =>
+          import("./MasterData/Marketing/Splist/EditSPNew")
         )}
       />
       <Route

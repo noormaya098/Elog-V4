@@ -14,7 +14,7 @@ function HalamanDetail() {
   const [isidata, setIsidata] = useState([]);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = () => setShow(true); 
   const [totalPrice, setTotalPrice] = useState([]);
   const { isidetail, setSpDetail } = mobil((state) => ({
     isidetail: state.isidetail,

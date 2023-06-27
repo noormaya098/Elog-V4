@@ -54,11 +54,6 @@ function SplistAkuntingBaru() {
       },
       width: "150px"
     },
-
-
-
-
-
     {
       name: "Approve By Akunting",
       cell: (row) => {
@@ -132,25 +127,25 @@ function SplistAkuntingBaru() {
       },
       width: "150px",
     },
-    {
-      name: "Detail",
-      selector: (row) => (
-        <Button size="sm" onClick={() => {
-          buttonarahin(row.idmp, row.approveAct);
-        }}>
-          Detail
-        </Button>
-      ),
-    },
+    // {
+    //   name: "Detail",
+    //   selector: (row) => (
+    //     <Button size="sm" onClick={() => {
+    //       buttonarahin(row.idmp, row.approveAct);
+    //     }}>
+    //       Detail
+    //     </Button>
+    //   ),
+    // },
 
   ];
 
-  const buttonarahin = (idmp, approveAct) => {
+  const buttonarahin = (row, approveAct) => {
+    history.push(`/masterdata/purchasing/detailsp/${row.idmp}`);
     console.log(`approveAct before setting state: `, approveAct);
     localStorage.setItem(`ApproveAct`, approveAct);
     setAapproveActValue(localStorage.getItem(`ApproveAct`));
     console.log(`AapproveActValue immediately after setting state: `, AapproveActValue);
-    history.push(`/masterdata/purchasing/detailsp/${idmp}`);
   };
 
 
@@ -249,6 +244,7 @@ function SplistAkuntingBaru() {
                     type="text"
                     placeholder="No SP "
                     onChange={handleFilterChange}
+                    
                   />
                 </Col>
               </div>
@@ -263,6 +259,7 @@ function SplistAkuntingBaru() {
                 paginationServer
                 paginationTotalRows={totalRows}
                 onChangePage={setPage}
+                onRowClicked={buttonarahin}
               />
             )}
           </Col>

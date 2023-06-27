@@ -1,5 +1,4 @@
-import { Card } from "antd";
-import { Col, Row, Form, Modal, Button, Table } from "react-bootstrap";
+import { Card, Modal as ModalAntd } from "antd";
 import React from "react";
 import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
@@ -9,7 +8,14 @@ import mobil from "../../../redux toolkit/store/ZustandStore";
 import Select from 'react-select';
 import Baseurl from "../../../../Api/BaseUrl";
 import Swal from "sweetalert2";
-function EditSP() {
+import { Formik, Field, Form as FormikForm } from 'formik';
+import { Col, Row, Form, Modal, Button, Table } from "react-bootstrap";
+
+import * as Yup from 'yup';
+import EditSPNew from "./EditSPNew";
+
+
+function EditSP({ alamatInvoice }) {
   const [show, setShow] = useState(false);
   const [showSP, setShowSP] = useState(false);
   const { phZustand, setPHZustand } = mobil((state) => ({
@@ -17,6 +23,7 @@ function EditSP() {
     phZustand: state.phZustand,
   }));
 
+  console.log('alamatInvoice', alamatInvoice);
   const { shipmentSementara, setshipmentSementara } = mobil((state) => ({
     shipmentSementara: state.shipmentSementara,
     setshipmentSementara: state.setshipmentSementara
@@ -33,9 +40,7 @@ function EditSP() {
   const [KendaraanModal, setKendaraanModal] = useState([]);
   const [memo, setMemo] = useState([]);
   const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
-  const { isicombinedData, setisiCombinedData } = mobil((item) => ({
-    sp: item.sp,
-  }));
+
   const { idmp } = useParams();
   const [validated, setValidated] = useState(false);
   const [comment, setComment] = useState([]);
@@ -63,12 +68,17 @@ function EditSP() {
   const [perubahanServiceValue, setPerubahanServiceValue] = useState("")
   const [JenisBarangValue, setJenisBarangValue] = useState("")
   const [CustomerValue, setCustomerValue] = useState("")
-  const [AlamatInvoiceOption, setAlamatInvoiceOption] = useState("")
   const [isiTarif, setisiTarif] = useState("")
   const [IdmpdPerstate, setIdmpdPerstate] = useState([])
   const [NameKendaraan, setNameKendaraan] = useState("")
   const [idKota, setidKota] = useState([])
   const [IdBongkarKota, setIdBongkarKota] = useState([])
+  const [AlamatOptions, setAlamatOptions] = useState('')
+  const [AlamatOptionsValue, setAlamatOptionsValue] = useState('')
+  const [AsuransiOptions, setAsuransiOptions] = useState('')
+  const [AsuransiOptionsValue, setAsuransiOptionsValue] = useState('')
+  const [ServiceValue, setServiceValue] = useState('')
+  const [ServiceValueOptions, setServiceValueOptios] = useState('')
 
   const getDetail = async () => {
     try {
@@ -83,6 +93,7 @@ function EditSP() {
       );
       setDetailData(response.data);
       const memos = response.data.memo;
+      setAsuransiOptionsValue(response.data?.asuransi)
       setMemo(memos);
     } catch (error) {
       console.error("Failed to fetch detail data:", error);
@@ -91,8 +102,29 @@ function EditSP() {
   useEffect(() => {
     getDetail();
     comments();
+    Optionsnya()
+    refresh()
   }, [idmp, memo]);
 
+  const Optionsnya = async () => {
+    try {
+      const data = await axios.get(`${Baseurl}sp/get-SP-select-create?keyword=&companyId=${detailData?.idcustomer}&divisi=sales&kode_cabang=JKT`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        })
+      console.log(data.data.data);
+      setAlamatOptions(data.data.data.address)
+      setAsuransiOptions(data.data.data.insurance)
+      setServiceValueOptios(data.data.data.service)
+      console.log(`ini ServiceValueOptions`, ServiceValueOptions);
+
+    } catch (error) {
+
+    }
+  }
 
   useEffect(() => {
     const getDetailModal = async () => {
@@ -132,6 +164,8 @@ function EditSP() {
         }
       );
       setDetailData(response.data);
+      setAlamatOptionsValue(response.data?.alamatInvoice)
+      // setAsuransiOptionsValue(response.data?.asuransi)
       const memos = response.data.memo;
       setMemo(memos);
     } catch (error) {
@@ -140,6 +174,8 @@ function EditSP() {
     }
   };
 
+  console.log(`detailData?.service
+  `, detailData?.service);
   const columns = [
     {
       name: "Title",
@@ -268,7 +304,7 @@ function EditSP() {
       `${Baseurl}sp/create-SP-detail`,
       {
         idMp: idmp,
-        idcustomer: 1,
+        idcustomer: detailData?.idcustomer,
         ph:
           phZustand !== ""
             ? JSON.stringify(phZustand)
@@ -306,7 +342,7 @@ function EditSP() {
     Swal.fire("Good job!", "Data Berhasil Di tambahkan", "success");
   };
 
-  console.log(`NameKendaraan`, NameKendaraan);
+  console.log(`AsuransiOptionsValue`, AsuransiOptionsValue);
 
 
   const deltebutton = async (x) => {
@@ -358,8 +394,8 @@ function EditSP() {
           }
         );
 
-        window.location.reload();
       }
+      comments()
     } catch (error) {
       console.log(error);
     }
@@ -398,16 +434,16 @@ function EditSP() {
       const data = await axios.post(`${Baseurl}sp/edit-SP`, {
         id_mp: idmp,
         memo: "ini barang",
-        id_customer: "1",
+        id_customer: detailData?.idcustomer,
         jenis_barang: JenisBarangValue !== "" ? JenisBarangValue : detailData?.jenis_barang,
         packing: "1",
-        asuransi: "Y",
+        asuransi: AsuransiOptionsValue,
         tgl_pickup: "2023-05-03 17:12:33",
         marketing: MarketingValue,
         tgl_bongkar: "2023-05-03 17:12:33",
         service: perubahanServiceValue !== "" ? perubahanServiceValue : detailData?.service,
         customer: CustomerValue !== "" ? CustomerValue : detailData?.customer,
-        alamat_invoice: AlamatInvoiceOption,
+        alamat_invoice: AlamatOptionsValue,
       },
         {
           headers: {
@@ -457,7 +493,7 @@ function EditSP() {
     if (valid == undefined) {
       console.log(`nama`, Namakendaraan)
       setisiTarif(0)
-       Swal.fire({
+      Swal.fire({
         icon: 'error',
         title: 'Oops...',
         text: 'Tarif Tidak Ditemukan Silahkan Hubungi Sales!',
@@ -540,9 +576,9 @@ function EditSP() {
   }
   let counter = 1;
 
-  console.log(`detail data`, detailDataTemp);
+  // console.log(`detail data`, detailDataTemp);
 
-  console.log(`detail data`, detailDataTemp);
+  // console.log(`detail data`, detailDataTemp);
 
   const KendaraanModalOptions = KendaraanModal.map((item) => ({
     value: item.id,
@@ -550,10 +586,24 @@ function EditSP() {
   }))
   // console.log(`detail data`, detailData.detail?.[0].tujuan);
   // const alamatbongkarscroll  =
+
+
+  const validationSchema = Yup.object().shape({
+    alamatMuat: Yup.string()
+      .required('Alamat Muat Required'),
+    alamatBongkar: Yup.string()
+      .required('Alamat Bongkar Required'),
+    // Sisipkan validasi lainnya sesuai kebutuhan
+  });
+
+
+
+
   return (
     <div>
       <Card>
         <Row>
+          <EditSPNew />
           <div className="d-flex justify-content-end">
             {jobdesk != "sales" ? (
               <>
@@ -571,235 +621,253 @@ function EditSP() {
             ) : (
               <></>
             )}
-            <Button onClick={() => editttsp()} size="sm" className="d-flex justify-content-end" variant="primary">
-              Save Edit SP
-            </Button>
+            {/* <Button onClick={() => editttsp()} size="sm" className="d-flex justify-content-end" variant="primary">
+              Save Edit SP */}
+            {/* </Button> */}
           </div>
 
           {/* Modal add alamat sp */}
+
+
+
           <Modal show={show} onHide={handleClose} size="lg">
             <Modal.Header closeButton>
               <Modal.Title>Masukkan Alamat</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Col sm={12}>
-                <Form noValidate validated={validated}  >
-                  <Form.Group>
-                    <Form.Label>* Alamat Muat</Form.Label>
-                    <Select
-                      options={options}
-                      onChange={(selectedOption) => {
-                        setalamatMuatValue(selectedOption.value)
-                        setidKota(selectedOption.idKota)
-                      }}
-                    />
+                <Formik
+                  initialValues={{
+                    alamatMuat: '',
+                    alamatBongkar: '',
+                    // Sisipkan nilai awal lainnya
+                  }}
+                  validationSchema={validationSchema}
+                  onSubmit={(values) => {
+                    console.log(values);
+                  }}
+                >
+                  {formikProps => (
+                    <FormikForm noValidate>
+                      <Form.Group>
 
-                    <hr />
-                    <h5>Alamat Bongkar</h5>
-                    <Row>
-                      <Col sm={12}>
-                        <Form.Label>* Alamat Bongkar</Form.Label>
+                        <Form.Label>* Alamat Muat</Form.Label>
                         <Select
                           options={options}
                           onChange={(selectedOption) => {
-                            setAlamatBongkarValue(selectedOption.value)
-                            { } setIdBongkarKota(selectedOption.idKota)
-                          }
-                          }
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={4}>
-                        <Form.Label>* Kendaraan</Form.Label>
-                        <Select
-                          options={KendaraanModalOptions}
-                          onChange={(selectedOption) => {
-                            setKendaraanValue(selectedOption.value);
-                            setNameKendaraan(selectedOption.label);
+                            setalamatMuatValue(selectedOption.value)
+                            setidKota(selectedOption.idKota)
                           }}
                         />
-                        {/* <Form.Select
-                          onChange={(e) => setKendaraanValue(e.target.value)}
-                        >
-                          <option>Pilih Kendaraan</option>
-                          {KendaraanModal.map((item, index) => (
-                            <option value={item.id}>{item.type}</option>
-                          ))}
-                        </Form.Select> */}
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>* Via</Form.Label>
-                        <Form.Select
-                          onChange={(e) => setSelectVia(e.target.value)}
-                        >
-                          <option>Pilih Via</option>
-                          <option>darat</option>
-                          <option>laut</option>
-                          <option>udara</option>
-                        </Form.Select>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>* Shipment</Form.Label>
-                        <Form.Select
-                          onChange={(e) =>
-                            setshipmentValue(e.target.value)
 
-                          }
-                        >
-                          <option>Pilih Shipment</option>
-                          {shipmentOptions.map((item, index) => (
-                            <option value={item.id}>{item?.shipment}</option>
-                          ))}
-                        </Form.Select>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={3}>
-                        <Form.Label>* Berat</Form.Label>
-                        <Form.Control
-                          value={detailDataTemp.berat}
-                          onChange={(e) => setBeratValue(e.target.value)}
-                          required
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={3}>
-                        <Form.Label>* Qty</Form.Label>
-                        <Form.Control
-                          required
-                          onChange={(e) => setValue(e.target.value)}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={3}>
-                        <Form.Label>* Koli</Form.Label>
-                        <Form.Control
-                          onChange={(e) => setKoliValue(e.target.value)}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={3}>
-                        <Form.Label>* Nama Barang</Form.Label>
-                        <Form.Control
-                          onChange={(e) => setNamaBarang(e.target.value)}
-                        ></Form.Control>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={4}>
-                        <Form.Label>Panjang</Form.Label>
-                        <Form.Control
-                          onChange={(e) => setPanjangValue(e.target.value)}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>Lebar</Form.Label>
-                        <Form.Control
-                          onChange={(e) => setLebarValue(e.target.value)}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>Tinggi</Form.Label>
-                        <Form.Control
-                          onChange={(e) => setTinggiValue(e.target.value)}
-                        ></Form.Control>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={4}>
-                        <Form.Label>* Tarif</Form.Label>
-                        <Form.Control
-                          disabled
-                          // value={TarifValue == "" ? TarifValue : isiTarif.biaya_jalan}
-                          // value={isiTarif?.biaya_jalan}  
-                          defaultValue={isiTarif?.biaya_jalan != 0 ? isiTarif?.biaya_jalan : TarifValue}
-                          onChange={(e) => {
-                            setTarifValue(
-                              e.target.value == "" ? 0 : e.target.value
-                            );
-                            tarif();
-                          }}
-                        >
-                        </Form.Control>
-                        <Button className="mt-1" size="sm" variant="warning" onClick={() => tarifalamat()}>cek tarif</Button>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>* Bongkar</Form.Label>
-                        <Form.Control
-                          disabled
-                          value={bongkarValue}
-                          onChange={(e) => {
-                            setBongkarValue(
-                              e.target.value == "" ? 0 : e.target.value
-                            );
-                            tarif();
-                          }}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>* Biaya Muat</Form.Label>
-                        <Form.Control
-                          disabled
-                          value={biayaMuatValue}
-                          onChange={(e) => {
-                            setBiayaMuatValue(
-                              e.target.value == "" ? 0 : e.target.value
-                            );
-                            tarif();
-                          }}
-                        ></Form.Control>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={4}>
-                        <Form.Label>* Biaya Multimuat</Form.Label>
-                        <Form.Control
-                          disabled
-                          value={TarifValue}
-                          onChange={(e) => {
-                            setTarifValue(
-                              e.target.value == "" ? 0 : e.target.value
-                            );
-                            tarif();
-                          }}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>* Biaya Multidrop</Form.Label>
-                        <Form.Control
-                          disabled
-                          value={bongkarValue}
-                          onChange={(e) => {
-                            setBongkarValue(
-                              e.target.value == "" ? 0 : e.target.value
-                            );
-                            tarif();
-                          }}
-                        ></Form.Control>
-                      </Col>
-                      <Col sm={4}>
-                        <Form.Label>* Biaya Mel</Form.Label>
-                        <Form.Control
-                          disabled
-                          value={biayaMuatValue}
-                          onChange={(e) => {
-                            setBiayaMuatValue(
-                              e.target.value == "" ? 0 : e.target.value
-                            );
-                            tarif();
-                          }}
-                        ></Form.Control>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={8}>
-                        <Form.Label>Total</Form.Label>
-                        <Form.Control
-                          value={totalValue}
-                          disabled
-                        ></Form.Control>
-                      </Col>
-                    </Row>
-                  </Form.Group>
-                </Form>
+                        <hr />
+                        <h5>Alamat Bongkar</h5>
+                        <Row>
+                          <Col sm={12}>
+                            <Form.Label>* Alamat Bongkar</Form.Label>
+                            <Select
+                              options={options}
+                              onChange={(selectedOption) => {
+                                setAlamatBongkarValue(selectedOption.value)
+                                { } setIdBongkarKota(selectedOption.idKota)
+                              }
+                              }
+                            />
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm={4}>
+                            <Form.Label>* Kendaraan</Form.Label>
+                            <Select
+                              options={KendaraanModalOptions}
+                              onChange={(selectedOption) => {
+                                setKendaraanValue(selectedOption.value);
+                                setNameKendaraan(selectedOption.label);
+                              }}
+                            />
+                            <Form.Select
+                              onChange={(e) => setKendaraanValue(e.target.value)}
+                            >
+                              <option>Pilih Kendaraan</option>
+                              {KendaraanModal.map((item, index) => (
+                                <option value={item.id}>{item.type}</option>
+                              ))}
+                            </Form.Select>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>* Via</Form.Label>
+                            <Form.Select
+                              onChange={(e) => setSelectVia(e.target.value)}
+                            >
+                              <option>Pilih Via</option>
+                              <option>darat</option>
+                              <option>laut</option>
+                              <option>udara</option>
+                            </Form.Select>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>* Shipment</Form.Label>
+                            <Form.Select
+                              onChange={(e) =>
+                                setshipmentValue(e.target.value)
+
+                              }
+                            >
+                              <option>Pilih Shipment</option>
+                              {shipmentOptions.map((item, index) => (
+                                <option value={item.id}>{item?.shipment}</option>
+                              ))}
+                            </Form.Select>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm={3}>
+                            <Form.Label>* Berat</Form.Label>
+                            <Form.Control
+                              value={detailDataTemp.berat}
+                              onChange={(e) => setBeratValue(e.target.value)}
+                              required
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={3}>
+                            <Form.Label>* Qty</Form.Label>
+                            <Form.Control
+                              required
+                              onChange={(e) => setValue(e.target.value)}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={3}>
+                            <Form.Label>* Koli</Form.Label>
+                            <Form.Control
+                              onChange={(e) => setKoliValue(e.target.value)}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={3}>
+                            <Form.Label>* Nama Barang</Form.Label>
+                            <Form.Control
+                              onChange={(e) => setNamaBarang(e.target.value)}
+                            ></Form.Control>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm={4}>
+                            <Form.Label>Panjang</Form.Label>
+                            <Form.Control
+                              onChange={(e) => setPanjangValue(e.target.value)}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>Lebar</Form.Label>
+                            <Form.Control
+                              onChange={(e) => setLebarValue(e.target.value)}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>Tinggi</Form.Label>
+                            <Form.Control
+                              onChange={(e) => setTinggiValue(e.target.value)}
+                            ></Form.Control>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm={4}>
+                            <Form.Label>* Tarif</Form.Label>
+                            <Form.Control
+                              disabled
+                              // value={TarifValue == "" ? TarifValue : isiTarif.biaya_jalan}
+                              // value={isiTarif?.biaya_jalan}  
+                              defaultValue={isiTarif?.biaya_jalan != 0 ? isiTarif?.biaya_jalan : TarifValue}
+                              onChange={(e) => {
+                                setTarifValue(
+                                  e.target.value == "" ? 0 : e.target.value
+                                );
+                                tarif();
+                              }}
+                            >
+                            </Form.Control>
+                            <Button className="mt-1" size="sm" variant="warning" onClick={() => tarifalamat()}>cek tarif</Button>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>* Bongkar</Form.Label>
+                            <Form.Control
+                              disabled
+                              value={bongkarValue}
+                              onChange={(e) => {
+                                setBongkarValue(
+                                  e.target.value == "" ? 0 : e.target.value
+                                );
+                                tarif();
+                              }}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>* Biaya Muat</Form.Label>
+                            <Form.Control
+                              disabled
+                              value={biayaMuatValue}
+                              onChange={(e) => {
+                                setBiayaMuatValue(
+                                  e.target.value == "" ? 0 : e.target.value
+                                );
+                                tarif();
+                              }}
+                            ></Form.Control>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm={4}>
+                            <Form.Label>* Biaya Multimuat</Form.Label>
+                            <Form.Control
+                              disabled
+                              value={TarifValue}
+                              onChange={(e) => {
+                                setTarifValue(
+                                  e.target.value == "" ? 0 : e.target.value
+                                );
+                                tarif();
+                              }}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>* Biaya Multidrop</Form.Label>
+                            <Form.Control
+                              disabled
+                              value={bongkarValue}
+                              onChange={(e) => {
+                                setBongkarValue(
+                                  e.target.value == "" ? 0 : e.target.value
+                                );
+                                tarif();
+                              }}
+                            ></Form.Control>
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Label>* Biaya Mel</Form.Label>
+                            <Form.Control
+                              disabled
+                              value={biayaMuatValue}
+                              onChange={(e) => {
+                                setBiayaMuatValue(
+                                  e.target.value == "" ? 0 : e.target.value
+                                );
+                                tarif();
+                              }}
+                            ></Form.Control>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm={8}>
+                            <Form.Label>Total</Form.Label>
+                            <Form.Control
+                              value={totalValue}
+                              disabled
+                            ></Form.Control>
+                          </Col>
+                        </Row>
+                      </Form.Group>
+                    </FormikForm>
+                  )}
+                </Formik>
               </Col>
             </Modal.Body>
             <Modal.Footer>
@@ -868,6 +936,7 @@ function EditSP() {
                     <Select
                       // defaultInputValue={detailDataTemp?.destination}
                       options={options}
+                      placeholder={detailDataTemp?.destination}
                       onChange={(selectedOption) => setalamatMuatValue(selectedOption.value)}
                     />
                     {/* <h5>Alamat Bongkar</h5> */}
@@ -1034,7 +1103,7 @@ function EditSP() {
               </Button>
             </Modal.Footer>
           </Modal>
-          <Row>
+          {/* <Row>
             <Col sm={6}>
               <Form>
                 <Form.Group>
@@ -1052,8 +1121,8 @@ function EditSP() {
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Service</Form.Label>
-                  <Form.Control onChange={(e) => setPerubahanServiceValue(e.target.value)} value={detailData?.service} disabled placeholder={detailData?.service}>
-
+                  <Form.Control disabled onChange={(e) => setPerubahanServiceValue(e.target.value)} value={detailData?.service}>
+                   
                   </Form.Control>
                 </Form.Group>
                 <Form.Group>
@@ -1064,10 +1133,6 @@ function EditSP() {
             </Col>
             <Col sm={6}>
               <Form>
-                {/* <Form.Group>
-                <Form.Label>Via</Form.Label>
-                <Form.Control disabled value={detailData?.detail?.[0]?.via} />
-              </Form.Group> */}
                 <Form.Group>
                   <Form.Label>Customer</Form.Label>
                   <Form.Control onChange={(e) => setCustomerValue(e.target.value)} disabled value={detailData?.customer} />
@@ -1083,29 +1148,30 @@ function EditSP() {
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Asuransi</Form.Label>
-                  <Form.Select value={detailData?.asuransi}>
-                    <option value={"N"}>Tidak Menggunakan Asuransi</option>
-                    <option value={"Y"}>Menggunakan Asuransi</option>
+                  <Form.Select onChange={(e) => setAsuransiOptionsValue(e.target.value)} value={AsuransiOptionsValue}>
+                    {AsuransiOptions && AsuransiOptions.map((item) => (
+                      <option value={item.value}>{item.tipe}</option>
+
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Form>
-
             </Col>
-          </Row>
-          <Row className="mt-3">
+          </Row> */}
+          {/* <Row className="mt-3">
             <Col sm={12}>
               <Form.Group>
-                <Form.Label>Alamat Invoice</Form.Label>
-                <Form.Select onChange={(e) => setAlamatInvoiceOption(e.target.value)} value={detailData?.alamatInvoice}>
-                  <option>{detailData?.alamatInvoice}</option>
-                  {detailData && detailData?.alamatInvoiceList?.map((item) => (
-                    <option value={item?.value}>{item?.address_npwp}</option>
+                <Form.Label>Alamat Invoicess</Form.Label>
+                <Form.Select onChange={(e) => setAlamatOptionsValue(e.target.value)} value={AlamatOptionsValue}>
+                  {/* <option>{detailData?.alamatInvoice}</option> */}
+          {/* {AlamatOptions && AlamatOptions.map((item) => (
+                    <option value={item?.addressId}>{item?.address}</option>
 
                   ))}
                 </Form.Select>
-              </Form.Group>
-            </Col>
-            {/* <Col sm={2}>
+              </Form.Group> */}
+          {/* </Col> */}
+          {/* <Col sm={2}>
               <Form.Group>
                 <Form.Label>PIC Pickup</Form.Label>
                 <Form.Control
@@ -1114,7 +1180,7 @@ function EditSP() {
                 />
               </Form.Group>
             </Col> */}
-            {/* <Col sm={2}>
+          {/* <Col sm={2}>
               <Form.Group>
                 <Form.Label>PIC Phone</Form.Label>
                 <Form.Control
@@ -1123,7 +1189,7 @@ function EditSP() {
                 />
               </Form.Group>
             </Col> */}
-          </Row>
+          {/* </Row> */}
           {/* <Row className="mt-4">
               <Col sm={8}>
                 <Form.Group>
@@ -1139,20 +1205,16 @@ function EditSP() {
               </Col>
             </Row> */}
           <Col className="mt-5" sm={12}>
-            <h4 className="text-center"> Detail Alamat</h4>
-            <Button size="sm" variant="primary" onClick={handleShow}>
+            {/* <Button size="sm" variant="primary" onClick={handleShow}>
               Tambah Alamat
-            </Button>
+            </Button> */}
           </Col>
 
 
         </Row>
-        <br />
         <Row>
           <Col>
-            <Table responsive bordered >
-              <thead></thead>
-              <tbody>
+              {/* <tbody>
                 {detailData &&
                   detailData.detail &&
                   detailData.detail.map((data, index) => (
@@ -1175,17 +1237,7 @@ function EditSP() {
 
                       <tr key={index}>
                         <td>
-                          {/* {index + 1}
-                            <span>
-                              <Button
-                                size="md"
-                                variant="danger"
-                                onClick={() => deltebutton(data.idmpd)}
-                                className="mt-2"
-                              >
-                                X
-                              </Button>
-                            </span> */}
+                        
                         </td>
                         <td colSpan={9}>{data.pickup}</td>
                       </tr>
@@ -1245,10 +1297,8 @@ function EditSP() {
                               <td>{data.item}</td>
                               <td>{data.berat}</td>
                               <td>{data.qty}</td>
-                              <td>{data.Price?.toLocaleString("id-ID", {
-                                style: "currency",
-                                currency: "IDR",
-                              })}</td>
+                              <td>-</td>
+                             
                               <td>{data.Price?.toLocaleString("id-ID", {
                                 style: "currency",
                                 currency: "IDR",
@@ -1258,20 +1308,18 @@ function EditSP() {
                         ))}
                     </>
                   ))}
-              </tbody>
-              <tfoot>
+              </tbody> */}
+              {/* <tfoot>
                 <tr style={{ fontWeight: "bold" }}>
                   <td colSpan={9} width="150px" className="text-right">
                     Sub Total
                   </td>
-                  <td width="150px">Rp {detailData?.totalMuat?.toLocaleString("id-ID", {
+                  <td width="150px">{detailData?.subTotal?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}</td>
                 </tr>
-              </tfoot>
-            </Table>
-
+              </tfoot> */}
             <p
               className="d-flex justify-content-end"
               style={{ fontWeight: "bold" }}

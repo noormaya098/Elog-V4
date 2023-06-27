@@ -22,11 +22,11 @@ function SPListlama() {
   // const [Pagginations, setPagginations] = useState(1)
   const history = useHistory();
 
-  const dataapi = async (page) => {
+  const dataapi = async (page = 1 , pageSize = 10) => {
     try {
       setLoading(true)
       const isi = await axios.get(
-        `${Baseurl}sp/get-SP-all?limit=10&page=${page}&keyword=${search}`,
+        `${Baseurl}sp/get-SP-all?limit=${pageSize}&page=${page}&keyword=${search}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -63,7 +63,7 @@ function SPListlama() {
     }
   };
   useEffect((page) => {
-    dataapi(pagination.currentPage, search);
+    dataapi();
     // dataapi(Pagginations);
   }, [search]);
 
@@ -248,20 +248,23 @@ function SPListlama() {
       },
       width: "180px",
     },
-    {
-      name: "Detail",
-      selector: (row) => <><Button size="sm" onClick={() => buttonarahin(row.idmp)}>Detail</Button></>,
-      width: "170px",
-    },
+    // {
+    //   name: "Detail",
+    //   selector: (row) => <><Button size="sm" onClick={() => buttonarahin(row.idmp)}>Detail</Button></>,
+    //   width: "170px",
+    // },
   ];
 
+  const RowClick = (row)=>{
+    history.push(`/masterdata/splistdetailakunting/${row.idmp}`);
+  }
   const buttonarahin = (idmp) => {
     // history.push(`/masterdata/detailsp/${idmp}`);
     history.push(`/masterdata/splistdetailakunting/${idmp}`);
   };
 
-  const handlePageChange = async (page) => {
-    dataapi(page)
+  const handlePageChange = async (page , pageSize) => {
+    dataapi(page ,pageSize)
     // setPagginations(page)
     // setPagination({ ...pagination, currentPage: page });
     // await dataapi(page, search);
@@ -290,7 +293,9 @@ function SPListlama() {
                 columns={columns}
                 title="SP List"
                 data={combinedData}
-              // pagination
+                onRowClicked={RowClick}
+
+                // pagination
               // paginationServer
               // paginationPerPage={pagination.limit}
               // paginationTotalRows={isiData.length}

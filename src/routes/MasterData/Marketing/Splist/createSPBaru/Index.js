@@ -9,6 +9,7 @@ import Select from 'react-select';
 import { DatePicker } from 'antd';
 import Swal from "sweetalert2";
 import { notification } from 'antd';
+import EditSP from "../EditSP";
 
 
 function Index() {
@@ -18,6 +19,7 @@ function Index() {
     setPHZustand: state.setPHZustand,
     phZustand: state.phZustand
   }));
+  const [ButtonDisable , setButtonDisable] = useState(false)
   const [getawalSP, setgetAwalSP] = useState([]);
   const [noPH, setnoPH] = useState("");
   const [noSPawal, setnogetAwalSP] = useState("");
@@ -38,7 +40,7 @@ function Index() {
   const [tgl_bongkar, setTgl_bongkar] = useState("");
   const [memoValue, setMemoValue] = useState("");
   const [JenisBarang, setJenisBarang] = useState("");
-  const [TypeMobilSelect , setTypeMobilSelect] = useState("");
+  const [TypeMobilSelect, setTypeMobilSelect] = useState("");
   const history = useHistory();
   const dapetinnosp = async () => {
     const data = await axios.get(
@@ -70,57 +72,67 @@ function Index() {
     dapetinnosp();
   }, [CompanyID]);
 
- const createspAwal = async () => {
-  try {
-    const response = await axios.post(
-      `${Baseurl}sp/create-SP`,
-      {
-        ph: noPH,
-        msp: noSPawal,
-        memo: memoValue,
-        id_customer: CompanyID,
-        jenis_barang: JenisBarang,
-        packing: packingValues,
-        asuransi: insuranceSelects,
-        tgl_pickup: tgl_pickup,
-        tgl_bongkar: tgl_bongkar,
-        service: serviceSelectValue,
-        alamat_invoice: AlamatInvoiceValue,
-        diskon: diskonselectValue,
-        asuransi_fee: 0,
-        total_keseluruhan: 0,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+  const createspAwal = async () => {
+    try {
+      setButtonDisable(true)
+      const response = await axios.post(
+        `${Baseurl}sp/create-SP`,
+        {
+          ph: noPH,
+          msp: noSPawal,
+          memo: memoValue,
+          id_customer: CompanyID,
+          jenis_barang: JenisBarang,
+          packing: packingValues,
+          asuransi: insuranceSelects,
+          tgl_pickup: tgl_pickup,
+          tgl_bongkar: tgl_bongkar,
+          service: serviceSelectValue,
+          alamat_invoice: AlamatInvoiceValue,
+          diskon: diskonselectValue,
+          asuransi_fee: 0,
+          total_keseluruhan: 0,
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setButtonDisable(false)
+      if (response.data) {
+        const idmp = response.data.idmp;
+
+        // Ant Design Notification Success
+        notification.success({
+          message: 'Success',
+          description: 'SP berhasil dibuat',
+          placement: 'topRight',
+        });
+
+        // history.push(`/masterdata/edit-spNew/${idmp}`);
+        history.push(`/masterdata/edit-sp/${idmp}`);
       }
-    );
-
-    if (response.data) {
-      const idmp = response.data.idmp; 
-
-      // Ant Design Notification Success
-      notification.success({
-        message: 'Success',
-        description: 'SP berhasil dibuat',
-        placement: 'topRight',
-      });
-
-      history.push(`/masterdata/edit-sp/${idmp}`); 
+    } catch (error) {
+      setButtonDisable(false)
+      if (error.response.data.errors) {
+        console.error(error.response.data.errors);
+        const errornya = error.response.data.errors.map((item) => ({
+          message: item.message
+        }))
+        errornya.forEach((errorMsg) => {
+          notification.error({
+            message: 'Error',
+            description: errorMsg.message,
+            placement: 'topRight',
+          });
+          console.log(errorMsg);
+        })
+      }
+      console.error(error);
     }
-  } catch (error) {
-    // Ant Design Notification Error
-    notification.error({
-      message: 'Error',
-      description: 'Ada kesalahan saat membuat SP',
-      placement: 'topRight',
-    });
-
-    console.error(error);
-  }
-};
+  };
 
 
   const handleDatesChange = (dates, dateStrings) => {
@@ -173,7 +185,7 @@ function Index() {
 
             <Col sm>
               <Form.Label>Tanggal Pickup - Tanggal Bongkar</Form.Label>
-              <br/>
+              <br />
               <RangePicker onChange={handleDatesChange} />
             </Col>
             {/* <Col sm={3}>
@@ -200,7 +212,7 @@ function Index() {
                 <Form.Control
                   value={JenisBarang}
                   type="text"
-                  onChange={(e)=>setJenisBarang(e.target.value)}
+                  onChange={(e) => setJenisBarang(e.target.value)}
                 ></Form.Control>
               </FormGroup>
             </Col>
@@ -283,11 +295,13 @@ function Index() {
             </Col>
           </Row>
         </Form>
-        <Button onClick={createspAwal} className="mt-5" size="md">
+        <Button onClick={createspAwal} className="mt-5" size="md" disabled={ButtonDisable}>
           Submit
         </Button>
       </Card>
+      {/* <EditSP alamatInvoice={alamatInvoice}/> */}
     </div>
+
   );
 }
 
