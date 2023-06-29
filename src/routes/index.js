@@ -65,6 +65,12 @@ const App = ({ match }) => (
         )}
       />
       <Route
+        path={`${match.url}masterdata/marketing/cancelsplist`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/CancelSPListSales")
+        )}
+      />
+      <Route
         path={`${match.url}masterdata/marketing/createsp`}
         component={asyncComponent(() =>
           import("./MasterData/Marketing/Splist/createSPBaru/Index")

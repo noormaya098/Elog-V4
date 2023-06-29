@@ -1,5 +1,5 @@
-import { Alert, Card } from "antd";
-import { Col, Row, Form, Modal, Button, Table } from "react-bootstrap";
+import { Alert, Card, Modal, Input, Select, message } from "antd";
+import { Col, Row, Form, Button, Table } from "react-bootstrap";
 import React from "react";
 import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
@@ -24,7 +24,27 @@ function DetailsAkunting() {
   const [tgl_act_4, settgl_act_4] = useState("")
   const [Kendaraan_purchasing, setKendaraan_purchasing] = useState("")
   const [tgl_act_5, settgl_act_5] = useState("")
+  const [modal1Open, setModal1Open] = useState(false);
+  const [MessageRejectSP, setMessageRejectSP] = useState("")
+  const [IDMessageRejectSP, setIDMessageRejectSP] = useState("")
+  const [KeteranganRejectSP, setKeteranganRejectSP] = useState("")
 
+  // message reject
+  const MessageReject = async () => {
+    try {
+      const data = await axios.get(`${Baseurl}sp/get-do-massage?limit=10334&page=1`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      )
+      setMessageRejectSP(data.data.data.order)
+    } catch (error) {
+
+    }
+  }
 
 
   useEffect(() => {
@@ -49,6 +69,7 @@ function DetailsAkunting() {
     };
     getDetail();
     comments();
+    MessageReject()
   }, [idmp, memo, Kendaraan_operasional, ApproveAkuntingStatus]);
 
   const columns = [
@@ -120,6 +141,7 @@ function DetailsAkunting() {
       if (result.isConfirmed) {
         const body = {
           id_mp: idmp,
+
         };
 
         try {
@@ -135,7 +157,7 @@ function DetailsAkunting() {
             title: "Berhasil",
             text: "Telah di Reject",
           });
-          window.location.reload();
+          // window.location.reload();
         } catch (error) {
           Swal.fire({
             icon: "error",
@@ -153,8 +175,8 @@ function DetailsAkunting() {
       const data = await axios.post(`${Baseurl}sp/cancel-sp`,
         {
           id_mp: idmp,
-          id_massage_do: comment.user,
-          keterangan: "canceled haha do"
+          id_massage_do: IDMessageRejectSP,
+          keterangan: KeteranganRejectSP
         },
         {
           headers: {
@@ -163,12 +185,29 @@ function DetailsAkunting() {
           },
 
         })
+      Swal.fire(
+        'Berhasil!',
+        'Permintaan berhasil!',
+        'success'
+      );
     } catch (error) {
-
+      // Munculkan SweetAlert jika terjadi error
+      if (error.response && error.response.status === 402) {
+        const isieror = error.response.data.status.message
+        Swal.fire(
+          'Gagal!',
+          `${isieror}`, // Memasukkan response data ke dalam pesan error
+          'error'
+        );
+      } else {
+        Swal.fire(
+          'Gagal!',
+          'Terjadi kesalahan!',
+          'error'
+        );
+      }
     }
-
   }
-
   const comments = async () => {
     const api = await axios.get(`${Baseurl}sp/get-SP-massage?id_mp=${idmp}`, {
       headers: {
@@ -208,6 +247,7 @@ function DetailsAkunting() {
   });
 
   // console.log(`TOTAL KESELURUHAN : ${rupiah}`);
+  const [actSalesStatus, setactSalesStatus] = useState("")
   const StausApprove = async () => {
     try {
       const data = await axios.get(`${Baseurl}sp/get-status-approve?id_mp=${idmp}`, {
@@ -217,6 +257,7 @@ function DetailsAkunting() {
         },
       });
       console.log(data.data.status.message);
+      setactSalesStatus(data.data.status.act_sales)
       setApproveAkuntingStatus(data.data.status.message.act_akunting)
       setApproveAkuntingTgl(data.data.status.message.tgl_act_3)
       setkendaraan_operasional(data.data.status.message.kendaraan_operasional)
@@ -233,20 +274,95 @@ function DetailsAkunting() {
     StausApprove()
   }, [])
 
+
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [commentReject, setCommentReject] = useState('')
+
+  const BuatMessage = async () => {
+    try {
+      const data = await axios.post(`${Baseurl}sp/create-massage-do`,
+        {
+          massage: commentReject
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token")
+          },
+
+        }
+      )
+      message.success(`${data.data.status.message}`);
+      MessageReject();
+      setCommentReject(''); // Mengatur ulang nilai commentReject menjadi string kosong
+      setIDMessageRejectSP(null); // Mengatur ulang nilai IDMessageRejectSP menjadi null
+      setKeteranganRejectSP(null); // Mengatur ulang nilai KeteranganRejectSP menjadi null
+      setShowCommentInput(false);
+    } catch (error) {
+      // Munculkan pesan error
+      if (error.response && error.response.status === 402) {
+        // Pesan khusus untuk error 402
+        message.error(`${error.response.data.status.message}`);
+      } else {
+        message.error('Terjadi kesalahan!');
+      }
+    }
+  }
   return (
     <div>
       <Card>
         <Row>
-          {/* <div className="d-flex justify-content-end">
-            {(jobdesk !== "operasional" && jobdesk !== "sales") && (
-              <>
-                <Button size="sm" onClick={() => tombolApprove()}>
-                  Approve
-                </Button>
-              </>
-            )}
+          {/* Modal Reject*/}
+          <Modal
+            title="Reject SP Sales"
+            style={{
+              top: 180,
+            }}
+            open={modal1Open}
+            onOk={() => {
+              RejectSP();
+              setModal1Open(false);
+            }}
+            onCancel={() => setModal1Open(false)}
+          >
+            <Row>
+              <Col sm={12}>
+                <Select
+                  showSearch
+                  optionFilterProp="children"
+                  style={{ width: '100%', }}
+                  placeholder="Pilih Alasan Reject"
+                  onChange={(e, options) => {
+                    setIDMessageRejectSP(e);
+                    setKeteranganRejectSP(options.children);
+                    console.log(IDMessageRejectSP);
+                    console.log(options.children);
+                  }}
+                >
+                  {MessageRejectSP && MessageRejectSP.map((item) => (
+                    <Select.Option key={item.message} value={item.id} >{item.no + " - " + item.massage}</Select.Option>
+                  ))}
+                </Select>
+              </Col>
+              <div className="mt-3" onClick={() => setShowCommentInput(true)}>
+                <i>Tidak ada Comment? Klik di sini untuk menambahkan</i>
+              </div>
+              {showCommentInput && (
+                <Col sm={12} className="mt-2">
+                  <Input
+                    size="large"
+                    value={commentReject}
+                    onChange={(e) => setCommentReject(e.target.value)}
+                    placeholder="Tambahkan komentar baru di sini"
+                  />
+                  <Button className="mt-2" size="sm" onClick={BuatMessage}>Tambahkan</Button>
+                </Col>
+              )}
+            </Row>
+          </Modal>
 
-          </div> */}
+
+
           <div className="d-flex justify-content-end">
             {
               (jobdesk !== "operasional" && jobdesk !== "sales" && jobdesk !== "purchasing" && ApproveAkuntingStatus !== "Y") ? (
@@ -308,20 +424,27 @@ function DetailsAkunting() {
             </Button>
 
 
-            {jobdesk === "sales" && (
+            {jobdesk === "sales" && actSalesStatus === "Y" ? (
               <>
-                <Button size="sm" onClick={RejectSP} variant="danger">
+                <Button size="sm" onClick={() => setModal1Open(true)} variant="danger">
                   Reject SP
                 </Button>
                 <Button size="sm" onClick={pindahedit} variant="primary">
                   Edit SJ
                 </Button>
               </>
-            )}
+            ) : <>
+              <Button size="sm" disabled onClick={() => setModal1Open(true)} variant="danger">
+                Reject SP
+              </Button>
+              <Button size="sm" onClick={pindahedit} variant="primary">
+                Edit SJ
+              </Button>
+            </>}
           </div>
 
-          <Modal>
-            <Modal.Header closeButton>
+          {/* <Modal> */}
+          {/* <Modal.Header closeButton>
               <Modal.Title>Approve Driver</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -337,8 +460,8 @@ function DetailsAkunting() {
             <Modal.Footer>
               <Button variant="secondary">Close</Button>
               <Button variant="primary">Save Changes</Button>
-            </Modal.Footer>
-          </Modal>
+            </Modal.Footer> */}
+          {/* </Modal> */}
 
           <Col sm={6}>
             <Form>

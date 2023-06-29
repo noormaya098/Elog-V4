@@ -87,22 +87,14 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
-                  {/* <Menu.Item key="driver">
-                    <Link to="/masterdata/driver">
+                  <Menu.Item key="Cancel SP List">
+                    <Link to="/masterdata/marketing/cancelsplist">
                       <i className="icon icon-widgets" />
                       <span>
-                        <IntlMessages id="sidebar.driver" />
+                        <IntlMessages id="Cancel SP List" />
                       </span>
                     </Link>
                   </Menu.Item>
-                  <Menu.Item key="vehicle">
-                    <Link to="/masterdata/vehicle">
-                      <i className="icon icon-widgets" />
-                      <span>
-                        <IntlMessages id="sidebar.vehicle" />
-                      </span>
-                    </Link>
-                  </Menu.Item> */}
                   <Menu.Item key="monitoringVehicle">
                     <Link to="/masterdata/monitoring">
                       <i className="icon icon-widgets" />

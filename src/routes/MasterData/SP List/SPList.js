@@ -252,6 +252,7 @@ function SPList() {
               // paginationTotalRows={isiData.length}
               // onChangePage={handlePageChange}
             />
+            <div className="d-flex justify-content-end mt-3">
             <Pagination
               showSizeChanger
               onChange={onPaginationChange}
@@ -260,6 +261,7 @@ function SPList() {
               total={TotalPage}
               defaultCurrent={1}
             />
+             </div>
           </Col>
         </Row>
       </Card>

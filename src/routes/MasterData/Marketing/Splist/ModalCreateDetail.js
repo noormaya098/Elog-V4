@@ -16,7 +16,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
     const [shipmentOptions, setShipmentOptions] = useState([]);
     const [Loding, setLoding] = useState(false)
     const [DetailSemuaTemp, setDetailSemuaTemp] = useState("")
-    const [DetaillSJall , setDetaillSJall] = useState("")
+    const [DetaillSJall, setDetaillSJall] = useState("")
 
     const formik = useFormik({
         initialValues: {
@@ -62,7 +62,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                     berat: formik.values.berat,
                     qty: formik.values.qyt,
                     koli: formik.values.koli,
-                    harga: formik.values.tarif
+                    harga: Hitung()
                 },
                 {
                     headers: {
@@ -117,7 +117,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
         }
     }
 
-    
+
 
 
 
@@ -148,7 +148,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
         }
     };
     useEffect(() => {
-      
+
         getDetailModal();
         // DetailSP()
     }, [DetailSemua]);
@@ -275,6 +275,26 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
             }
         });
     };
+
+    const Hitung = () => {
+        let total = 0;
+
+        // Daftar semua field yang ingin dijumlahkan
+        const fields = ['biayamel', 'biayamultidrop', 'biayamultimuat', 'biayamuat', 'bongkar'];
+
+        for (let field of fields) {
+            let value = formik.values[field];
+
+            // Jika value tidak ada atau bukan angka, anggap sebagai 0
+            if (!value || isNaN(value)) {
+                value = 0;
+            }
+
+            total += Number(value);
+        }
+
+        return total;
+    }
 
 
 
@@ -664,7 +684,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                                     name="bongkar"
                                     type="number"
                                     onChange={formik.handleChange}
-                                    value={formik.values.bongkar}
+                                    value={formik.values.bongkar === undefined ? '0' : formik.values.bongkar}
                                     onBlur={formik.handleBlur}
                                 />
                             </Form.Item>
@@ -770,9 +790,9 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                                     disabled
                                     id="total"
                                     name="total"
-                                    type="alamatmuat"
+                                    type="number"
                                     onChange={formik.handleChange}
-                                    value={`Rp ${formik.values.total === undefined ? 0 : formik.values.total}`}
+                                    value={Hitung()}
                                     onBlur={formik.handleBlur}
                                 />
                             </Form.Item>
@@ -801,7 +821,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                                     }}
                                 >
                                     <td> </td>
-                                    <td colSpan={9}>Alamat Muat</td>
+                                    <td colSpan={10}>Alamat Muat</td>
                                 </tr>
 
                                 <tr key={index}>
@@ -839,6 +859,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                                                 <td>Berat</td>
                                                 <td>Qty</td>
                                                 <td width="150px">Biaya Kirim</td>
+                                                <td width="150px">Biaya Bongkar</td>
                                                 <td width="150px">Total</td>
                                             </tr>
 
@@ -881,7 +902,11 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                                                 {/* <td>{data.Price?.toLocaleString("id-ID", {
                                 style: "currency",
                                 currency: "IDR",
-                              })}</td> */}
+                            })}</td> */}
+                                                <td>{data.harga_bongkar?.toLocaleString("id-ID", {
+                                                    style: "currency",
+                                                    currency: "IDR",
+                                                })}</td>
                                                 <td>{data.Price?.toLocaleString("id-ID", {
                                                     style: "currency",
                                                     currency: "IDR",
@@ -894,7 +919,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP }
                 </tbody>
                 <tfoot>
                     <tr style={{ fontWeight: "bold" }}>
-                        <td colSpan={9} width="150px" className="text-right">
+                        <td colSpan={10} width="150px" className="text-right">
                             Sub Total
                         </td>
                         <td width="150px">{DetailSemua?.subTotal?.toLocaleString("id-ID", {

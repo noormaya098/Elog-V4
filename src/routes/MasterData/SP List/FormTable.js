@@ -1614,10 +1614,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                             ) :
                              ""
                             }
-
+{/* 
                             {(jobdesk == "operasional" && data.supirId === 0 && data.unitId === 0
                               ? <p>belum di approve</p> : (jobdesk === "operasional" && StatusApproveOpt === "N" && ("Reject")) )
-                            }
+                            } */}
                             {/* {StatusApproveOpt === "N" && <p>approve</p>} */}
 
 

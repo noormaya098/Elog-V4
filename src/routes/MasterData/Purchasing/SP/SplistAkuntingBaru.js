@@ -137,9 +137,8 @@ function SplistOperasional() {
     // },
   ];
 
-  const buttonarahin = (idmp) => {
-    console.log(`klik dong`, idmp);
-    history.push(`/masterdata/purchasing/detailsp/${idmp}`);
+  const buttonarahin = (row) => {
+    history.push(`/masterdata/purchasing/detailsp/${row.idmp}`);
   };
 
   useEffect(() => {

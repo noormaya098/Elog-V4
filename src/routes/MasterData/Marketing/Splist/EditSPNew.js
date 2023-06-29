@@ -44,6 +44,7 @@ function EditSPNew() {
                 customer: data.data.customer,
                 pickup_date: data.data.pickup_date,
                 order_date: data.data.order_date,
+                bongkar_date: data.data.bongkar_date,
                 asuransi: data.data.asuransi,
                 alamatInvoice: data.data.alamatInvoice,
                 idPerusahaan: data.data.idcustomer,
@@ -120,7 +121,7 @@ function EditSPNew() {
                         packing: "",
                         asuransi: formik.values.asuransi,
                         tgl_pickup: formik.values.pickup_date,
-                        tgl_bongkar: "",
+                        tgl_bongkar: formik.values.bongkar_date,
                         service: formik.values.service,
                         alamat_invoice: formik.values.alamatInvoice,
                         biaya_muat: "",
@@ -152,7 +153,6 @@ function EditSPNew() {
             }
         });
     }
-
 
 
 
@@ -365,41 +365,75 @@ function EditSPNew() {
                                 />
                             </Form.Item>
                         </Col>
+
+                    </Row>
+                    <Row>
+
+                        <Col sm={6}>
+
+                            <Form.Item
+                                labelCol={{ span: 24 }}
+                                wrapperCol={{ span: 24 }} m
+                                style={{ marginBottom: 0 }}
+                                label="Bongkar Date"
+                                help={formik.touched.bongkar_date && formik.errors.bongkar_date}
+                                validateStatus={
+                                    formik.touched.bongkar_date && formik.errors.bongkar_date
+                                        ? 'error'
+                                        : 'success'
+                                }
+                            >
+                                <DatePicker
+                                    id="bongkar_date"
+                                    name="bongkar_date"
+                                    format="DD-MM-YYYY HH:mm:ss"
+                                    onChange={(date) => {
+                                        formik.setFieldValue(
+                                            'bongkar_date',
+                                            date ? date.format("DD-MM-YYYY HH:mm:ss") : ''
+                                        );
+                                    }}
+                                    value={formik.values.bongkar_date ? moment(formik.values.bongkar_date, "DD-MM-YYYY HH:mm:ss") : null}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col sm={6}>
+
+                            <Form.Item
+                                labelCol={{ span: 24 }}
+                                wrapperCol={{ span: 24 }}
+                                style={{ marginBottom: 0 }}
+                                label="Asuransi"
+                                help={formik.touched.jenisBarang && formik.errors.jenisBarang}
+                                validateStatus={
+                                    formik.touched.jenisBarang && formik.errors.jenisBarang
+                                        ? 'error'
+                                        : 'success'
+                                }
+                            >
+                                <Select
+                                    id="asuransi"
+                                    name="asuransi"
+                                    showSearch
+                                    optionFilterProp="children"
+                                    type="text"
+                                    value={formik.values.asuransi === "Y" ? "With Insurance" : "Without Insurance"}
+                                    onBlur={formik.handleBlur}
+                                    onChange={(value) => formik.setFieldValue("asuransi", value)}
+                                >
+                                    {AsuransiSelect && AsuransiSelect.map((item) => (
+                                        <Select.Option value={item.value}
+                                        >
+                                            {item.tipe}
+                                        </Select.Option>
+
+                                    ))}
+                                </Select>
+
+                            </Form.Item>
+                        </Col>
                     </Row>
 
-
-                    <Form.Item
-                        labelCol={{ span: 24 }}
-                        wrapperCol={{ span: 24 }}
-                        style={{ marginBottom: 0 }}
-                        label="Asuransi"
-                        help={formik.touched.jenisBarang && formik.errors.jenisBarang}
-                        validateStatus={
-                            formik.touched.jenisBarang && formik.errors.jenisBarang
-                                ? 'error'
-                                : 'success'
-                        }
-                    >
-                        <Select
-                            id="asuransi"
-                            name="asuransi"
-                            showSearch
-                            optionFilterProp="children"
-                            type="text"
-                            value={formik.values.asuransi === "Y" ? "Memakai Asuransi" : "Tidak Memakai Asuransi"}
-                            onBlur={formik.handleBlur}
-                            onChange={(value) => formik.setFieldValue("asuransi", value)}
-                        >
-                            {AsuransiSelect && AsuransiSelect.map((item) => (
-                                <Select.Option value={item.value}
-                                >
-                                    {item.tipe}
-                                </Select.Option>
-
-                            ))}
-                        </Select>
-
-                    </Form.Item>
                 </Col>
             </Row>
             <Row>
@@ -428,7 +462,7 @@ function EditSPNew() {
                         </Select>
                     </Form.Item>
                 </Col>
-               
+
             </Row>
             <ModalCreateDetail
                 idmp={idmp} DetailSP={DetailSP} AlamatInvoiceOptions={AlamatInvoiceOptions} DetailSemua={DetailSemua} />
