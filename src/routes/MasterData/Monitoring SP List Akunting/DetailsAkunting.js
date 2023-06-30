@@ -257,7 +257,7 @@ function DetailsAkunting() {
         },
       });
       console.log(data.data.status.message);
-      setactSalesStatus(data.data.status.act_sales)
+      setactSalesStatus(data.data.status.message.act_sales)
       setApproveAkuntingStatus(data.data.status.message.act_akunting)
       setApproveAkuntingTgl(data.data.status.message.tgl_act_3)
       setkendaraan_operasional(data.data.status.message.kendaraan_operasional)
@@ -274,6 +274,7 @@ function DetailsAkunting() {
     StausApprove()
   }, [])
 
+  console.log (`statusnya adalah`, actSalesStatus)
 
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [commentReject, setCommentReject] = useState('')
@@ -424,10 +425,10 @@ function DetailsAkunting() {
             </Button>
 
 
-            {jobdesk === "sales" && actSalesStatus === "Y" ? (
+            {jobdesk === "sales" && actSalesStatus === "N" ? (
               <>
                 <Button size="sm" onClick={() => setModal1Open(true)} variant="danger">
-                  Reject SP
+                  Reject SP 
                 </Button>
                 <Button size="sm" onClick={pindahedit} variant="primary">
                   Edit SJ
@@ -435,7 +436,7 @@ function DetailsAkunting() {
               </>
             ) : <>
               <Button size="sm" disabled onClick={() => setModal1Open(true)} variant="danger">
-                Reject SP
+                Reject SP 
               </Button>
               <Button size="sm" onClick={pindahedit} variant="primary">
                 Edit SJ

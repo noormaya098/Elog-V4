@@ -114,6 +114,12 @@ const App = ({ match }) => (
         )}
       />
       <Route
+        path={`${match.url}createar`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/ARList/CreateAR/CreateAR")
+        )}
+      />
+      <Route
         path={`${match.url}akunting/splistakuntingbaru`}
         component={asyncComponent(() =>
           import("./MasterData/Monitoring SP List Akunting/SplistAkuntingBaru")

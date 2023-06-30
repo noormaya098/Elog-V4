@@ -39,6 +39,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   const createsp = () => {
     history.push(`/masterdata/marketing/createsp`);
   };
+  const createar = () => {
+    history.push(`/createar`);
+  };
 
   return (
     <>
@@ -68,10 +71,25 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                   size="lg"
                   style={{width:180}}
                   className="d-flex align-items-center justify-content-center"
-                  onClick={() => createsp()}
+                  onClick={() =>  createsp()}
                   variant="warning"
                 >
                   ADD SP
+                </Button>
+              </div>
+              ) : (
+                <></>
+              )}
+              {jobdesk === "akunting" ?( 
+              <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
+                <Button
+                  size="lg"
+                  style={{width:180 , backgroundColor : "#00a65a" , color : "white" , marginTop : "-35px"}}
+                  className="d-flex align-items-center justify-content-center"
+                  onClick={() => createar()}
+                  variant="#00a65a"
+                >
+                  ADD AR
                 </Button>
               </div>
               ) : (

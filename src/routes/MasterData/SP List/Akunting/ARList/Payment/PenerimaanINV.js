@@ -5,6 +5,7 @@ import { DatePicker, Space } from 'antd';
 import Select from 'react-select';
 import useMitraStore from '../../../../../../zustand/Store/MitraStore';
 import DataTable from 'react-data-table-component';
+import { useHistory } from 'react-router-dom';
 
 function PenerimaanINV() {
     const NamaMitra = useMitraStore((state) => state.NamaMitra)
@@ -14,6 +15,8 @@ function PenerimaanINV() {
     const handleShow = () => setShow(true);
     const { RangePicker } = DatePicker;
     console.log(`ini mitra NamaMitra`, NamaMitra)
+
+   const pindah = useHistory()
 
     useEffect(() => {
         fetchMitra()
@@ -86,7 +89,9 @@ function PenerimaanINV() {
             year: '1984',
         },
     ]
-    
+
+   
+
     return (
         <div>
             <Card>
@@ -117,7 +122,7 @@ function PenerimaanINV() {
                         </Form>
                     </Col>
                     <Col sm={2}>
-                        <Button className='mt-4' variant='primary'>Download</Button>
+                        <Button className='mt-4'  variant='primary'>Download</Button>
                     </Col>
                 </Row>
             </Card>
@@ -192,9 +197,9 @@ function PenerimaanINV() {
                 </Modal.Footer>
             </Modal>
             <DataTable
-            columns={columns}
-            data={data}
-        />
+                columns={columns}
+                data={data}
+            />
         </div>
     )
 }
