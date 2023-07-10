@@ -163,7 +163,7 @@ useEffect(() => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      messagedetail();
+      // messagedetail();
     }, 5000); // delay 5 detik
 
     findTidakMenggunakanUnit()

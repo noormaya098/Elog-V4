@@ -1,7 +1,7 @@
 // FormTable.js
 import React from "react";
 import { Col, Row, Form, Button, Table, Modal } from "react-bootstrap";
-import { Card, Checkbox, Tag, Spin } from "antd";
+import { Card, Checkbox, Select as SelectAntd, Tag, Spin, Input, Modal as ModalAntd, Form as AntForm, DatePicker, Upload } from "antd";
 import { useState, useEffect } from "react";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
@@ -11,13 +11,22 @@ import Token from "../../../Api/Token";
 import mobil from "../../redux toolkit/store/ZustandStore";
 import { Alert, Space } from 'antd';
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import ZustandStore from "../../../zustand/Store/JenisKepemilikanOptions";
+import moment from 'moment';
+import { UploadOutlined } from '@ant-design/icons';
+import * as Yup from 'yup';
+import { useFormik } from 'formik'
+import useMitraStore from "../../../zustand/Store/MitraStore";
 
-const jobdesk = localStorage.getItem("jobdesk");
+
 function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
+
+  const [modal1Open, setModal1Open] = useState(false);
   const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
   const [mitraVehicle, setMitraVehicle] = useState([]);
   const [types, setType] = useState([]);
   const [nomorpolisi, setNomorPolisi] = useState([]);
+  const [NamaSupir, setNamaSupir] = useState("")
   const [NomorPolisi2, setNomorPolisi2] = useState([])
   const [isidaSementara, setIsidaSementara] = useState([])
   const [selectnomor, setSelectnomor] = useState([]);
@@ -36,6 +45,26 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const [LoadingMuterMuter, setLoadingMuterMuter] = useState(false)
   const [driveranother, setDriveranother] = useState([]);
   const [selectanotherrvalue, setSelectanotherrvalue] = useState([]);
+  const { NamaMitra, fetchMitra } = useMitraStore((item) => ({
+    NamaMitra: item.NamaMitra,
+    fetchMitra: item.fetchMitra
+  }))
+  const NamaMitraOptions = NamaMitra.map((item) => ({
+    label: item.NamaMitra,
+    value: item.mitraId
+  }))
+  const { DriverType, setDriverType } = ZustandStore((item) => ({
+    DriverType: item.DriverType,
+    setDriverType: item.setDriverType
+  }))
+  const { jenisKepemilikan, setjenisKepemilikan } = ZustandStore((item) => ({
+    jenisKepemilikan: item.jenisKepemilikan,
+    setjenisKepemilikan: item.setjenisKepemilikan
+  }))
+  const { WarnaPlat, setWarnaPlat } = ZustandStore((item) => ({
+    WarnaPlat: item.WarnaPlat,
+    setWarnaPlat: item.setWarnaPlat
+  }))
   const { isidetail, setSpDetail } = mobil((state) => ({
     isidetail: state.isidetail,
     setSpDetail: state.setSpDetail,
@@ -91,6 +120,11 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     SJKosongModal: state.SJKosongModal,
     setSJKosongModal: state.setSJKosongModal,
   }));
+  const { TipeKendaraan, FetchTipeKendaraan } = ZustandStore((state) => ({
+    TipeKendaraan: state.TipeKendaraan,
+    FetchTipeKendaraan: state.FetchTipeKendaraan,
+  }));
+  const [FotoDriver, setFotoDriver] = useState("")
   const [Mitra1Multi, setMitra1Multi] = useState([])
   const [StatusApproveAct, setStatusApproveAct] = useState("")
   const [TanggalACT3, setTanggalACT3] = useState("")
@@ -100,65 +134,45 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   const [Kendaraan_operasionalStatus, setKendaraanOperasionalStatus] = useState({})
   const [StatusPurchasing, setStatusPurchasing] = useState("")
   const history = useHistory()
+  const [selectTypeMobil, setselectTypeMobil] = useState("")
+  const [selectTypeMobil2, setselectTypeMobil2] = useState("")
 
   ////checkbox multi
   const handleCheckboxChange = (event) => {
     setCheckboxValue(event.target.checked ? 1 : 0);
   };
 
-  console.log(`ini adlaah StatusApproveOpt`, StatusApproveOpt);
 
   ///select driver
+
+  const vehicle = async () => {
+    let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${selectTypeMobil}&mitra=${mitra1}&id=${selectnomor}`;
+
+    const sleet = await axios.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token"),
+      },
+    });
+    const nomorpolisis = sleet.data.data.vehicle;
+    const drivernya = sleet.data.data.Driver;
+    setMitraFix(sleet.data.data.mitra)
+    setNomorFix(sleet.data.data.vehicle)
+    setNamaDriverFix(sleet.data.data.Driver)
+    // console.log(`ini driver`, sleet.data.data);
+    setselectDriver(drivernya);
+    setNomorPolisi(nomorpolisis);
+  };
   useEffect(() => {
-    const vehicle = async () => {
-      let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&mitra=${mitra1}&id=${selectnomor}`;
-
-      const sleet = await axios.get(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      const nomorpolisis = sleet.data.data.vehicle;
-      const drivernya = sleet.data.data.Driver;
-      setMitraFix(sleet.data.data.mitra)
-      setNomorFix(sleet.data.data.vehicle)
-      setNamaDriverFix(sleet.data.data.Driver)
-      // console.log(`ini driver`, sleet.data.data);
-      setselectDriver(drivernya);
-      setNomorPolisi(nomorpolisis);
-    };
-
     if (types.length > 0) {
       vehicle();
     }
 
-  }, [types, selectnomor, mitra1, selectnomor2,]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
-
-  // console.log(`ini NamaDriverFix`, NomorFix2);
-
-  // if (isidata[0]?.via != "") {
-  //   setTimeout(() => {
-  //     return (Swal.fire({
-  //       icon: 'error',
-  //       title: 'Data SP belum Lengkap',
-  //       text: 'Silahkan Hubungi Marketing!',
-  //     }))
-  //   }, 1500);
-
-  // } else {
-  //   console.log(`ada`)
-  // }
-  // }, [isidata]);
-  const validasi = () => {
-    const iniaapa = "ksoong"
-  }
-
-
+  }, [types, selectnomor, mitra1, selectnomor2, selectTypeMobil]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
 
   useEffect(() => {
     const vehicle = async () => {
-      let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&mitra=${mitra2}&id=${selectnomor2}`;
+      let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${selectTypeMobil2}&mitra=${mitra2}&id=${selectnomor2}`;
 
       const sleet = await axios.get(url, {
         headers: {
@@ -175,10 +189,11 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     if (types.length > 0) {
       vehicle();
     }
-  }, [types, selectnomor, mitra2, selectnomor2]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
+    FetchTipeKendaraan()
+  }, [types, selectnomor, mitra2, selectnomor2, selectTypeMobil2]);  // pastikan Anda memasukkan semua variabel yang Anda gunakan sebagai dependensi useEffect
 
   // console.log(`ini NamaDriverFix2`, NamaDriverFix2);
-  ///// approve op
+  ///// approve op operasional
   useEffect(() => {
     const vehicle = async () => {
       let url = `${Baseurl}sp/get-SP-select-2?vehicleType=${types[0]}&mitra=1&id=${selectnomor}`;
@@ -189,31 +204,35 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
           Authorization: localStorage.getItem("token"),
         },
       });
-      console.log(sleet.data?.data.vehicle);
+      console.log(`ini op driver `, sleet.data?.data.vehicle);
       setKodeKendaraanOps(sleet.data?.data.vehicle)
     };
 
     if (types.length > 0) {
       vehicle();
     }
-  }, [types, selectnomor, mitra1, selectnomor2]);
+  }, [types, selectnomor, mitra1, selectnomor2, selectTypeMobil2]);
 
 
+
+  const anotherdriver = async () => {
+    const another = await axios.get(`${Baseurl}sp/another-driver`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem(`token`),
+      },
+    });
+    const driveranotders = another.data.data;
+    setDriveranother(driveranotders);
+    setIsiKomenRejectSP()
+  };
   useEffect(() => {
-    const anotherdriver = async () => {
-      const another = await axios.get(`${Baseurl}sp/another-driver`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem(`token`),
-        },
-      });
-      const driveranotders = another.data.data;
-      setDriveranother(driveranotders);
-      setIsiKomenRejectSP()
-    };
-
     anotherdriver();
   }, []);
+
+  const PindahVehicle = () => {
+    history.push(`/masterdata/purchasing/vehicle`)
+  }
 
   ///tombol approve
   const HandleApproveOPS = (idmpd) => {
@@ -222,8 +241,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       const body = {
         id_mpd: IDMPD,
         id_mp: idmp,
-        id_unit: selectnomor,
-        id_supir: selectDriver[0]?.idUnit ? selectDriver[0]?.idUnit : idUnit,
+        id_supir: selectnomor,
+        // id_unit: selectnomor,
+        id_unit: selectDriver[0]?.idUnit ? selectDriver[0]?.idUnit : idUnit,
         nama_supir: selectDriver[0]?.name ? selectDriver[0]?.name : idUnit,
         id_mitra: 1,
         id_mitra_pickup: 1,
@@ -261,7 +281,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     }
 
   };
-  // console.log(`ini idUnit`, idUnit);
 
   ///tombol approve
   const HandleApprovePURCH = (idmpd) => {
@@ -418,16 +437,18 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
     kd_kendaraan: item.kd_kendaraan
   })) : [];
   const nomorpolisiOptions = Array.isArray(KodeKendaraanOps) ? KodeKendaraanOps.map((item) => ({
-    value: item.id,
-    label: item.kd_kendaraan + " - " + item.no_polisi,
+    value: item.driverId,
+    label: item.kd_kendaraan + " - " + item.no_polisi + " - " + item.mitra,
     kd_kendaraan: item.kd_kendaraan
   })) : [];
 
   const anotneroptionsdriver = Array.isArray(driveranother) ? driveranother.map((item) => ({
     value: item.id,
-    label: item.name,
+    label: item.name + " || " + item?.mitra,
     kd_kendaraan: item.kd_kendaraan
   })) : [];
+
+  console.log(`anotneroptionsdriver`, anotneroptionsdriver);
   // const nomorpolisiOptions = nomorpolisi.filter(item => item.mitra === mitra1).map(item => ({
   //   value: item.driverId,
   //   label: item.no_polisi,
@@ -575,6 +596,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   useEffect(() => {
     MitraMulti()
     AmbilStatusApprove()
+    setDriverType()
+    fetchMitra()
+    setWarnaPlat()
+    setjenisKepemilikan()
   }, [StatusApproveAct, StatusPurchasing, Kendaraan_operasionalStatus])
 
   let angkamanual = 1
@@ -597,19 +622,657 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
       setKendaraanOperasionalStatus(data.data.status.message.kendaraan_operasional)
       setStatusPurchasing(data.data.status.message.kendaraan_purchasing)
 
-      console.log(`ini status StatusPurchasing`, StatusPurchasing);
     } catch (error) {
 
     }
   };
 
+  const validationSchema = Yup.object().shape({
+    kode_kendaraan: Yup.string().required('Kode Kendaraan wajib diisi'),
+    no_polisi: Yup.string().required('No Polisi wajib diisi'),
+    tgl_stnk: Yup.date().required('Tanggal STNK wajib diisi'),
+    jenis_kepemilikan: Yup.string().required('Jenis Kepemilikan wajib diisi'),
+    jenis_kendaraan: Yup.string().required('Jenis Kendaraan wajib diisi'),
+    vendor: Yup.string().required('Vendor Kendaraan wajib diisi'),
+    // nama_driver: Yup.string().required('Nama Driver wajib diisi'),
+    // tgl_plat_nomor: Yup.string().required('tgl plat nomor wajib diisi'),
+    // warna_plat: Yup.string().required('Warna Plat wajib diisi'),
+    // merk_mobil: Yup.string().required('Merk Mobil wajib diisi'),
+    // tahun_mobil: Yup.number().required('Tahun Mobil wajib diisi').integer('Tahun Mobil harus berupa angka'),
+    // panjang: Yup.number().required('Panjang Kendaraan wajib diisi').integer('Panjang Kendaraan harus berupa angka'),
+    // lebar: Yup.number().required('Lebar Kendaraan wajib diisi').integer('Lebar Kendaraan harus berupa angka'),
+    // tinggi: Yup.number().required('Tinggi Kendaraan wajib diisi').integer('Tinggi Kendaraan harus berupa angka'),
+    // no_bpkb: Yup.string().required('No BPKB wajib diisi'),
+    // stnk: Yup.string().required('STNK wajib diisi'),
+    // tgl_kir: Yup.date().required('Tanggal KIR wajib diisi'),
+    // tgl_beli: Yup.date().required('Tanggal Pembelian wajib diisi'),
+    // kapasitas: Yup.number().required('Kapasitas wajib diisi').integer('Kapasitas harus berupa angka'),
+    // kapasitas_maks: Yup.number().required('Kapasitas Maks wajib diisi').integer('Kapasitas Maks harus berupa angka'),
+    // kubikasi: Yup.number().required('Kubikasi wajib diisi').integer('Kubikasi harus berupa angka'),
+    // location: Yup.string().required('Lokasi wajib diisi'),
+    // id_driver: Yup.string().required('ID Driver wajib diisi'),
+    // id_kendaraan_jenis: Yup.string().required('ID Jenis Kendaraan wajib diisi'),
+    // FotoDriver: Yup.string().required('Foto Vehicle wajib diisi')
+  });
+  const formik = useFormik({
+    initialValues: {
+      tgl_stnk: "",
+      fotoVehicle: "",
+      kode_kendaraan: '',
+      no_polisi: '',
+      jenis_kepemilikan: '',
+      jenis_kendaraan: '',
+      vendor: '',
+      nama_driver: '',
+      jenis_SIM: '',
+      warna_plat: '',
+      merk_mobil: '',
+      tahun_mobil: '',
+      warna_plat: '',
+      panjang: '',
+      lebar: '',
+      tinggi: '',
+      tgl_plat_nomor: "",
+      no_bpkb: '',
+      stnk: '',
+      tgl_kir: '',
+      tgl_beli: '',
+      kapasitas: '',
+      kapasitas_maks: '',
+      kubikasi: '',
+      location: '',
+      id_driver: '',
+      id_kendaraan_jenis: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: values => {
+      BuatVehicle(values)
+      setModal1Open(false)
+      handleShow();
+      console.log(formik.errors)
+      console.log(values);
+    },
+  });
 
+  const DriverName = async (value) => {
+    try {
+      const data = await axios.get(`${Baseurl}vehicle/get-select?vehicleType=${value}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+
+          }
+        }
+      )
+      setNamaSupir(data.data.data.driverName)
+    } catch (error) {
+
+    }
+  }
+
+  const BuatVehicle = async (values, newFileList) => {
+    try {
+      const formData = new FormData();
+      Object.keys(values).forEach(key => formData.append(key, values[key]));
+      formData.append("cover", FotoDriver);
+
+      const data = await axios.post(`${Baseurl}vehicle/create-vehicle`, formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: localStorage.getItem("token"),
+          }
+        });
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: 'Data kendaraan berhasil ditambahkan',
+      });
+
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Terjadi kesalahan saat menambahkan data kendaraan',
+      });
+    }
+  }
 
 
   return (
     <>
       <Row>
+        <ModalAntd
+          title="Create Vehicle"
+          style={{
+            width: 800,
+            top: 20,
+            zIndex: 99999999
+          }}
+          width={800}
+          open={modal1Open}
+          onOk={formik.handleSubmit}
+          onCancel={() => setModal1Open(false)}
+        >
+          <AntForm>
+            <Row>
+              <Col sm={4}>
+                <Card>
+                  <img src={FotoDriver}></img>
 
+                </Card>
+                <Upload
+                  name="fotoVehicle"
+                  beforeUpload={file => {
+                    // Mencegah upload default
+                    return false;
+                  }}
+                  onChange={({ fileList }) => {
+                    // Ambil file asli dari fileList terakhir dan simpan dalam state
+                    if (fileList.length > 0) {
+                      const { originFileObj } = fileList[fileList.length - 1];
+                      setFotoDriver(originFileObj);
+                    } else {
+                      setFotoDriver(null);
+                    }
+                  }}
+                >
+                  <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                </Upload>
+                <AntForm.Item
+                  label="Tgl EXP STNK"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tgl_stnk && formik.errors.tgl_stnk}
+                  validateStatus={formik.touched.tgl_stnk && formik.errors.tgl_stnk ? 'error' : 'success'}
+                  style={{ marginBottom: 2, width: "100%" }}
+                >
+                  <DatePicker
+                    id="tgl_stnk"
+                    name="tgl_stnk"
+                    onChange={(date) => {
+                      formik.setFieldValue("tgl_stnk", date ? date.format("YYYY-MM-DD") : "");
+                    }}
+                    value={formik.values.tgl_stnk ? moment(formik.values.tgl_stnk) : null}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Tgl Exp Plat Nomor"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tgl_plat_nomor && formik.errors.tgl_plat_nomor}
+                  validateStatus={formik.touched.tgl_plat_nomor && formik.errors.tgl_plat_nomor ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <DatePicker
+                    id="tgl_plat_nomor"
+                    name="tgl_plat_nomor"
+                    onChange={(date) => {
+                      formik.setFieldValue("tgl_plat_nomor", date ? date.format("YYYY-MM-DD") : "");
+                    }}
+                    value={formik.values.tgl_plat_nomor ? moment(formik.values.tgl_plat_nomor) : null}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Tgl Exp Kir"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tgl_kir && formik.errors.tgl_kir}
+                  validateStatus={formik.touched.tgl_kir && formik.errors.tgl_kir ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <DatePicker
+                    id="tgl_kir"
+                    name="tgl_kir"
+                    onChange={(date) => {
+                      formik.setFieldValue("tgl_kir", date ? date.format("YYYY-MM-DD") : "");
+                    }}
+                    value={formik.values.tgl_kir ? moment(formik.values.tgl_kir) : null}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+
+                <AntForm.Item
+                  label="Tgl Beli"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tgl_beli && formik.errors.tgl_beli}
+                  validateStatus={formik.touched.tgl_beli && formik.errors.tgl_beli ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <DatePicker
+                    id="tgl_beli"
+                    name="tgl_beli"
+                    onChange={(date) => {
+                      formik.setFieldValue("tgl_beli", date ? date.format("YYYY-MM-DD") : "");
+                    }}
+                    value={formik.values.tgl_beli ? moment(formik.values.tgl_beli) : null}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+              </Col>
+              <Col sm={4}>
+                <AntForm.Item
+                  label="Jenis Kepemilikan"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.jenis_kepemilikan && formik.errors.jenis_kepemilikan}
+                  validateStatus={formik.touched.jenis_kepemilikan && formik.errors.jenis_kepemilikan ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <SelectAntd
+                    showSearch
+                    optionFilterProp="children"
+                    id="jenis_kepemilikan"
+                    name="jenis_kepemilikan"
+                    onChange={(value) => formik.setFieldValue('jenis_kepemilikan', value)}
+                    value={formik.values.jenis_kepemilikan || ""}
+                    onBlur={formik.handleBlur}
+                  >
+                    {jenisKepemilikan.map((option) => (
+                      <SelectAntd.Option key={option.label} value={option.jenis}>
+                        {option.jenis}
+                      </SelectAntd.Option>
+                    ))}
+                  </SelectAntd>
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Kode Kendaraan"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.kode_kendaraan && formik.errors.kode_kendaraan}
+                  validateStatus={formik.touched.kode_kendaraan && formik.errors.kode_kendaraan ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="kode_kendaraan"
+                    name="kode_kendaraan"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.kode_kendaraan}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+
+                <AntForm.Item
+                  style={{ marginBottom: 2 }}
+                  label="No Polisi"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.no_polisi && formik.errors.no_polisi}
+                  validateStatus={formik.touched.no_polisi && formik.errors.no_polisi ? 'error' : 'success'}
+                >
+                  <Input
+                    id="no_polisi"
+                    name="no_polisi"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.no_polisi}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  style={{ marginBottom: 2 }}
+                  label="Mitra"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.vendor && formik.errors.vendor}
+                  validateStatus={formik.touched.vendor && formik.errors.vendor ? 'error' : 'success'}
+                >
+                  <SelectAntd
+                    showSearch
+                    optionFilterProp="children"
+                    id="vendor"
+                    name="vendor"
+                    onChange={(value, option) => {
+                      formik.setFieldValue('vendor', option.children); // ini akan mengambil label (children dari option)
+                      formik.setFieldValue('id_vendor', value); // ini akan mengambil value dari option yang dipilih
+                    }}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.vendor || ''}
+                  >
+                    {NamaMitraOptions && NamaMitraOptions.map((option) => (
+                      <SelectAntd.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectAntd.Option>
+                    ))}
+                  </SelectAntd>
+
+                </AntForm.Item>
+
+                <AntForm.Item
+                  label="Jenis Kendaraan"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan}
+                  validateStatus={formik.touched.jenis_kendaraan && formik.errors.jenis_kendaraan ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <SelectAntd
+                    showSearch
+                    optionFilterProp="children"
+                    id="jenis_kendaraan"
+                    name="jenis_kendaraan"
+                    type="text"
+                    onChange={(value, option) => {
+                      formik.setFieldValue('jenis_kendaraan', value);
+                      formik.setFieldValue('id_kendaraan_jenis', parseInt(option.key));
+                      DriverName(value);
+                    }}
+                    value={formik.values.jenis_kendaraan}
+                    onBlur={formik.handleBlur}
+                  >
+                    {DriverType.map((item) => (
+                      <SelectAntd.Option key={item.id} value={item.tipe}>
+                        {item.tipe}
+                      </SelectAntd.Option>
+                    ))}
+                  </SelectAntd>
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Nama Driver"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.id_driver && formik.errors.id_driver}
+                  validateStatus={formik.touched.id_driver && formik.errors.id_driver ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <SelectAntd
+                    showSearch
+                    optionFilterProp="children"
+                    id="id_driver"
+                    name="id_driver"
+                    type="text"
+                    onChange={(value) => {
+                      formik.setFieldValue('id_driver', value);
+                    }}
+                    placeholder="pilih driver"
+                    value={formik.values.id_driver}
+                    onBlur={formik.handleBlur}
+                  >
+                    {NamaSupir && NamaSupir.map((item) => (
+                      <SelectAntd.Option key={item.tipe} value={item.driverId}>
+                        {item.driverName}
+                      </SelectAntd.Option>
+                    ))}
+                  </SelectAntd>
+                  <a href="/masterdata/purchasing/driver" target="_blank" style={{ color: "blue" }}>Tambah Driver</a>
+                </AntForm.Item>
+
+                <AntForm.Item
+                  label="Warna Plat"
+                  placeholder="warna"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.warna_plat && formik.errors.warna_plat}
+                  validateStatus={formik.touched.warna_plat && formik.errors.warna_plat ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <SelectAntd
+                    id="warna_plat"
+                    name="warna_plat"
+                    type="text"
+                    placeholder="test"
+                    onChange={(value) => formik.setFieldValue('warna_plat', value)}
+                    value={formik.values.warna_plat}
+                    onBlur={formik.handleBlur}
+                  >
+                    {WarnaPlat && WarnaPlat.map((item) => (
+                      <SelectAntd.Option key={item.warna} value={item.warna}>
+                        {item.warna}
+                      </SelectAntd.Option>
+                    ))}
+                  </SelectAntd>
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Merk Mobil"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.merk_mobil && formik.errors.merk_mobil}
+                  validateStatus={formik.touched.merk_mobil && formik.errors.merk_mobil ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="merk_mobil"
+                    name="merk_mobil"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.merk_mobil}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+
+
+              </Col>
+              <Col sm={4}>
+                <AntForm.Item
+                  label="Tahun Mobil"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tahun_mobil && formik.errors.tahun_mobil}
+                  validateStatus={formik.touched.tahun_mobil && formik.errors.tahun_mobil ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="tahun_mobil"
+                    name="tahun_mobil"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.tahun_mobil}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                {/* <AntForm.Item
+                                    label="Warna Plat"
+                                    required
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    help={formik.touched.warna_plat && formik.errors.warna_plat}
+                                    validateStatus={formik.touched.warna_plat && formik.errors.warna_plat ? 'error' : 'success'}
+                                    style={{ marginBottom: 2 }}
+                                >
+                                    <Input
+                                        id="warna_plat"
+                                        name="warna_plat"
+                                        type="text"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.warna_plat}
+                                        onBlur={formik.handleBlur}
+                                    />
+                                </AntForm.Item> */}
+                <Row gutter={16}>
+                  <Col sm={4}>
+                    <AntForm.Item
+                      label="Panjang"
+                      required
+                      labelCol={{ span: 24 }}
+                      wrapperCol={{ span: 24 }}
+                      help={formik.touched.panjang && formik.errors.panjang}
+                      validateStatus={formik.touched.panjang && formik.errors.panjang ? 'error' : 'success'}
+                      style={{ marginBottom: 2 }}
+                    >
+                      <Input
+                        id="panjang"
+                        name="panjang"
+                        type="text"
+                        onChange={formik.handleChange}
+                        value={formik.values.panjang}
+                        onBlur={formik.handleBlur}
+                      />
+                    </AntForm.Item>
+                  </Col>
+                  <Col sm={4}>
+                    <AntForm.Item
+                      label="Lebar"
+                      required
+                      labelCol={{ span: 24 }}
+                      wrapperCol={{ span: 24 }}
+                      help={formik.touched.lebar && formik.errors.lebar}
+                      validateStatus={formik.touched.lebar && formik.errors.lebar ? 'error' : 'success'}
+                      style={{ marginBottom: 2 }}
+                    >
+                      <Input
+                        id="lebar"
+                        name="lebar"
+                        type="text"
+                        onChange={formik.handleChange}
+                        value={formik.values.lebar}
+                        onBlur={formik.handleBlur}
+                      />
+                    </AntForm.Item>
+                  </Col>
+                  <Col sm={4}>
+                    <AntForm.Item
+                      label="Tinggi"
+                      required
+                      labelCol={{ span: 24 }}
+                      wrapperCol={{ span: 24 }}
+                      help={formik.touched.tinggi && formik.errors.tinggi}
+                      validateStatus={formik.touched.tinggi && formik.errors.tinggi ? 'error' : 'success'}
+                      style={{ marginBottom: 2 }}
+                    >
+                      <Input
+                        id="tinggi"
+                        name="tinggi"
+                        type="text"
+                        onChange={formik.handleChange}
+                        value={formik.values.tinggi}
+                        onBlur={formik.handleBlur}
+                      />
+                    </AntForm.Item>
+                  </Col>
+                </Row>
+                <AntForm.Item
+                  label="No BPKB"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.no_bpkb && formik.errors.no_bpkb}
+                  validateStatus={formik.touched.no_bpkb && formik.errors.no_bpkb ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="no_bpkb"
+                    name="no_bpkb"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.no_bpkb}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  label="STNK"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.stnk && formik.errors.stnk}
+                  validateStatus={formik.touched.stnk && formik.errors.stnk ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="stnk"
+                    name="stnk"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.stnk}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+
+                <AntForm.Item
+                  label="Kapasitas"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tinggi && formik.errors.tinggi}
+                  validateStatus={formik.touched.tinggi && formik.errors.tinggi ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="kapasitas"
+                    name="kapasitas"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.kapasitas}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Kapasitas Max"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.kapasitas_maks && formik.errors.kapasitas_maks}
+                  validateStatus={formik.touched.kapasitas_maks && formik.errors.kapasitas_maks ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="kapasitas_maks"
+                    name="kapasitas_maks"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.kapasitas_maks}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Kubikasi"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tinggi && formik.errors.tinggi}
+                  validateStatus={formik.touched.tinggi && formik.errors.tinggi ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="kubikasi"
+                    name="kubikasi"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.kubikasi}
+                    onBlur={formik.handleBlur}
+                  />
+                </AntForm.Item>
+                <AntForm.Item
+                  label="Location"
+                  required
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                  help={formik.touched.tinggi && formik.errors.tinggi}
+                  validateStatus={formik.touched.tinggi && formik.errors.tinggi ? 'error' : 'success'}
+                  style={{ marginBottom: 2 }}
+                >
+                  <Input
+                    id="location"
+                    name="location"
+                    type="text"
+                    onChange={formik.handleChange}
+                    value={formik.values.location}
+                    onBlur={formik.handleBlur}
+                  />
+
+                </AntForm.Item>
+              </Col>
+            </Row>
+          </AntForm>
+        </ModalAntd>
         <div className="d-flex justify-content-end">
           {(jobdesk == "operasional") && (
             <>
@@ -634,7 +1297,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                           disabled
                           value={types[0] || ""}
                           onChange={(e) => {
-                            console.log(e.target.value);
                           }}
                         >
                           {types.map((type, index) => (
@@ -656,11 +1318,11 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         <Select
                           options={nomorpolisiOptions}
                           onChange={(selectedOption) => {
-                            console.log(`kode kendaraan`, selectedOption.value);
                             setSelectnomor(selectedOption.value);
                             setSelectNopol(selectedOption.label);
                           }}
                         />
+                        <a onClick={() => { setModal1Open(true); setShow(false) }} style={{ color: "blue" }}>Tambah Kendaraan</a>
                       </Col>
                     </Row>
                     <Row>
@@ -671,14 +1333,12 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                           value={selectDriver[0]?.idUnit}
                           onChange={(e) => {
-                            console.log(`awo`, e.target.value);
                             setIdunit(e.target.value);
                           }}
                         >
                           <option value={selectDriver[0]?.idUnit}>
                             {selectDriver[0] && selectDriver[0]?.name != "" ? selectDriver[0] && selectDriver[0]?.name : "tidak tersedia"}
                           </option>
-                          console.log(selectDriver[0]?.idUnit);
                         </Form.Select>
                       </Col>
                     </Row>
@@ -709,7 +1369,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                           disabled
                           value={types[0] || ""}
                           onChange={(e) => {
-                            console.log(e.target.value);
                           }}
                         >
                           {types.map((type, index) => (
@@ -724,7 +1383,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         <Select
                           // options={nomorpolisiOptions}
                           onChange={(selectedOption) => {
-                            console.log(`kode kendaraan`, selectedOption.value);
                             setSelectnomor(selectedOption.value);
                             setSelectNopol(selectedOption.label);
                           }}
@@ -736,7 +1394,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                           value={selectDriver[0]?.id}
                           onChange={(e) => {
-                            console.log(`awo`, e.target.value);
                             setIdunit(e.target.value);
                           }}
                         >
@@ -768,7 +1425,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                           disabled
                           value={types[0] || ""}
                           onChange={(e) => {
-                            console.log(e.target.value);
                           }}
                         >
                           {types.map((type, index) => (
@@ -783,7 +1439,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         <Select
                           // options={nomorpolisiOptions}
                           onChange={(selectedOption) => {
-                            console.log(`kode kendaraan`, selectedOption.value);
                             setSelectnomor(selectedOption.value);
                             setSelectNopol(selectedOption.label);
                           }}
@@ -794,7 +1449,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         <Form.Select
                           value={selectDriver[0]?.id}
                           onChange={(e) => {
-                            console.log(`awo`, e.target.value);
                             setIdunit2(e.target.value);
                           }}
                         >
@@ -826,7 +1480,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                           disabled
                           value={types[0] || ""}
                           onChange={(e) => {
-                            console.log(e.target.value);
                           }}
                         >
                           {types.map((type, index) => (
@@ -841,7 +1494,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         <Select
                           // options={nomorpolisiOptions}
                           onChange={(selectedOption) => {
-                            console.log(`kode kendaraan`, selectedOption.value);
                             setSelectnomor(selectedOption.value);
                             setSelectNopol(selectedOption.label);
                           }}
@@ -851,9 +1503,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         <Form.Label>Select Driver</Form.Label>
                         <Form.Select
 
+                          // placeholder={selectDriver[0]?.id}
                           value={selectDriver[0]?.id}
                           onChange={(e) => {
-                            console.log(`awo`, e.target.value);
                             setIdunit(e.target.value);
                           }}
                         >
@@ -883,6 +1535,32 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                     <br />
                     {bukaanother && (
                       <>
+                        <AntForm.Item
+                          style={{ marginBottom: 2 }}
+                          label="Select Driver"
+                          required
+                          labelCol={{ span: 24 }}
+                          wrapperCol={{ span: 24 }}
+                          help={formik.touched.vendor && formik.errors.vendor}
+                          validateStatus={formik.touched.vendor && formik.errors.vendor ? 'error' : 'success'}
+                        >
+                          <SelectAntd
+                            showSearch
+                            optionFilterProp="children"
+                            id="vendor"
+                            name="vendor"
+                            onChange={(e) => setIdunit(e.target.value)}
+                            onBlur={formik.handleBlur}
+                            value={idUnit}
+                          >
+                            {driveranother && driveranother.map((option) => (
+                              <SelectAntd.Option key={option.value} value={option.id}>
+                                {option.name}
+                              </SelectAntd.Option>
+                            ))}
+                          </SelectAntd>
+
+                        </AntForm.Item>
                         <Form.Label>Select Driverssss</Form.Label>
                         <Form.Select onChange={(e) => setIdunit(e.target.value)}>
                           <option>Select Driver</option>
@@ -898,6 +1576,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                   </>
                 </Modal.Body>
                 <Modal.Footer>
+
                   <Button variant="secondary" onClick={handleClose}>
                     Close
                   </Button>
@@ -971,8 +1650,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                     <Alert type="error" message="Diverted Purchasing" banner /> :
                     null}
 
-              {(jobdesk === "operasional")}
-              <Button size="sm" variant="danger" onClick={rejectsp}>Reject SP</Button>
+              {(jobdesk === "operasional") &&
+                <Button size="sm" variant="danger" onClick={rejectsp}>Reject SP</Button>
+              }
 
               {/* {(StatusPurchasing === 'Y') &&
                 <Alert type="success" message="Approve Purchasing" banner /> */}
@@ -1016,7 +1696,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         disabled
                         value={types[0] || ""}
                         onChange={(e) => {
-                          console.log(e.target.value);
                         }}
                       >
                         {types.map((type, index) => (
@@ -1034,7 +1713,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                       <Select
                         // options={nomorpolisiOptions}
                         onChange={(selectedOption) => {
-                          console.log(`kode kendaraan`, selectedOption.value);
                           setSelectnomor(selectedOption.value);
                           setSelectNopol(selectedOption.label);
                         }}
@@ -1049,7 +1727,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
 
                         value={selectDriver[0]?.id}
                         onChange={(e) => {
-                          console.log(`awo`, e.target.value);
                           setIdunit(e.target.value);
                         }}
                       >
@@ -1092,7 +1769,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                         disabled
                         value={Mitra1Multi?.tipeKendaraan}
                         onChange={(e) => {
-                          console.log(e.target.value);
                         }}
                       >
                         {types.map((type, index) => (
@@ -1151,15 +1827,18 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                       <Form.Label>Vehicle Type</Form.Label>
                       <Form.Select
                         type="text"
-                        disabled
-                        value={types[0] || ""}
+
+                        value={selectTypeMobil}
                         onChange={(e) => {
-                          console.log(e.target.value);
+                          vehicle();
+                          setselectTypeMobil(e.target.value);
                         }}
                       >
-                        {types.map((type, index) => (
-                          <option key={index} value={type}>
-                            {type}
+
+                        <option>Select Type</option>
+                        {TipeKendaraan && TipeKendaraan.map((type, index) => (
+                          <option key={index} value={type.id}>
+                            {type.tipe}
                           </option>
                         ))}
                       </Form.Select>
@@ -1169,19 +1848,18 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                       <Select
                         options={kodeKendaraanOptions}
                         onChange={(selectedOption) => {
-                          console.log(`kode kendaraan`, selectedOption.value);
+                          anotherdriver()
                           setSelectnomor(selectedOption.value);
                           setSelectNopol(selectedOption.label);
                         }}
                       />
-
                     </Col>
                     <Col sm={3}>
                       <Form.Label>Select Driver</Form.Label>
                       <Select
                         options={anotneroptionsdriver}
                         onChange={(selectedOption) => {
-                          console.log(`kode kendaraan`, selectedOption.value);
+                          anotherdriver()
                           setIdunit(selectedOption.value);
                           setSelectNopol(selectedOption.label);
                         }}
@@ -1220,15 +1898,16 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                       <Form.Label>Vehicle Type</Form.Label>
                       <Form.Select
                         type="text"
-                        disabled
-                        value={types[0] || ""}
+                        value={selectTypeMobil2}
                         onChange={(e) => {
-                          console.log(e.target.value);
+                          vehicle();
+                          setselectTypeMobil2(e.target.value);
                         }}
                       >
-                        {types.map((type, index) => (
-                          <option key={index} value={type}>
-                            {type}
+                        <option>Select Type</option>
+                        {TipeKendaraan && TipeKendaraan.map((type, index) => (
+                          <option key={index} value={type.id}>
+                            {type.tipe}
                           </option>
                         ))}
                       </Form.Select>
@@ -1238,7 +1917,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                       <Select
                         options={kodeKendaraanOptions2}
                         onChange={(selectedOption) => {
-                          console.log(`kode kendaraan`, selectedOption.value);
+                          anotherdriver()
                           setSelectnomor2(selectedOption.value);
                           setSelectNopol(selectedOption.label);
                         }}
@@ -1250,22 +1929,11 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                       <Select
                         options={anotneroptionsdriver}
                         onChange={(selectedOption) => {
-                          console.log(`kode kendaraan`, selectedOption.value);
+                          anotherdriver()
                           setIdunit2(selectedOption.value);
                           setSelectNopol(selectedOption.label);
                         }}
                       />
-                      {/* <Form.Select
-                        value={NamaDriverFix2[0]?.idUnit}
-                        onChange={(e) => {
-                          console.log(`awo`, e.target.value);
-                          setIdunit2(e.target.value);
-                        }}
-                      >
-                         <option value={NamaDriverFix2[0]?.idUnit}>
-                            {NamaDriverFix2[0] && NamaDriverFix2[0]?.name != "" ? NamaDriverFix2[0] && NamaDriverFix2[0]?.name : "tidak tersedia"}
-                          </option>
-                      </Form.Select> */}
                     </Col>
                   </Row>
                   <Row>
@@ -1280,11 +1948,6 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                   ) : null}
 
                   <br />
-                  {/* <hr /> */}
-                  {/* Purchasing Another Button */}
-                  {/* <Button size="sm" onClick={() => handleAnotherDriverClick()}>
-                    another driver
-                  </Button> */}
                   <br />
                   {bukaanother && (
                     <>
@@ -1303,6 +1966,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 </>
               </Modal.Body>
               <Modal.Footer>
+                <a variant="warning" target="_blank" href="/masterdata/purchasing/vehicle" >
+                  Tambah Vehicle
+                </a>
                 <Button variant="secondary" onClick={handleClose}>
                   Close
                 </Button>
@@ -1592,6 +2258,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                 onClick={() => {
                                   handleShow(data.idmpd);
                                   approvebaru(data.idmpd);
+
                                 }}
                                 className="mt-2"
                                 disabled={LoadingMuterMuter}
@@ -1612,9 +2279,9 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                                 Approved
                               </Button>
                             ) :
-                             ""
+                              ""
                             }
-{/* 
+                            {/* 
                             {(jobdesk == "operasional" && data.supirId === 0 && data.unitId === 0
                               ? <p>belum di approve</p> : (jobdesk === "operasional" && StatusApproveOpt === "N" && ("Reject")) )
                             } */}
@@ -1759,7 +2426,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               </>
             </tr>
           </Table>
-          {/* )} */}
+
         </Col>
       </Row>
     </>

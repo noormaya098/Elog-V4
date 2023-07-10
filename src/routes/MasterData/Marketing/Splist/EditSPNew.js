@@ -58,6 +58,7 @@ function EditSPNew() {
         }
     }
 
+    const [NamaMarketing, setNamaMarketing] = useState("")
     const DetailSPSelect = async () => {
         try {
             const data = await axios.get(`${Baseurl}sp/get-SP-select-create?keyword=&companyId=${DetailSemua.idcustomer}&divisi=sales&kode_cabang=JKT`,
@@ -70,7 +71,8 @@ function EditSPNew() {
             setAlamatInvoiceOptions(data.data.data.address)
             setAsuransiSelect(data.data.data.insurance)
             setJenisBarangSelection(data.data.data.service)
-            console.log(data.data.data.address)
+            console.log(`dari edit`, data.data.data)
+            setNamaMarketing(data.data.data?.marketing)
         } catch (error) {
 
         }
@@ -119,6 +121,7 @@ function EditSPNew() {
                         id_customer: DetailSemua.idcustomer,
                         jenis_barang: formik.values.jenisBarang,
                         packing: "",
+                        marketing : formik.values.marketing,
                         asuransi: formik.values.asuransi,
                         tgl_pickup: formik.values.pickup_date,
                         tgl_bongkar: formik.values.bongkar_date,
@@ -202,14 +205,30 @@ function EditSPNew() {
                                     : 'success'
                             }
                         >
-                            <Input
+                            <Select
+                                id="marketing"
+                                name="marketing"
+                                showSearch
+                                optionFilterProp='children'
+                                value={formik.values.marketing == null ? "-" : formik.values.marketing}
+                                onChange={(value) => formik.setFieldValue("marketing", value)}
+                                onBlur={formik.handleBlur}
+                            >
+                                {NamaMarketing &&
+                                    NamaMarketing.map((item) => (
+                                        <Select.Option key={item.address} value={item.id}>
+                                            {item.fullname}
+                                        </Select.Option>
+                                    ))}
+                            </Select>
+                            {/* <Input
                                 id="marketing"
                                 name="marketing"
                                 type="text"
                                 onChange={formik.handleChange}
                                 value={formik.values.marketing == null ? "-" : formik.values.marketing}
                                 onBlur={formik.handleBlur}
-                            />
+                            /> */}
                         </Form.Item>
                         <Form.Item
                             style={{ marginBottom: 0 }}
@@ -354,6 +373,7 @@ function EditSPNew() {
                                 <DatePicker
                                     id="order_date"
                                     name="order_date"
+                                    disabled
                                     format="DD-MM-YYYY HH:mm:ss"
                                     onChange={(date) => {
                                         formik.setFieldValue(
@@ -448,6 +468,7 @@ function EditSPNew() {
                         <Select
                             id="alamatInvoice"
                             name="alamatInvoice"
+                            optionFilterProp='children'
                             showSearch
                             value={formik.values.alamatInvoice}
                             onChange={(value) => formik.setFieldValue("alamatInvoice", value)}
@@ -465,7 +486,7 @@ function EditSPNew() {
 
             </Row>
             <ModalCreateDetail
-                idmp={idmp} DetailSP={DetailSP} AlamatInvoiceOptions={AlamatInvoiceOptions} DetailSemua={DetailSemua} />
+                idmp={idmp} DetailSP={DetailSP} JenisBarangFormik={formik.values.jenisBarang} AlamatInvoiceOptions={AlamatInvoiceOptions} DetailSemua={DetailSemua} />
             {/* </Card> */}
         </div>
     )

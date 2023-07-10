@@ -10,6 +10,7 @@ import axios from 'axios';
 import Baseurl from '../../../Api/BaseUrl';
 import Swal from 'sweetalert2';
 import ZustandStore from '../../../zustand/Store/JenisKepemilikanOptions';
+import useMitraStore from '../../../zustand/Store/MitraStore';
 
 function DriverTableBaru() {
     const [modalOpen, setModalOpen] = useState(false);
@@ -46,6 +47,11 @@ function DriverTableBaru() {
             name: 'No',
             selector: row => row.no,
             width: "80px"
+        },
+        {
+            name: 'NIK Driver',
+            selector: row => row.nik,
+            width: "100px"
         },
         {
             name: 'Nama',
@@ -192,6 +198,7 @@ function DriverTableBaru() {
         setJenisSim()
         setDriverType()
         setStatusDriverAktif()
+        fetchMitra()
     }, [CariDriver, CariJenisKepemilikan, CariDriverAktif])
 
     const onShowSizeChange = async (page) => {
@@ -230,7 +237,7 @@ function DriverTableBaru() {
                 tgllahir: data.data.data[0]?.dateBirth,
                 agama: data.data.data[0]?.driverReligion,
                 notelp1: data.data.data[0]?.noTelp1,
-                notelp2: data.data.data[0]?.noTelp2,
+                notelp2: data.data.data[0]?.noTelp2 === undefined ? "Tidak ada No Telp2" : data.data.data[0]?.noTelp2,
                 email: data.data.data[0]?.driverEmail,
                 tglmasuk: data.data.data[0]?.dateIn,
                 tglsim: data.data.data[0]?.simDate,
@@ -238,7 +245,10 @@ function DriverTableBaru() {
                 jeniskepemilikan: data.data.data[0]?.jenisKepemilikan,
                 ukseragam: data.data.data[0]?.ukuranSeragam,
                 rekeningbank: data.data.data[0]?.BankRekening,
-                norekening: data.data.data[0]?.Norek
+                norekening: data.data.data[0]?.Norek,
+                mitra: data.data.data[0]?.mitra,
+                mitraId: data.data.data[0]?.mitraId,
+                cover: data.data.data[0]?.driverImage
 
             })
         } catch (error) {
@@ -272,6 +282,8 @@ function DriverTableBaru() {
                     jenis_kepemilikan: formik.values.jeniskepemilikan,
                     rekening_bank: formik.values.rekeningbank,
                     rekening_norek: formik.values.norekening,
+                    id_mitra: formik.values.mitraId,
+                    mitra: formik.values.mitra,
                 },
                 {
                     headers: {
@@ -329,13 +341,16 @@ function DriverTableBaru() {
             formData.append('jenis_kepemilikan', formik.values.jeniskepemilikan);
             formData.append('rekening_bank', formik.values.rekeningbank);
             formData.append('rekening_norek', formik.values.norekening);
+            formData.append('id_mitra', formik.values.mitraId);
 
-            const response = await axios.post(`${Baseurl}driver/create-driver`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: localStorage.getItem("token"),
-                }
-            });
+            const response = await axios.post(`${Baseurl}driver/create-driver`,
+                formData
+                , {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: localStorage.getItem("token"),
+                    }
+                });
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
@@ -347,7 +362,7 @@ function DriverTableBaru() {
 
             console.log(response.data);
         } catch (error) {
-            console.error(error);
+            console.error(error.status);
 
             // Display SweetAlert error message
             Swal.fire({
@@ -359,12 +374,20 @@ function DriverTableBaru() {
     };
 
 
+
+    const { NamaMitra, fetchMitra } = useMitraStore((item) => ({
+        NamaMitra: item.NamaMitra,
+        fetchMitra: item.fetchMitra
+    }))
+
+
+
     const UploadFoto = async () => {
         try {
             const formData = new FormData();
             formData.append('cover', formik.values.cover);
             formData.append('id', DetailId);
-            const data = await axios.post(`${Baseurl}vehicle/upload-vehicle-photo`, formData,
+            const data = await axios.post(`${Baseurl}driver/upload-driver-photo`, formData,
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
@@ -372,6 +395,7 @@ function DriverTableBaru() {
                     }
                 }
             )
+            ApiAwal()
         } catch (error) {
             // console.error(error);
             // Swal.fire({
@@ -406,9 +430,28 @@ function DriverTableBaru() {
             noktp: '',
             jenis_SIM: '',
             tglsim: '',
+            cover: "",
+            tglmasuk: "",
+            tgllahir: "",
+            email: '',
+            divisi: '',
+            nosim: '',
+            jenissim: '',
+            alamat: '',
+            agama: '',
+            notelp1: '',
+            vehicletype: '',
+            jeniskepemilikan: '',
+            ukseragam: '',
+            rekeningbank: '',
+            norekening: '',
+
         },
         validationSchema: Yup.object({
-            nik: Yup.string().required('Nik harus diisi'),
+            nik: Yup.string()
+                .required('Nik harus diisi')
+                .max(6,"Tidak Boleh Melebihi 6 Karakter")
+                .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
             noktp: Yup.number().required('No KTP harus diisi').integer('Nik harus berupa angka'),
             namadriver: Yup.string().required('Nama Driver harus diisi'),
             email: Yup.string().email('Format email tidak valid').required('Email harus diisi'),
@@ -419,7 +462,7 @@ function DriverTableBaru() {
             tgllahir: Yup.date().required('Tanggal Lahir harus diisi'),
             agama: Yup.string().required('Agama harus diisi'),
             notelp1: Yup.number().required('No Telp 1 harus diisi'),
-            // notelp2: Yup.number().required('No Telp 2 harus diisi'),
+            cover: Yup.string().required('gambar harus diisi'),
             tglmasuk: Yup.date().nullable().required('Tanggal Masuk harus diisi'),
             tglsim: Yup.date().nullable().required('Tanggal SIM harus diisi'),
             vehicletype: Yup.string().required('Vehicle Type harus diisi'),
@@ -442,6 +485,30 @@ function DriverTableBaru() {
             }
         },
     });
+
+    const UpdateFoto = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('cover', formik.values.cover);
+            formData.append('id', DetailId);
+            const data = await axios.post(`${Baseurl}driver/upload-driver-photo`, formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: localStorage.getItem("token"),
+                    }
+                }
+            )
+        } catch (error) {
+            // console.error(error);
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Error',
+            //     text: `Failed to upload photo: ${error.message}`,
+            // });
+        }
+    }
+
     return (
 
         <div>
@@ -516,6 +583,7 @@ function DriverTableBaru() {
                                         </div>
                                     </Card>
                                     <Form.Item
+                                        name="uploadgambar"
                                         label="Upload Gambar"
                                         help={formik.touched.cover && formik.errors.cover ? formik.errors.cover : null}
                                         validateStatus={formik.touched.cover && formik.errors.cover ? 'error' : undefined}
@@ -573,8 +641,87 @@ function DriverTableBaru() {
                                     </Form.Item>
                                 </Col>
                                 <Col sm={4}>
-                                <Form.Item
-                                        label="Jenis Kepemilikan"
+                                    <Form.Item
+                                        label="NIK"
+                                        help={formik.touched.nik && formik.errors.nik ? formik.errors.nik : null}
+                                        validateStatus={formik.touched.nik && formik.errors.nik ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input nik"
+                                            name="nik"
+                                            onChange={e => {
+                                                const val = e.target.value;
+                                                formik.setFieldValue('nik', val ? val.charAt(0).toUpperCase() + val.slice(1) : '');
+                                            }}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.nik}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Nama Driver"
+                                        help={formik.touched.namadriver && formik.errors.namadriver ? formik.errors.namadriver : null}
+                                        validateStatus={formik.touched.namadriver && formik.errors.namadriver ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="namadriver"
+                                            name="namadriver"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.namadriver}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Divisi"
+                                        help={formik.touched.divisi && formik.errors.divisi ? formik.errors.divisi : null}
+                                        validateStatus={formik.touched.divisi && formik.errors.divisi ? 'error' : undefined}
+                                    >
+                                        <Input
+                                            placeholder="input divisi"
+                                            name="divisi"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.divisi}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Perusahaan"
+                                        help={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? formik.errors.jeniskepemilikan : null}
+                                        validateStatus={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? 'error' : undefined}
+                                    >
+                                        <Select
+
+                                            name="mitra"
+                                            id='mitra'
+                                            showSearch
+                                            optionFilterProp="children"
+                                            // onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.mitra}
+                                            onChange={(value, key) => {
+                                                formik.setFieldValue('mitra', value)
+                                                formik.setFieldValue('mitraId', parseInt(key.key))
+
+                                            }}
+                                        >
+
+                                            {NamaMitra && NamaMitra.map((item) => (
+                                                <Select.Option key={item.mitraId} value={item.NamaMitra}>
+                                                    {item.NamaMitra}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                        {/* <Input
+                                            placeholder="input jenis kepemilikan"
+                                            name="jeniskepemilikan"
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            value={formik.values.jeniskepemilikan}
+                                        /> */}
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Jenis Driver"
                                         help={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? formik.errors.jeniskepemilikan : null}
                                         validateStatus={formik.touched.jeniskepemilikan && formik.errors.jeniskepemilikan ? 'error' : undefined}
                                     >
@@ -603,32 +750,6 @@ function DriverTableBaru() {
                                         /> */}
                                     </Form.Item>
                                     <Form.Item
-                                        label="NIK"
-                                        help={formik.touched.nik && formik.errors.nik ? formik.errors.nik : null}
-                                        validateStatus={formik.touched.nik && formik.errors.nik ? 'error' : undefined}
-                                    >
-                                        <Input
-                                            placeholder="input nik"
-                                            name="nik"
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.nik}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nama Driver"
-                                        help={formik.touched.namadriver && formik.errors.namadriver ? formik.errors.namadriver : null}
-                                        validateStatus={formik.touched.namadriver && formik.errors.namadriver ? 'error' : undefined}
-                                    >
-                                        <Input
-                                            placeholder="namadriver"
-                                            name="namadriver"
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.namadriver}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
                                         label="No KTP"
                                         help={formik.touched.noktp && formik.errors.noktp ? formik.errors.noktp : null}
                                         validateStatus={formik.touched.noktp && formik.errors.noktp ? 'error' : undefined}
@@ -641,19 +762,7 @@ function DriverTableBaru() {
                                             value={formik.values.noktp}
                                         />
                                     </Form.Item>
-                                    <Form.Item
-                                        label="Divisi"
-                                        help={formik.touched.divisi && formik.errors.divisi ? formik.errors.divisi : null}
-                                        validateStatus={formik.touched.divisi && formik.errors.divisi ? 'error' : undefined}
-                                    >
-                                        <Input
-                                            placeholder="input divisi"
-                                            name="divisi"
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.divisi}
-                                        />
-                                    </Form.Item>
+
                                     <Form.Item
                                         label="No SIM"
                                         help={formik.touched.nosim && formik.errors.nosim ? formik.errors.nosim : null}
@@ -700,34 +809,33 @@ function DriverTableBaru() {
                                             value={formik.values.jenissim}
                                         /> */}
                                     </Form.Item>
-                                    
+
 
                                     <Form.Item
                                         label="Agama"
                                         help={formik.touched.agama && formik.errors.agama ? formik.errors.agama : null}
                                         validateStatus={formik.touched.agama && formik.errors.agama ? 'error' : undefined}
                                     >
-                                        <Input
-                                            placeholder="input agama"
-                                            name="agama"
-                                            onChange={formik.handleChange}
+                                        <Select
+                                            placeholder="Pilih Agama"
                                             onBlur={formik.handleBlur}
                                             value={formik.values.agama}
-                                        />
+                                            onChange={(value, option) => {
+                                                formik.handleChange({
+                                                    target: {
+                                                        name: 'agama',
+                                                        value: value,
+                                                    },
+                                                });
+                                            }}
+                                        >
+                                            <Select.Option value="1">Islam</Select.Option>
+                                            <Select.Option value="2">Kristen</Select.Option>
+                                            <Select.Option value="3">Hindu</Select.Option>
+                                            <Select.Option value="4">Buddha</Select.Option>
+                                            <Select.Option value="5">Khonghucu</Select.Option>
+                                        </Select>
                                     </Form.Item>
-                                    {/* <Form.Item
-                                        label="Agama"
-                                        help={formik.touched.nik && formik.errors.nik ? formik.errors.nik : null}
-                                        validateStatus={formik.touched.nik && formik.errors.nik ? 'error' : undefined}
-                                    >
-                                        <Input
-                                            placeholder="input nik"
-                                            name="nik"
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            value={formik.values.nik}
-                                        />
-                                    </Form.Item> */}
                                 </Col>
                                 <Col sm={4}>
 
@@ -737,6 +845,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp1 && formik.errors.notelp1 ? 'error' : undefined}
                                     >
                                         <Input
+                                        type='number'
                                             placeholder="input notelp1"
                                             name="notelp1"
                                             onChange={formik.handleChange}
@@ -750,11 +859,12 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp2 && formik.errors.notelp2 ? 'error' : undefined}
                                     >
                                         <Input
+                                        type='number'
                                             placeholder="input notelp2"
                                             name="notelp2"
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
-                                            value={formik.values.notelp2}
+                                            value={formik.values.notelp2 === undefined ? "Tidak ada No Telp 2" : formik.values.notelp2}
                                         />
                                     </Form.Item>
                                     <Form.Item
@@ -799,7 +909,7 @@ function DriverTableBaru() {
                                             value={formik.values.vehicletype}
                                         /> */}
                                     </Form.Item>
-                                    
+
                                     <Form.Item
                                         label="Ukuran Seragam"
                                         help={formik.touched.ukseragam && formik.errors.ukseragam ? formik.errors.ukseragam : null}
@@ -846,6 +956,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.norekening && formik.errors.norekening ? 'error' : undefined}
                                     >
                                         <Input
+                                        type='number'
                                             placeholder="input nomor rekening"
                                             name="norekening"
                                             onChange={formik.handleChange}

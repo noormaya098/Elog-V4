@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component';
 import Baseurl from '../../../../Api/BaseUrl';
 import axios from 'axios';
-import { Button, Modal, Input, Form as AntForm, DatePicker, Card, Select, Upload, Pagination } from 'antd';
+import { Button, Modal, Input, Form as AntForm, DatePicker, Card, Select, Upload, Pagination, Tag } from 'antd';
 import moment from 'moment';
 import { UploadOutlined } from '@ant-design/icons';
 import * as Yup from 'yup';
@@ -59,21 +59,34 @@ function VehicleBaru() {
 
     const validationSchema = Yup.object().shape({
         kode_kendaraan: Yup.string()
-            .required('Kode Kendaraan wajib diisi'),
-        no_polisi: Yup.string()
-            .required('No Polisi wajib diisi'),
-        jenis_kepemilikan: Yup.string()
-            .required('Jenis Kepemilikan wajib diisi'),
-        jenis_kendaraan: Yup.string()
-            .required('Jenis Kendaraan wajib diisi'),
-        vendor: Yup.string()
-            .required('Vendor Kendaraan wajib diisi'),
-        warna_plat: Yup.string()
-            .required('Warna Plat Driver wajib diisi'),
-        merk_mobil: Yup.string()
-            .required('Warna Plat Driver wajib diisi'),
-
-
+            .required('Kode Kendaraan wajib diisi')
+            .max(10, 'Kode Kendaraan tidak boleh lebih dari 10 karakter'),
+        no_polisi: Yup.string().required('No Polisi wajib diisi')
+            .max(10, 'No Polisi tidak boleh lebih dari 10 karakter'),
+        // tgl_stnk: Yup.date().required('Tanggal STNK wajib diisi'),
+        // jenis_kepemilikan: Yup.string().required('Jenis Kepemilikan wajib diisi'),
+        // jenis_kendaraan: Yup.string().required('Jenis Kendaraan wajib diisi'),
+        // vendor: Yup.string().required('Vendor Kendaraan wajib diisi'),
+        // nama_driver: Yup.string().required('Nama Driver wajib diisi'),
+        // jenis_SIM: Yup.string().required('Jenis SIM wajib diisi'),
+        // warna_plat: Yup.string().required('Warna Plat wajib diisi'),
+        merk_mobil: Yup.string().required('Merk Mobil wajib diisi')
+            .transform(value => (value ? value.toUpperCase() : '')),
+        // tahun_mobil: Yup.number().required('Tahun Mobil wajib diisi').integer('Tahun Mobil harus berupa angka'),
+        // panjang: Yup.number().required('Panjang Kendaraan wajib diisi').integer('Panjang Kendaraan harus berupa angka'),
+        // lebar: Yup.number().required('Lebar Kendaraan wajib diisi').integer('Lebar Kendaraan harus berupa angka'),
+        // tinggi: Yup.number().required('Tinggi Kendaraan wajib diisi').integer('Tinggi Kendaraan harus berupa angka'),
+        // no_bpkb: Yup.string().required('No BPKB wajib diisi'),
+        stnk: Yup.string().required('STNK wajib diisi')
+            .max(10, "No STNK Tidak Boleh Lebih dari 10 Karakter"),
+        // tgl_kir: Yup.date().required('Tanggal KIR wajib diisi'),
+        // tgl_beli: Yup.date().required('Tanggal Pembelian wajib diisi'),
+        // kapasitas: Yup.number().required('Kapasitas wajib diisi').integer('Kapasitas harus berupa angka'),
+        // kapasitas_maks: Yup.number().required('Kapasitas Maks wajib diisi').integer('Kapasitas Maks harus berupa angka'),
+        // kubikasi: Yup.number().required('Kubikasi wajib diisi').integer('Kubikasi harus berupa angka'),
+        // location: Yup.string().required('Lokasi wajib diisi'),
+        // id_driver: Yup.string().required('ID Driver wajib diisi'),
+        // id_kendaraan_jenis: Yup.string().required('ID Jenis Kendaraan wajib diisi')
     });
 
 
@@ -84,6 +97,7 @@ function VehicleBaru() {
 
     const formik = useFormik({
         initialValues: {
+            tgl_stnk: "",
             kode_kendaraan: '',
             no_polisi: '',
             jenis_kepemilikan: '',
@@ -106,12 +120,20 @@ function VehicleBaru() {
             kapasitas_maks: '',
             kubikasi: '',
             location: '',
-            id_driver: ''
+            id_driver: '',
+            id_kendaraan_jenis: ''
         },
         validationSchema: validationSchema,
         onSubmit: values => {
-            EditVehicle(values)
-            BuatVehicle(values)
+            if (IdDriver == null) {
+                BuatVehicle(values)
+
+            } else {
+
+                EditVehicle(values)
+                UploadFoto(FotoDriver)
+                ApiAwal()
+            }
             console.log(formik.errors)
             console.log(values);;
         },
@@ -122,6 +144,33 @@ function VehicleBaru() {
         formik.resetForm();
 
     };
+
+    const UploadFoto = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('cover', FotoDriver);
+            formData.append('id', IdDriver);
+            const data = await axios.post(`${Baseurl}vehicle/upload-vehicle-photo`, formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: localStorage.getItem("token"),
+                    }
+                }
+            )
+            ApiAwal()
+        } catch (error) {
+            // console.error(error);
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Error',
+            //     text: `Failed to upload photo: ${error.message}`,
+            // });
+        }
+    }
+
+
+
 
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -160,6 +209,10 @@ function VehicleBaru() {
             name: 'Nama Supir',
             selector: row => row.driverName,
         },
+        {
+            name: 'Status',
+            selector: row => row.status === "1" ? <Tag color='green'>Aktif</Tag> : <Tag color='red'>Tidak Aktif</Tag>,
+        },
     ];
 
     const ApiAwal = async (page = 1) => {
@@ -193,6 +246,8 @@ function VehicleBaru() {
                     ...values,
                     id: IdDriver,
                     id_driver: formik.values.id_driver,
+                    id_vendor: formik.values.id_vendor,
+                    // id_jenis_kendaraan: formik.values.id_jenis_kendaraan
                 },
                 {
                     headers: {
@@ -206,6 +261,7 @@ function VehicleBaru() {
                 title: 'Berhasil',
                 text: 'Data berhasil diedit',
             });
+            ApiAwal()
 
         } catch (error) {
             // Tampilkan SweetAlert untuk error
@@ -249,6 +305,7 @@ function VehicleBaru() {
                 tahun_mobil: data.data.data[0].vehilceYear,
                 setFotoDriver: data.data.data[0].vehicleImage,
                 vendor: data.data.data[0].vendor,
+                id_vendor: data.data.data[0].id_vendor,
                 id_driver: data.data.data[0].driverId,
                 jenis_SIM: data.data.data[0]?.jenis_SIM,
                 no_bpkb: data.data.data[0]?.bpkbNumber,
@@ -262,7 +319,8 @@ function VehicleBaru() {
                 panjang: data.data.data[0]?.vehicleLentgth,
                 lebar: data.data.data[0]?.vehicleWidth,
                 tinggi: data.data.data[0]?.vehicleHeight,
-                kapasitas_maks: data.data.data[0]?.maxCapacity
+                kapasitas_maks: data.data.data[0]?.maxCapacity,
+                id_jenis_kendaraan: data.data.data[0]?.id_jenis_kendaraan
 
 
 
@@ -289,9 +347,10 @@ function VehicleBaru() {
                 title: 'Berhasil',
                 text: 'Data kendaraan berhasil ditambahkan',
             });
+            ApiAwal()
 
         } catch (error) {
-            // Tampilkan SweetAlert untuk error
+            console.log(error);
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
@@ -318,7 +377,7 @@ function VehicleBaru() {
         }
     }
 
-    console.log(`ini foto driver`, FotoDriver);
+    console.log(`ini DriverType`, DriverType);
 
     const title = () => {
         if (formik.values.jenis_kepemilikan === "") {
@@ -575,16 +634,20 @@ function VehicleBaru() {
                                             optionFilterProp="children"
                                             id="vendor"
                                             name="vendor"
-                                            onChange={(value) => formik.setFieldValue('vendor', value)}
+                                            onChange={(value, option) => {
+                                                formik.setFieldValue('vendor', option.children); // ini akan mengambil label (children dari option)
+                                                formik.setFieldValue('id_vendor', value); // ini akan mengambil value dari option yang dipilih
+                                            }}
                                             onBlur={formik.handleBlur}
                                             value={formik.values.vendor || ''}
                                         >
                                             {NamaMitraOptions.map((option) => (
-                                                <Select.Option key={option.value} value={option.label}>
+                                                <Select.Option key={option.value} value={option.value}>
                                                     {option.label}
                                                 </Select.Option>
                                             ))}
                                         </Select>
+
                                     </AntForm.Item>
 
                                     <AntForm.Item
@@ -602,15 +665,16 @@ function VehicleBaru() {
                                             id="jenis_kendaraan"
                                             name="jenis_kendaraan"
                                             type="text"
-                                            onChange={(value) => {
+                                            onChange={(value, option) => {
                                                 formik.setFieldValue('jenis_kendaraan', value);
+                                                formik.setFieldValue('id_kendaraan_jenis', parseInt(option.key));
                                                 DriverName(value);
                                             }}
                                             value={formik.values.jenis_kendaraan}
                                             onBlur={formik.handleBlur}
                                         >
                                             {DriverType.map((item) => (
-                                                <Select.Option key={item.tipe} value={item.tipe}>
+                                                <Select.Option key={item.id} value={item.tipe}>
                                                     {item.tipe}
                                                 </Select.Option>
                                             ))}
@@ -634,6 +698,7 @@ function VehicleBaru() {
                                             onChange={(value) => {
                                                 formik.setFieldValue('id_driver', value);
                                             }}
+                                            // value={formik.values.id_driver}
                                             value={formik.values.id_driver}
 
                                             onBlur={formik.handleBlur}
@@ -716,7 +781,10 @@ function VehicleBaru() {
                                             id="merk_mobil"
                                             name="merk_mobil"
                                             type="text"
-                                            onChange={formik.handleChange}
+                                            onChange={e => {
+                                                e.target.value = e.target.value.toUpperCase();
+                                                formik.handleChange(e);
+                                            }}
                                             value={formik.values.merk_mobil}
                                             onBlur={formik.handleBlur}
                                         />
@@ -861,7 +929,7 @@ function VehicleBaru() {
                                     </AntForm.Item>
 
                                     <AntForm.Item
-                                        label="Kapasitas"
+                                        label="Kapasitas (KG)"
                                         required
                                         labelCol={{ span: 24 }}
                                         wrapperCol={{ span: 24 }}
@@ -870,16 +938,16 @@ function VehicleBaru() {
                                         style={{ marginBottom: 2 }}
                                     >
                                         <Input
-                                            id="kapasitas"
-                                            name="kapasitas"
-                                            type="text"
-                                            onChange={formik.handleChange}
-                                            value={formik.values.kapasitas}
-                                            onBlur={formik.handleBlur}
+                                        id="kapasitas"
+                                        name="kapasitas"
+                                        type="number"
+                                        onChange={formik.handleChange}
+                                        value={formik.values.kapasitas}
+                                        onBlur={formik.handleBlur}
                                         />
                                     </AntForm.Item>
                                     <AntForm.Item
-                                        label="Kapasitas Max"
+                                        label="Kapasitas Max (KG)"
                                         required
                                         labelCol={{ span: 24 }}
                                         wrapperCol={{ span: 24 }}
@@ -890,7 +958,7 @@ function VehicleBaru() {
                                         <Input
                                             id="kapasitas_maks"
                                             name="kapasitas_maks"
-                                            type="text"
+                                            type="number"
                                             onChange={formik.handleChange}
                                             value={formik.values.kapasitas_maks}
                                             onBlur={formik.handleBlur}
@@ -908,14 +976,14 @@ function VehicleBaru() {
                                         <Input
                                             id="kubikasi"
                                             name="kubikasi"
-                                            type="text"
+                                            type="number"
                                             onChange={formik.handleChange}
                                             value={formik.values.kubikasi}
                                             onBlur={formik.handleBlur}
                                         />
                                     </AntForm.Item>
                                     <AntForm.Item
-                                        label="Location"
+                                        label="Cabang"
                                         required
                                         labelCol={{ span: 24 }}
                                         wrapperCol={{ span: 24 }}

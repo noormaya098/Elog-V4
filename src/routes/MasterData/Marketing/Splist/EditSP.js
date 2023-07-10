@@ -472,9 +472,9 @@ function EditSP({ alamatInvoice }) {
       // service_type: detailData?.service,
       // id_muat_kota: 3172,
       // id_muat_kota: alamatMuatValue,
-      id_muat_kota: idKota,
+      id_muat_kota: IdBongkarKota,
       // id_tujuan_kota: 3603,
-      id_tujuan_kota: IdBongkarKota,
+      id_tujuan_kota: alamatMuatValue,
       // id_customer: 11,
       id_customer: detailData?.idcustomer,
       id_kendaraan_jenis: KendaraanValue,
@@ -491,7 +491,7 @@ function EditSP({ alamatInvoice }) {
     const Namakendaraan = data.data.data?.jenisKendaraan?.nama_kendaraan_jenis
     // console.log(`apa ini `,KendaraanValue);
     if (valid == undefined) {
-      console.log(`nama`, Namakendaraan)
+    
       setisiTarif(0)
       Swal.fire({
         icon: 'error',
@@ -500,7 +500,7 @@ function EditSP({ alamatInvoice }) {
       })
 
     } else {
-      console.log(`nama`, Namakendaraan)
+      
       return (
         setisiTarif(valid),
         setNameKendaraan(Namakendaraan)
@@ -515,7 +515,7 @@ function EditSP({ alamatInvoice }) {
   const options = detaildestination.map((item, index) => ({
     value: item.id,
     idKota: item.idKota,
-    label: item.pic + "-" + item.address
+    label:"Kota." + item.pic + "-" + item.address
   }));
 
   const EditSPButton = async () => {
@@ -586,7 +586,7 @@ function EditSP({ alamatInvoice }) {
   }))
   // console.log(`detail data`, detailData.detail?.[0].tujuan);
   // const alamatbongkarscroll  =
-
+console.log(`KendaraanModal`,KendaraanModal);
 
   const validationSchema = Yup.object().shape({
     alamatMuat: Yup.string()
@@ -605,7 +605,7 @@ function EditSP({ alamatInvoice }) {
         <Row>
           <EditSPNew />
           <div className="d-flex justify-content-end">
-            {jobdesk != "sales" ? (
+            {jobdesk != "sales" && jobdesk != "operasional"? (
               <>
                 <Button size="sm" onClick={() => tombolApprove()}>
                   Approve
@@ -680,9 +680,10 @@ function EditSP({ alamatInvoice }) {
                             <Form.Label>* Kendaraan</Form.Label>
                             <Select
                               options={KendaraanModalOptions}
-                              onChange={(selectedOption) => {
-                                setKendaraanValue(selectedOption.value);
-                                setNameKendaraan(selectedOption.label);
+                              onChange={(e) => {
+                                setKendaraanValue(e.value);
+                                setNameKendaraan(e.label);
+                                console.log(`KendaraanValue.value`,e);
                               }}
                             />
                             <Form.Select

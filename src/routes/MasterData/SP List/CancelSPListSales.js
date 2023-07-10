@@ -7,15 +7,16 @@ import Baseurl from '../../../Api/BaseUrl';
 
 function CancelSPListSales() {
     const [DataAwal, setDataAwal] = useState("")
-    const [CariSP , setCariSP] = useState("")
+    const [CariSP, setCariSP] = useState("")
+    const [DataPaginations, setDataPaginations] = useState("")
 
     const columns = [
         {
-            name: 'no',
+            name: 'No',
             selector: row => row.no,
         },
         {
-            name: 'sp',
+            name: 'No SP',
             selector: row => row.sp,
         },
         {
@@ -35,6 +36,7 @@ function CancelSPListSales() {
 
                 }
             )
+            setDataPaginations(data.data.data?.totalData)
             setDataAwal(data.data.data.order)
         } catch (error) {
 
@@ -53,10 +55,10 @@ function CancelSPListSales() {
             <Card>
                 <div className='d-flex justify-content-end'>
                     <Row>
-                        <Col sm={6}>
-                            <Input style={{width : "100%"}}
+                        <Col style={{width : "100%"}} sm={6}>
+                            <Input 
                                 placeholder='Cari SP'
-                                onChange={(e)=>setCariSP(e.target.value)}
+                                onChange={(e) => setCariSP(e.target.value)}
                             />
                         </Col>
                     </Row>
@@ -72,9 +74,8 @@ function CancelSPListSales() {
                         <Pagination
                             showSizeChanger
                             onChange={onPaginationChange}
-                            // defaultPageSize={10}
                             size="default"
-                            total={"200"}
+                            total={DataPaginations}
                             defaultCurrent={1}
                         />
                     </div>

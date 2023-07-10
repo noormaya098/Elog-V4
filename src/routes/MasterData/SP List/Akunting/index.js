@@ -3,7 +3,7 @@ import axios from 'axios';
 import DataTable from "react-data-table-component";
 import Baseurl from '../../../../Api/BaseUrl';
 import { Card, Tag, Pagination } from 'antd';
-import { Button, Row, Form, Col } from 'react-bootstrap';
+import { Button, Row, Form, Col, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function Index() {
@@ -34,18 +34,18 @@ function Index() {
     useEffect(() => {
         fetchData();
     }, [search]);
-    // const limit = 10
+    let limit = 1
     const columns = [
         {
             name: "No",
-            selector: (row, index) => row.no,
+            selector: (row, index) => limit++,
             width: "50px",
             wrap: true,
         },
         {
             name: "SP ID",
             selector: (row) => row.sp,
-            width: "150px",
+            width: "200px",
             wrap: true,
         },
         {
@@ -57,13 +57,13 @@ function Index() {
         {
             name: "Service",
             selector: (row) => row.service,
-            width: "100px",
+            width: "150px",
             wrap: true,
         },
         {
             name: "sales Name",
             selector: (row) => row.salesName,
-            width: "100px",
+            width: "150px",
             wrap: true,
         },
         {
@@ -94,64 +94,9 @@ function Index() {
 
                 return <>{displayText}</>;
             },
-            width: "150px",
+            width: "250px",
         },
-        // {
-        //     name: "Detail",
-        //     selector: (row) => (
-        //         <Button size="sm" onClick={() => buttonarahin(row?.idmp)}>
-        //             Detail
-        //         </Button>
-        //     ),
-        // },
-        //   {
-        //     name: "Approve By Ops",
-        //     selector: (row) => {
-        //       const approveact = row.approveOps;
-        //       const dateApproveAct = row.dateApproveOps;
-        //       let displayText =
-        //         approveact === "Y" && dateApproveAct !== "Invalid date" ? (
-        //           <Tag color="green">
-        //             Approve <br /> <small>{dateApproveAct}</small>
-        //           </Tag>
-        //         ) : approveact === "N" && dateApproveAct === "Invalid date" ? (
-        //           <Tag color="yellow">
-        //             Waiting <br /> <small>{dateApproveAct}</small>
-        //           </Tag>
-        //         ) : (
-        //           <Tag color="red">
-        //             Diverted <br /> <small>{dateApproveAct}</small>
-        //           </Tag>
-        //         );
 
-        //       return <>{displayText}</>;
-        //     },
-        //     width: "150px",
-        //   },
-        //   {
-        //     name: "Approve By Purchasing",
-        //     selector: (row) => {
-        //       const approveact = row.approvePurch;
-        //       const dateApproveAct = row.dateApprovePurch;
-        //       let displayText =
-        //         approveact === "Y" && dateApproveAct !== "Invalid date" ? (
-        //           <Tag color="green">
-        //             Approve <br /> <small>{dateApproveAct}</small>
-        //           </Tag>
-        //         ) : approveact === "N" && dateApproveAct === "Invalid date" ? (
-        //           <Tag color="yellow">
-        //             Waiting <br /> <small>{dateApproveAct}</small>
-        //           </Tag>
-        //         ) : (
-        //           <Tag color="red">
-        //             Diverted <br /> <small>{dateApproveAct}</small>
-        //           </Tag>
-        //         );
-
-        //       return <>{displayText}</>;
-        //     },
-        //     width: "150px",
-        //   },
     ];
 
     const buttonarahin = (row) => {
@@ -161,6 +106,7 @@ function Index() {
     const handlePageChange = (page) => {
         fetchData(page);
     }
+
 
 
 
@@ -183,26 +129,28 @@ function Index() {
                 </Row>
                 <Col>
                     {Loading ? "loading gan" : (
-                        <DataTable columns={columns} data={DataAwal}
-                            // pagination // activate pagination
-                            // paginationServer // pagination on server side
-                            onChangePage={handlePageChange} // handle page change
-                            paginationTotalRows={totalRows} // total number of rows
+                        <DataTable
+                            columns={columns}
+                            data={DataAwal}
+                            onChangePage={handlePageChange}
+                            paginationTotalRows={totalRows}
                             onRowClicked={buttonarahin}
                         />
+
                     )}
                     <div className='d-flex justify-content-end mt-3'>
 
-                    <Pagination
-                        showSizeChanger
-                        // onShowSizeChange={onShowSizeChange}
-                        onChange={handlePageChange}
-                        defaultCurrent={1}
-                        total={500}
+                        <Pagination
+                            showSizeChanger
+                            // onShowSizeChange={onShowSizeChange}
+                            onChange={handlePageChange}
+                            defaultCurrent={1}
+                            total={500}
                         />
-                        </div>
+                    </div>
                 </Col>
             </Card>
+
         </div>
     );
 }

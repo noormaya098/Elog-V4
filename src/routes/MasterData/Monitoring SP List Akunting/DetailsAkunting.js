@@ -274,7 +274,7 @@ function DetailsAkunting() {
     StausApprove()
   }, [])
 
-  console.log (`statusnya adalah`, actSalesStatus)
+  console.log(`statusnya adalah`, actSalesStatus)
 
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [commentReject, setCommentReject] = useState('')
@@ -346,7 +346,7 @@ function DetailsAkunting() {
                 </Select>
               </Col>
               <div className="mt-3" onClick={() => setShowCommentInput(true)}>
-                <i>Tidak ada Comment? Klik di sini untuk menambahkan</i>
+                <i>Tidak ada Comment?<span><a style={{ color: 'blue' }}>Klik di sini</a></span> untuk menambahkan</i>
               </div>
               {showCommentInput && (
                 <Col sm={12} className="mt-2">
@@ -428,20 +428,21 @@ function DetailsAkunting() {
             {jobdesk === "sales" && actSalesStatus === "N" ? (
               <>
                 <Button size="sm" onClick={() => setModal1Open(true)} variant="danger">
-                  Reject SP 
+                  Reject SP Sales
                 </Button>
                 <Button size="sm" onClick={pindahedit} variant="primary">
                   Edit SJ
                 </Button>
               </>
-            ) : <>
+            ) : ""}
+            {/* ? jobdesk === "sales" && actSalesStatus === "Y" : <>
               <Button size="sm" disabled onClick={() => setModal1Open(true)} variant="danger">
-                Reject SP 
+                Reject SP Sales
               </Button>
               <Button size="sm" onClick={pindahedit} variant="primary">
                 Edit SJ
               </Button>
-            </>}
+            </> : "" */}
           </div>
 
           {/* <Modal> */}
@@ -479,6 +480,10 @@ function DetailsAkunting() {
                 <Form.Label>Jenis Barang</Form.Label>
                 <Form.Control disabled value={detailData?.jenisBarang} />
               </Form.Group>
+              <Form.Group>
+                <Form.Label>Marketing</Form.Label>
+                <Form.Control disabled value={detailData?.marketing} />
+              </Form.Group>
 
             </Form>
           </Col>
@@ -493,12 +498,12 @@ function DetailsAkunting() {
                 <Form.Control disabled value={detailData?.customer} />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Pickup Date</Form.Label>
+                <Form.Label>Tgl Pickup</Form.Label>
                 <Form.Control disabled value={detailData?.pickup_date} />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Order Date</Form.Label>
-                <Form.Control disabled value={detailData?.order_date} />
+                <Form.Label>Tgl Bongkar</Form.Label>
+                <Form.Control disabled value={detailData?.bongkar_date} />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Asuransi</Form.Label>

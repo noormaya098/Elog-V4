@@ -19,7 +19,7 @@ function SPList() {
   const [spId, setSpId] = useState("");
   const [pageSize, setPageSize] = useState(10);
 
-  const dataapi = async (page) => {
+  const dataapi = async (page=1) => {
     const isi = await axios.get(
       `${Baseurl}sp/get-SP?limit=${pageSize}&page=${page}&keyword=${spId}`,
       {
@@ -43,10 +43,9 @@ function SPList() {
     dataapi(pagination.currentPage, spId);
   }, [spId , pageSize]);
 
-  const onPaginationChange = (page, newPageSize) => {
-    console.log(page, newPageSize);
+  const onPaginationChange = (page) => {
+    console.log(page, );
     // Perbarui state pageSize dengan nilai baru
-    setPageSize(newPageSize);
     // Panggil dataapi dengan page baru
     dataapi(page);
   };
@@ -121,7 +120,7 @@ function SPList() {
   const columns = [
     {
       name: "No",
-      selector: (row) => counter ++,
+      selector: (row) => row.no,
       width: "70px",
       wrap: true,
     },
@@ -214,15 +213,6 @@ function SPList() {
     // history.push(`/masterdata/splistdetailakunting/${idmp}`);
   };
 
-  const handlePageChange = async (page) => {
-    setPagination({ ...pagination, currentPage: page });
-    await dataapi(page, spId);
-  };
-
-  const handleSpIdChange = (e) => {
-    setSpId(e.target.value);
-  };
-
   return (
     <div>
       <Card>
@@ -255,10 +245,10 @@ function SPList() {
             <div className="d-flex justify-content-end mt-3">
             <Pagination
               showSizeChanger
-              onChange={onPaginationChange}
+              onChange={()=>onPaginationChange()}
               // defaultPageSize={10}
               size="default"
-              total={TotalPage}
+              total={500}
               defaultCurrent={1}
             />
              </div>
