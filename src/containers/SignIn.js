@@ -63,19 +63,19 @@ const SignIn = () => {
               className="gx-signin-form gx-form-row0"
             >
               <Form.Item
-                initialValue="username"
+                initialValue=""
                 rules={[
-                  { required: true, message: "The input is not valid E-mail!" },
+                  { required: true, message: "Masukkan UserName!" },
                 ]}
                 name="username"
               >
-                <Input placeholder="text" />
+                <Input type="text" placeholder="Masukkan UserName" />
               </Form.Item>
               <Form.Item
                 initialValue=""
                 placeholder="password"
                 rules={[
-                  { required: true, message: "Please input your Password!" },
+                  { required: true, message: "Masukkan Password!" },
                 ]}
                 name="password"
               >

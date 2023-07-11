@@ -72,7 +72,9 @@ function VehicleBaru() {
         // warna_plat: Yup.string().required('Warna Plat wajib diisi'),
         merk_mobil: Yup.string().required('Merk Mobil wajib diisi')
             .transform(value => (value ? value.toUpperCase() : '')),
-        // tahun_mobil: Yup.number().required('Tahun Mobil wajib diisi').integer('Tahun Mobil harus berupa angka'),
+        tahun_mobil: Yup.string()
+            .required('Tahun Mobil wajib diisi')
+            .max(4, 'Tahun Mobil Tidak Boleh Lebih dari 4 Digit'),
         // panjang: Yup.number().required('Panjang Kendaraan wajib diisi').integer('Panjang Kendaraan harus berupa angka'),
         // lebar: Yup.number().required('Lebar Kendaraan wajib diisi').integer('Lebar Kendaraan harus berupa angka'),
         // tinggi: Yup.number().required('Tinggi Kendaraan wajib diisi').integer('Tinggi Kendaraan harus berupa angka'),
@@ -169,7 +171,68 @@ function VehicleBaru() {
         }
     }
 
+    const ModalOFFVehicle = async (vehicleId) => {
+        try {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin mengubah status driver menjadi "Tidak Ready"?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak',
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const data = await axios.post(
+                        `${Baseurl}vehicle/off-vehicle`,
+                        {
+                            id_vehicle: vehicleId,
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: localStorage.getItem('token'),
+                            },
+                        }
+                    );
+                }
+                ApiAwal()
+            });
+        } catch (error) {
+            // Handle error
+        }
+    };
 
+    
+    const ModalONVehicle = async (vehicleId) => {
+        try {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Apakah Anda yakin ingin mengubah status driver menjadi "Ready"?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Tidak',
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const data = await axios.post(
+                        `${Baseurl}vehicle/on-vehicle`,
+                        {
+                            id_vehicle: vehicleId,
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: localStorage.getItem('token'),
+                            },
+                        }
+                    );
+                }
+                ApiAwal()
+            });
+        } catch (error) {
+            // Handle error
+        }
+    };
 
 
     const handleCancel = () => {
@@ -180,6 +243,7 @@ function VehicleBaru() {
         {
             name: 'No',
             selector: row => row.no,
+            width:"80px",
         },
         {
             name: 'Image',
@@ -211,9 +275,38 @@ function VehicleBaru() {
         },
         {
             name: 'Status',
-            selector: row => row.status === "1" ? <Tag color='green'>Aktif</Tag> : <Tag color='red'>Tidak Aktif</Tag>,
+            selector: row => row.status === "1" ? "Aktif" : "Tidak Aktif",
+            cell: row => (
+                <div>
+                    {row.status === "1" ? (
+                        <>
+                            <Button
+                                size="small"
+                                type="primary"
+                                className="mt-3"
+
+                                onClick={() => ModalOFFVehicle(row.vehicleId)}
+                            >
+                                Driver Ready
+                            </Button>
+                        </>
+                    ) :
+                        <>
+                            <Button
+                                size="small"
+                                type="danger"
+                                className="mt-3"
+                                onClick={() => ModalONVehicle(row.vehicleId)}
+                            >
+                                Driver Tidak Ready
+                            </Button>
+
+                        </>}
+                </div>
+            )
         },
     ];
+    const [TotalPage , setTotalPage]=useState("")
 
     const ApiAwal = async (page = 1) => {
         try {
@@ -224,6 +317,7 @@ function VehicleBaru() {
                 }
             });
             setDataAwal(data.data.data.order)
+            setTotalPage(data.data.data?.totalData)
         } catch (error) {
 
         }
@@ -805,7 +899,7 @@ function VehicleBaru() {
                                         <Input
                                             id="tahun_mobil"
                                             name="tahun_mobil"
-                                            type="text"
+                                            type="number"
                                             onChange={formik.handleChange}
                                             value={formik.values.tahun_mobil}
                                             onBlur={formik.handleBlur}
@@ -938,12 +1032,12 @@ function VehicleBaru() {
                                         style={{ marginBottom: 2 }}
                                     >
                                         <Input
-                                        id="kapasitas"
-                                        name="kapasitas"
-                                        type="number"
-                                        onChange={formik.handleChange}
-                                        value={formik.values.kapasitas}
-                                        onBlur={formik.handleBlur}
+                                            id="kapasitas"
+                                            name="kapasitas"
+                                            type="number"
+                                            onChange={formik.handleChange}
+                                            value={formik.values.kapasitas}
+                                            onBlur={formik.handleBlur}
                                         />
                                     </AntForm.Item>
                                     <AntForm.Item
@@ -1018,7 +1112,7 @@ function VehicleBaru() {
                         showSizeChanger
                         onChange={onShowSizeChange}
                         defaultCurrent={1}
-                        total={500}
+                        total={TotalPage}
                     />
                 </div>
             </Card>

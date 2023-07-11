@@ -741,6 +741,8 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
   }
 
 
+
+
   return (
     <>
       <Row>
@@ -1630,7 +1632,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 : (StatusApproveAct === 'N' && TanggalACT3 === null) ?
                   <Alert type="info" message="Waiting Akunting" banner /> :
                   (StatusApproveAct === 'N' && TanggalACT3 !== null) ?
-                    <Alert type="error" message="Diverted Akunting" banner /> :
+                    <Alert type="error" message="Reject Akunting" banner /> :
                     null
               }
 
@@ -1639,7 +1641,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 : (StatusApproveOpt === 'N' && TanggalACT4 === null) ?
                   <Alert type="info" message="Waiting Operasional" banner /> :
                   (StatusApproveOpt === 'N' && TanggalACT4 !== null) ?
-                    <Alert type="error" message="Diverted Operasional" banner /> :
+                    <Alert type="error" message="Reject Operasional" banner /> :
                     null}
 
               {(StatusPurchasing === 'Y' && TanggalACT5 != null) ?
@@ -1647,7 +1649,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 : (StatusPurchasing === 'N' && TanggalACT5 === null) ?
                   <Alert type="info" message="Waiting Purchasing" banner /> :
                   (StatusPurchasing === 'N' && TanggalACT5 === null) ?
-                    <Alert type="error" message="Diverted Purchasing" banner /> :
+                    <Alert type="error" message="Reject Purchasing" banner /> :
                     null}
 
               {(jobdesk === "operasional") &&
@@ -2251,21 +2253,22 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                               </>
                             )}</td>
 
-                            {(jobdesk == "operasional" && data.supirId === 0 && data.unitId === 0) ? (
+                            {IsiKomenRejectSP === "Tidak Menggunakan unit" ? (
+                              <Alert type="error" message="SP Sudah Di Reject" banner />
+                            ) : (jobdesk === "operasional" && data.supirId === 0 && data.unitId === 0) ? (
                               <Button
                                 size="sm"
                                 variant="primary"
                                 onClick={() => {
                                   handleShow(data.idmpd);
                                   approvebaru(data.idmpd);
-
                                 }}
                                 className="mt-2"
                                 disabled={LoadingMuterMuter}
                               >
                                 Approve
                               </Button>
-                            ) : jobdesk === "operasional" ? (
+                            ) : (jobdesk === "operasional" && data.supirId !== 0 && data.unitId !== 0) ? (
                               <Button
                                 disabled
                                 size="sm"
@@ -2278,9 +2281,11 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                               >
                                 Approved
                               </Button>
-                            ) :
-                              ""
+                            ) : null
                             }
+
+
+
                             {/* 
                             {(jobdesk == "operasional" && data.supirId === 0 && data.unitId === 0
                               ? <p>belum di approve</p> : (jobdesk === "operasional" && StatusApproveOpt === "N" && ("Reject")) )
@@ -2355,7 +2360,7 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 <td colSpan={9} width="150px" className="text-right">
                   Sub Total
                 </td>
-                <td width="150px">Rp {IsiDataSPSemua?.totalMuat?.toLocaleString("id-ID", {
+                <td width="150px"> {IsiDataSPSemua?.subTotal?.toLocaleString("id-ID", {
                   style: "currency",
                   currency: "IDR",
                 })}</td>
