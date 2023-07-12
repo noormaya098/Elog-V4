@@ -164,7 +164,7 @@ const App = ({ match }) => (
       />
       <Route
         path={`${match.url}mastermitra`}
-        component={asyncComponent(() => import("./CopyData/MasterMitraOld/Index"))}
+        component={asyncComponent(() => import("./CopyData/MasterMitraOld/"))}
       />
       <Route
         path={`${match.url}mastermitraadd`}
