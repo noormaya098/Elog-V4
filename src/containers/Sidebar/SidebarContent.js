@@ -104,7 +104,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     onClick={() => createap()}
                     variant="warning"
                     >
-                    ADD AP Maya
+                    ADD AP
                   </Button>
                 </div>
                     </>
