@@ -89,7 +89,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                   onClick={() => createar()}
                   variant="#00a65a"
                 >
-                  ADD AR
+                  ADD ARS
                 </Button>
               </div>
               ) : (
