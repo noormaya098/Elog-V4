@@ -13,7 +13,7 @@ import {
 import IntlMessages from "../../util/IntlMessages";
 import { useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
-import  {CarTwoTone , SmileTwoTone , ScheduleTwoTone ,ProfileTwoTone ,CheckSquareTwoTone}  from '@ant-design/icons';
+import { CarTwoTone, SmileTwoTone, ScheduleTwoTone, ProfileTwoTone, CheckSquareTwoTone } from '@ant-design/icons';
 const { SubMenu } = Menu;
 
 const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
@@ -42,6 +42,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   const createar = () => {
     history.push(`/createar`);
   };
+  const createap = () => {
+    history.push(`/akunting/tambahdataap`);
+  };
 
   return (
     <>
@@ -64,34 +67,47 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
             mode="inline"
           >
             <MenuItemGroup key="main">
-              {jobdesk === "sales" ?( 
-             
-              <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
-                <Button
-                  size="lg"
-                  style={{width:180}}
-                  className="d-flex align-items-center justify-content-center"
-                  onClick={() =>  createsp()}
-                  variant="warning"
-                >
-                  ADD SP
-                </Button>
-              </div>
+              {jobdesk === "sales" ? (
+
+                <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
+                  <Button
+                    size="lg"
+                    style={{ width: 180 }}
+                    className="d-flex align-items-center justify-content-center"
+                    onClick={() => createsp()}
+                    variant="warning"
+                  >
+                    ADD SP
+                  </Button>
+                </div>
               ) : (
                 <></>
               )}
-              {jobdesk === "akunting" ?( 
-              <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
-                <Button
-                  size="lg"
-                  style={{width:180 , backgroundColor : "#00a65a" , color : "white" , marginTop : "-35px"}}
-                  className="d-flex align-items-center justify-content-center"
-                  onClick={() => createar()}
-                  variant="#00a65a"
-                >
-                  ADD ARS
-                </Button>
-              </div>
+              {jobdesk === "akunting" ? (
+                <>
+                <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
+                  <Button
+                    size="lg"
+                    style={{ width: 180, backgroundColor: "#00a65a", color: "white", marginTop: "-35px" }}
+                    className="d-flex align-items-center justify-content-center"
+                    onClick={() => createar()}
+                    variant="#00a65a"
+                    >
+                    ADD AR
+                  </Button>
+                </div>
+                <div className="d-flex justify-content-center gx-sidebar-content w-100 mt-5 text-center ">
+                  <Button
+                    size="lg"
+                    style={{ width: 180,  color: "white", marginTop: "-35px" }}
+                    className="d-flex align-items-center justify-content-center"
+                    onClick={() => createap()}
+                    variant="warning"
+                    >
+                    ADD AP
+                  </Button>
+                </div>
+                    </>
               ) : (
                 <></>
               )}
@@ -129,31 +145,31 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     <Link to="/masterdata/purchasing/driver">
                       {/* <i className="icon icon-widgets" /> */}
                       <SmileTwoTone />
-                        <IntlMessages id="sidebar.driver" />
+                      <IntlMessages id="sidebar.driver" />
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="vehicle">
                     <Link to="/masterdata/vehicle">
-                    <CarTwoTone />
-                        <IntlMessages id="sidebar.vehicle" />
+                      <CarTwoTone />
+                      <IntlMessages id="sidebar.vehicle" />
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="monitoringVehicle">
                     <Link to="/masterdata/monitoring">
-                    <ScheduleTwoTone />
-                        <IntlMessages id="Monitoring Vehicle" />
+                      <ScheduleTwoTone />
+                      <IntlMessages id="Monitoring Vehicle" />
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="New SP">
                     <Link to="/masterdata/newsplist">
-                    <CheckSquareTwoTone />
-                        <IntlMessages id="Approve SP" />
+                      <CheckSquareTwoTone />
+                      <IntlMessages id="Approve SP" />
                     </Link>
                   </Menu.Item>
                   <Menu.Item key="SP List">
                     <Link to="/masterdata/splist">
-                    <ProfileTwoTone />
-                        <IntlMessages id="SP List" />
+                      <ProfileTwoTone />
+                      <IntlMessages id="SP List" />
                     </Link>
                   </Menu.Item>
                 </SubMenu>
@@ -188,62 +204,132 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               )}
               {jobdesk.toLowerCase() === "akunting" ? (
                 <>
-                <SubMenu key="monitoring" title="Akunting">
-                  <Menu.Item key="SP Lists All">
-                    <Link to="/akunting/splistakuntingbaru">
+                  <SubMenu key="monitoring" title="Akunting">
+                    <Menu.Item key="SP Lists All">
+                      <Link to="/akunting/splistakuntingbaru">
+                        <i className="icon icon-widgets" />
+                        <span>Approve SP</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SP Lists">
+                      <Link to="/akunting/splistwaitingakunting">
+                        <i className="icon icon-widgets" />
+                        <span>Waiting SP Akunting</span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
+                  <SubMenu key="ArList" title="AR List">
+                    <Menu.Item key="SP Lists All">
+                      <Link to="/akunting/ar/ar">
+                        <i className="icon icon-widgets" />
+                        <span>AR List ALL</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SP Lists All">
+                      <Link to="/akunting/ar/ar">
+                        <i className="icon icon-widgets" />
+                        <span>List Invoice AR</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SP Lists All">
+                      <Link to="/akunting/ar/ar">
+                        <i className="icon icon-widgets" />
+                        <span>SJ no AR</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SP Lists All">
+                      <Link to="/akunting/ar/ar">
+                        <i className="icon icon-widgets" />
+                        <span>Penerimaan SJ</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="SP Lists All">
+                      <Link to="/akunting/ar/ar">
+                        <i className="icon icon-widgets" />
+                        <span>Report Pembayaran Customer</span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
+                  <SubMenu key="Payment" title="Payment">
+                    <Menu.Item key="Payment">
+                      <Link to="/akunting/ar/reportpartners/reportpenerimaaninvoice">
+                        <i className="icon icon-widgets" />
+                        <span>Penerimaan INV</span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu><SubMenu key="Masters" title="Masters">
+                    <Menu.Item key="Master Mitra">
+                      <Link to="/mastermitra">
+                        <i className="icon icon-widgets" />
+                        <span>Master Mitra</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Masters">
+                      <Link to="/masteralamat">
+                        <i className="icon icon-widgets" />
+                        <span>Data Customer</span>
+                      </Link>
+                    </Menu.Item>
+
+                    <Menu.Item key="Master Kecamatan">
+                      <Link to="/masterkecamatan">
+                        <i className="icon icon-widgets" />
+                        <span>Data Kecamatan</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Master Kota">
+                      <Link to="/masterkota">
+                        <i className="icon icon-widgets" />
+                        <span>Data Kota</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Master Provinsi">
+                      <Link to="/masterprovinsi">
+                        <i className="icon icon-widgets" />
+                        <span>Data Provinsi</span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
+
+                  <SubMenu key="AP List" title="AP List">
+                    <Menu.Item key="SP_AP_LIST">
+                      <Link to="/akunting/ap/">
+                        <i className="icon icon-widgets" />
+                        <span>AP List ALL</span>
+                      </Link>
+                    </Menu.Item>
+
+
+
+                    {/* <Menu.Item key="SP_AP_LIST">
+                    <Link to="/akunting/apaddon">
                       <i className="icon icon-widgets" />
-                      <span>Approve SP</span>
+                      <span>AP AddOn</span>
                     </Link>
-                  </Menu.Item>
-                  <Menu.Item key="SP Lists">
-                    <Link to="/akunting/splistwaitingakunting">
-                      <i className="icon icon-widgets" />
-                      <span>Waiting SP Akunting</span>
-                    </Link>
-                  </Menu.Item>
-                </SubMenu>
-                <SubMenu key="ArList" title="AR List">
-                  <Menu.Item key="SP Lists All">
-                    <Link to="/akunting/ar/ar">
-                      <i className="icon icon-widgets" />
-                      <span>AR List ALL</span>
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="SP Lists All">
-                    <Link to="/akunting/ar/ar">
-                      <i className="icon icon-widgets" />
-                      <span>List Invoice AR</span>
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="SP Lists All">
-                    <Link to="/akunting/ar/ar">
-                      <i className="icon icon-widgets" />
-                      <span>SJ no AR</span>
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="SP Lists All">
-                    <Link to="/akunting/ar/ar">
-                      <i className="icon icon-widgets" />
-                      <span>Penerimaan SJ</span>
-                    </Link>
-                  </Menu.Item>
-                  <Menu.Item key="SP Lists All">
-                    <Link to="/akunting/ar/ar">
-                      <i className="icon icon-widgets" />
-                      <span>Report Pembayaran Customer</span>
-                    </Link>
-                  </Menu.Item>
-                </SubMenu>
-                <SubMenu key="Payment" title="Payment">
-                  <Menu.Item key="Payment">
-                    <Link to="/akunting/ar/reportpartners/reportpenerimaaninvoice">
-                      <i className="icon icon-widgets" />
-                      <span>Penerimaan INV</span>
-                    </Link>
-                  </Menu.Item>
-                 
-                </SubMenu>
+                  </Menu.Item> */}
+                  </SubMenu>
+                  <SubMenu key="Tarif" title="Tarif">
+                    <Menu.Item key="Tarif Mitra">
+                      <Link to="/tarifmitra">
+                        <i className="icon icon-widgets" />
+                        <span>Tarif Mitra</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Tarif Eureka">
+                      <Link to="/tarif_eureka">
+                        <i className="icon icon-widgets" />
+                        <span>Tarif Eureka</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Tarif Customer">
+                      <Link to="/pelanggantarif">
+                        <i className="icon icon-widgets" />
+                        <span>Tarif Customer</span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
                 </>
+
               ) : null}
 
               {jobdesk === "purchasing" ? (

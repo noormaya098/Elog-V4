@@ -101,6 +101,152 @@ const App = ({ match }) => (
           import("./MasterData/SP List/Akunting/ARList/DetailAR")
         )}
       />
+       <Route
+        path={`${match.url}akunting/ap/`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/APList/APListALL")
+        )}
+      />
+      <Route
+        path={`${match.url}masteralamat`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterAlamat/index")
+        )}
+      />
+      <Route
+        path={`${match.url}masteralamatadd`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterAlamat/add")
+        )}
+      />
+      <Route
+        path={`${match.url}detailcustomer`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterAlamat/detail")
+        )}
+      />
+      <Route
+        path={`${match.url}editcustomer`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterAlamat/edit")
+        )}
+      />
+      <Route
+        path={`${match.url}masterkecamatan`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterKecamatan/index")
+        )}
+      />
+      <Route
+        path={`${match.url}masterkota`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterKota/index")
+        )}
+      />
+      <Route
+        path={`${match.url}masterprovinsi`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterProvinsi/index")
+        )}
+      />
+      <Route
+        path={`${match.url}akunting/tambahdataap`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/APList/TambahDataAP")
+        )}
+      />
+      <Route
+        path={`${match.url}akunting/apaddon`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/APList/APAddOn")
+        )}
+      />
+      <Route
+        path={`${match.url}akunting/editapplist`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/APList/EditAPList")
+        )}
+      />
+      <Route
+        path={`${match.url}mastermitra`}
+        component={asyncComponent(() => import("./CopyData/MasterMitraOld/Index"))}
+      />
+      <Route
+        path={`${match.url}mastermitraadd`}
+        component={asyncComponent(() => import("./CopyData/MasterMitra/add"))}
+      />
+      <Route
+        path={`${match.url}mastermitradetaill`}
+        component={asyncComponent(() => import("./CopyData/MasterMitraOld/DetailMitra"))}
+      />
+
+      <Route
+        path={`${match.url}tarifmitra`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifMitra/index")
+        )}
+      />
+      <Route
+        path={`${match.url}tarifmitradetail`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifMitra/detail")
+        )}
+      />
+      <Route
+        path={`${match.url}tarifmitracreate`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifMitra/create")
+        )}
+      />
+      <Route
+        path={`${match.url}tarifmitraedit`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifMitra/edit")
+        )}
+      />
+      <Route
+        path={`${match.url}tarif_eureka`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifEureka/index")
+        )}
+      />
+      <Route
+        path={`${match.url}tarif_eureka_edit`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifEureka/edit")
+        )}
+      />
+      <Route
+        path={`${match.url}tarif_eurekacreate`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifEureka/create")
+        )}
+      />
+      
+      <Route
+        path={`${match.url}pelanggantarif`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifPelanggan/index")
+        )}
+      />
+      <Route
+        path={`${match.url}pelanggantarifedit`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifPelanggan/edit")
+        )}
+      />
+      <Route
+        path={`${match.url}pelanggantarifcerate`}
+        component={asyncComponent(() =>
+          import("./CopyData/TarifPelanggan/create")
+        )}
+      />
+      <Route
+        path={`${match.url}lostsalee`}
+        component={asyncComponent(() =>
+          import("./CopyData/LoseSales/index")
+        )}
+      />
       <Route
         path={`${match.url}akunting/ar/edits/:no`}
         component={asyncComponent(() =>
