@@ -104,7 +104,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     onClick={() => createap()}
                     variant="warning"
                     >
-                    ADD AP AJA 
+                    ADD AP
                   </Button>
                 </div>
                     </>
