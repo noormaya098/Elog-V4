@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Row, Col, Form, Button } from "react-bootstrap";
+import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
 import { Checkbox, notification, Form as FormAntd, Input } from "antd";
 import * as Yup from "yup";
 import { httpClient } from "../../../../Api/Api";
 import { useFormik } from "formik";
 
 function DataProfile({ mitraId, onSubmit }) {
+  const [order, setOrder] = useState([]);
+  const [detailSp, setDetailSp] = useState([]);
   const id_mitras = mitraId;
   const [datamiTraProfile, setDataMitraProfile] = useState([]);
   const router = useHistory();
   const formik = useFormik({
     initialValues: {
+      nama_perusahaan: "",
       id_mitra: id_mitras || "",
       kode_mitra: "",
       kode: "",
@@ -147,9 +150,44 @@ function DataProfile({ mitraId, onSubmit }) {
           .then(({ data }) => {
             if (data.status.code === 200) {
               setDataMitraProfile(data.data);
-              formik.setValues({
-                namamitra: data.data.nama_mitra,
-              });
+              setOrder(data);
+              setTimeout(() => {
+                formik.setFieldValue("nama_mitra", data.data.nama_mitra);
+                formik.setFieldValue("kode_mitra", data.data.kode_mitra);
+                formik.setFieldValue("kota", data.data.alamat_kantor);
+                formik.setFieldValue("jenis_barang", data.data.jenis_barang);
+                formik.setFieldValue("kode_customer", data.data.kode_customer);
+                formik.setFieldValue("officer_number", data.data.telepon);
+                formik.setFieldValue("nama_perusahaan", data.data.nama_perusahaan);
+                formik.setFieldValue("service", data.service);
+                formik.setFieldValue("order_date", data.order_date);
+                formik.setFieldValue("pickupDate", data.pickup_date);
+                formik.setFieldValue("hp", data.hp);
+                formik.setFieldValue("email", data.data.email);
+                formik.setFieldValue("telpon", data.data.telepon);
+                formik.setFieldValue("kota", data.data.alamat_kantor);
+                formik.setFieldValue("jenis_barang", data.data.jenis_barang);
+                formik.setFieldValue("kode_customer", data.data.kode_customer);
+                formik.setFieldValue("officer_number", data.data.officer_number);
+                formik.setFieldValue("nama_perusahaan", data.data.nama_perusahaan);
+                formik.setFieldValue("service", data.service);
+                formik.setFieldValue("paymentoftype", data.paymentoftype);
+                formik.setFieldValue("bankname", data.data.nama_bank);
+                formik.setFieldValue("accountname", data.data.nama_akun);
+                formik.setFieldValue("accountnumber", data.data.no_rek);
+                formik.setFieldValue("alamat_npwp", data.data.alamat_npwp);
+                formik.setFieldValue("mata_uang", data.data.mata_uang);
+                formik.setFieldValue("tahun_berdiri", data.data.tahun_berdiri);
+                formik.setFieldValue("tgl_berdiri", data.data.tgl_berdiri);
+                formik.setFieldValue("npwp", data.data.npwp);
+                formik.setFieldValue("alamat_kantor", data.data.alamat_kantor);
+                formik.setFieldValue("telepon", data.data.telepon);
+                formik.setFieldValue("hp", data.data.hp);
+                formik.setFieldValue("typeof", data.data.typeof);
+                formik.setFieldValue("fax", data.data.fax);
+                formik.setFieldValue("email", data.data.email);
+                setDetailSp(data.detail_sp);
+              }, 1000);
             }
           })
           .catch(function (error) {
@@ -192,7 +230,7 @@ function DataProfile({ mitraId, onSubmit }) {
 
   return (
     <div>
-      <FormAntd
+      {/* <FormAntd
         name="basic"
         labelCol={{
           span: 8,
@@ -203,10 +241,11 @@ function DataProfile({ mitraId, onSubmit }) {
         style={{
           maxWidth: 600,
         }}
-        // initialValues={{
-        //   remember: true,
-        //   namamitra: "",
-        // }}
+        initialValues={{
+          remember: true,
+          namamitra: "",
+          nama_perusahaan:"",
+        }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
@@ -223,6 +262,17 @@ function DataProfile({ mitraId, onSubmit }) {
         >
           <Input  value={formik.values.namamitra} />
         </FormAntd.Item>
+        <Form.Group style={{ marginBottom: "10px" }}>
+                <FormAntd.Item name="nama_perusahaan">Customer Name</FormAntd.Item>
+               
+                  <Input
+                    name="nama_perusahaan"
+                    value={formik.values.nama_perusahaan}
+                    onChange={formik.handleChange}
+                    isInvalid={!!formik.errors.nama_perusahaan}
+                  />
+         
+              </Form.Group>
 
         <FormAntd.Item
           wrapperCol={{
@@ -230,11 +280,13 @@ function DataProfile({ mitraId, onSubmit }) {
             span: 16,
           }}
         >
+
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
         </FormAntd.Item>
-      </FormAntd>
+      
+      </FormAntd> */}
 
       <br />
       <h5>
@@ -244,7 +296,7 @@ function DataProfile({ mitraId, onSubmit }) {
         </span>
       </h5>
       <br />
-      <Row className="align-items-center">
+      <Row className="align-items-center"> 
         <Col sm={2}>
           <Form.Label>
             <b>MITRA CODE</b>
@@ -902,7 +954,7 @@ function DataProfile({ mitraId, onSubmit }) {
       <br />
       <hr />
       <br />
-      <Button variant="primary" onClick={handleSubmit}>
+      <Button variant="primary" onClick={formik.handleSubmit}>
         Save Changes
       </Button>
     </div>

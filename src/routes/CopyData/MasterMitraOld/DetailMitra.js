@@ -6,6 +6,7 @@ import FormDataDetailMitra from "./Form/DataProfile";
 import DataReferensi from "./Form/DataReferensi";
 import DataKeuangan from "./Form/DataKeuangan";
 import PIC from "./Form/PIC";
+import DataBaru from "./Form/Databaru";
 // import Report from "./Form/Report";
 export default function DetailMitra() {
   const url = window.location.href;
@@ -21,8 +22,11 @@ export default function DetailMitra() {
               id="noanim-tab-example"
               className="mb-3 d-flex justify-content-end"
             >
-              <Tab eventKey="home" title="DATA PROFILE">
+              {/* <Tab  eventKey="home" title="DATA PROFILE">
                 <FormDataDetailMitra mitraId={mitraId} />
+              </Tab> */}
+              <Tab eventKey="home" title="DATA BARU">
+                <DataBaru mitraId={mitraId} />
               </Tab>
               <Tab eventKey="profile" title="DATA REFERENSI">
                 <DataReferensi mitraId={mitraId} />

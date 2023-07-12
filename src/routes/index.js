@@ -179,6 +179,10 @@ const App = ({ match }) => (
         path={`${match.url}mastermitradetaill`}
         component={asyncComponent(() => import("./CopyData/MasterMitraOld/DetailMitra"))}
       />
+      <Route
+        path={`${match.url}mastermitradetaillnew`}
+        component={asyncComponent(() => import("./CopyData/MasterMitraOld/Form/Databaru"))}
+      />
 
       <Route
         path={`${match.url}tarifmitra`}
