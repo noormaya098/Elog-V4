@@ -33,14 +33,14 @@ function SJ() {
   }))
 
   const [KodeCabangValue, setKodeCabangValue] = useState([])
-  const [NamaMitraValue, setNamaMitraValue] = useState("")
-  const [NamaMitraValue2, setNamaMitraValue2] = useState("")
-
-  const dataapi = async (page = 1, size = 10) => {
+  const [selectedMitra, setSelectedMitra] = useState([])
+  const [BusetApi, setBusetApi] = useState("")
+  const [bubrenchApi, setbubrenchApi] = useState("")
+  const dataapi = async (page = 1, size = 10 , value="") => {
     try {
       setLoading(true)
       const isi = await axios.get(
-        `${Baseurl}sm/get-sm?limit=${size}&page=${page}&keyword=${search}&kodeCabang=${KodeCabangValue}&mitra1=${NamaMitraValue[0]}&mitra2=${NamaMitraValue[1]}&mitra3=${NamaMitraValue[2]}`,
+        `${Baseurl}sm/get-sm?limit=${size}&page=${page}&keyword=${search}&kodeCabang=${KodeCabangValue}&mitra1=${selectedMitra[0]}&mitra2=${selectedMitra[1]}&mitra3=${selectedMitra[2]}&id_bu=${BusetApi}&id_bu_brench=${bubrenchApi}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function SJ() {
     dataapi()
     // dataapi(pagination.currentPage);
     SMFilter()
-  }, [search, KodeCabangValue]);
+  }, [search, KodeCabangValue , BusetApi , bubrenchApi,selectedMitra]);
 
   const columns = [
     {
@@ -140,8 +140,28 @@ function SJ() {
       width: "230px",
     },
     {
-      name: "Tanggal Muat",
+      name: "Tanggal PickUp",
       selector: (row) => row?.pickupDate === "Invalid date" ? "-" : row?.pickupDate,
+      width: "150px",
+    },
+    {
+      name: "Kendaraan",
+      selector: (row) => row.kendaraan === "" ? "-" : row?.kendaraan,
+      width: "150px",
+    },
+    {
+      name: "Kapal",
+      selector: (row) => row.kapal === "" ? "-" : row.kapal,
+      width: "150px",
+    },
+    {
+      name: "BU",
+      selector: (row) => row.bu,
+      width: "150px",
+    },
+    {
+      name: "bu_brench",
+      selector: (row) => row.bu_brench,
       width: "150px",
     },
     {
@@ -221,6 +241,9 @@ function SJ() {
     dataapi(page, size)
   };
 
+
+  const [BuState, setBuState] = useState("")
+  const [buBrench, setbuBrench] = useState("")
   const SMFilter = async () => {
     try {
       const data = await axios.get(`${Baseurl}sm/get-sm-filter`, {
@@ -231,7 +254,9 @@ function SJ() {
       });
       setJenisKodeCabang(data.data.cabang)
       setNamaMitraGlobalZustand(data.data.mitra)
-      console.log(`ini smfilter`, data.data);
+      setBuState(data.data.bu)
+      setbuBrench(data.data.bu_brench)
+      console.log(`ini bubrench`, data.data?.bu_brench);
       console.log(`ini KodeCabang`, KodeCabang);
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -243,15 +268,51 @@ function SJ() {
 
   const NamaMitraOptions = NamaMitraGlobalZustand.map((item) => ({
     value: item.mitraId,
-    label: item.NamaMitra
+    label: item.NamaMitra,
+    name: "mitra"
   }))
+  const BuStateOptions = BuState && [{value: "", label: "-"}].concat(
+    BuState.map((item) => ({
+      value: item.buId,
+      label: item.NamaMitra,
+      name: "bu"
+    }))
+  );
+  
+  const bu_brenchOptions = buBrench && [{value: "", label: "-"}].concat(buBrench.map((item) => ({
+    value: item.buBrenchId,
+    label: item.code,
+    name: "bubrench"
+  })))
 
-  const handleMitraChange = (value) => {
-    console.log(`selected ${value}`);
-    setNamaMitraValue(value[0]);
-    setNamaMitraValue2(value[1]) // memasukkan array pilihan ke dalam state
+
+  
+  const handleMitraChange = (e, option) => {
+    // console.log(`e`,e);
+    // console.log(`option`,option);
+    if (option.name === "bu") {
+      setBusetApi(e)
+    } else if (option.name === "bubrench") {
+      setbubrenchApi(e)
+    } else if (option?.[0]?.name === "mitra") {
+      console.log(`ini mitra 1`,e);
+    } else if (option?.[1]?.name === "mitra") {
+      console.log(`ini mitra 2`,e);
+    } else if (option?.[2]?.name === "mitra") {
+      console.log(`ini mitra 3`,e);
+    } else if (e === "mitra") {
+      console.log(`ini mitra 3`,e);
+    }
   }
+ 
 
+  const handleMitraChanges = (value, option) => {
+    if (value.length <= 3) {
+      setSelectedMitra(value);
+     
+ 
+    }
+  };
 
 
   return (
@@ -262,9 +323,28 @@ function SJ() {
           <Col sm={2}>
             <Form.Group>
               <Form.Label><strong>BU</strong></Form.Label>
-              <Form.Select>
-                <option>-</option>
-              </Form.Select>
+              <Select
+                name="bu"
+                optionFilterProp="label"
+                showSearch
+                style={{ width: '100%' }}
+                placeholder="Pilih mitra"
+                onChange={handleMitraChange}
+                options={BuStateOptions}
+              />
+            </Form.Group>
+          </Col>
+          <Col sm={2}>
+            <Form.Group>
+              <Form.Label><strong>BU Brench</strong></Form.Label>
+              <Select
+                optionFilterProp="label"
+                showSearch
+                style={{ width: '100%' }}
+                placeholder="Pilih mitra"
+                onChange={handleMitraChange}
+                options={bu_brenchOptions}
+              />
             </Form.Group>
           </Col>
           <Col sm={2}>
@@ -281,22 +361,16 @@ function SJ() {
               </Form.Select>
             </Form.Group>
           </Col>
-          <Col sm={4}>
+          <Col sm={2}>
             <Form.Group>
               <Form.Label><strong>MITRA</strong></Form.Label>
-              {/* <Select
-                mode="tags"
-                style={{ width: '100%' }}
-                placeholder="Pilih Mitra"
-                onChange={(e)=>setNamaMitraValue(e.target.value)}
-                options={NamaMitraOptions}
-              /> */}
               <Select
+                optionFilterProp="label"
                 mode="multiple"
                 style={{ width: '100%' }}
                 placeholder="Pilih mitra"
-                defaultValue={[]}
-                onChange={handleMitraChange}
+                value={selectedMitra}
+                onChange={handleMitraChanges}
                 options={NamaMitraOptions}
               />
             </Form.Group>
