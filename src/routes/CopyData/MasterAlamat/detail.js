@@ -202,7 +202,6 @@ const SamplePage = () => {
                     value={formik.values.kode_customer}
                     onChange={formik.handleChange}
                     isInvalid={!!formik.errors.kode_customer}
-                    
                   />
                 </InputGroup>
               </Form.Group>
