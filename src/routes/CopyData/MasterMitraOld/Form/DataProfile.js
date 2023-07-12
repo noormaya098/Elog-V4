@@ -1,125 +1,120 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Row, Col, Form, Button, InputGroup } from "react-bootstrap";
-import { Checkbox, notification, Form as FormAntd, Input } from "antd";
+import { Row, Col, Form, Button } from "react-bootstrap";
+import { Checkbox, notification } from "antd";
 import * as Yup from "yup";
 import { httpClient } from "../../../../Api/Api";
 import { useFormik } from "formik";
-
 function DataProfile({ mitraId, onSubmit }) {
-  const [order, setOrder] = useState([]);
-  const [detailSp, setDetailSp] = useState([]);
   const id_mitras = mitraId;
   const [datamiTraProfile, setDataMitraProfile] = useState([]);
   const router = useHistory();
   const formik = useFormik({
     initialValues: {
-      nama_perusahaan: "",
       id_mitra: id_mitras || "",
-      kode_mitra: "",
-      kode: "",
-      qrcode: "",
-      nama_mitra: "",
-      title: "",
-      jenis: "",
-      jenis_usaha: "",
-      kepemilikan: "",
-      jumlah_armada: "",
-      jumlah_sdm_operasional: "",
-      cabang: "",
-      jenis_kiriman: "",
-      wilayah: "",
-      tujuan: "",
-      tahun_awal_kontrak: "",
-      awal_kontrak: "",
-      akhir_kontrak: "",
-      kontrak: "",
-      direktur: "",
-      tahun_berdiri: "",
-      npwp_id: "",
-      npwp_name: "",
-      npwp_address: "",
-      npwp_jalan: "",
-      npwp_blok: "",
-      npwp_nomor: "",
-      npwp_rt: "",
-      npwp_rw: "",
-      npwp_kelurahan: "",
-      npwp_kecamatan: " ",
-      npwp_kota: "",
-      npwp_provisin: "",
-      npwp_kodepos: "",
-      is_taxable: "",
-      telepon: "",
-      contact_person: "",
-      telp: "",
-      fax: "",
-      email: "",
-      alamat: "",
-      homepage: "",
-      pembayaran: "",
-      nama_bank: "",
-      nama_akun: "",
-      no_rek: "",
-      currency: "",
-      po_legalitas: "",
-      ktp_legalitas: "",
-      akta_pendirian: "",
-      akta_perubahan_dasar: "",
-      akta_susunan_direksi: "",
-      surat_domisili: "",
-      npwp_legalitas: "",
+      kode_mitra: "EM00298",
+      kode: "NL",
+      qrcode: "EM00297.png",
+      nama_mitra: "NOO LOGISTICS",
+      title: "PT",
+      jenis: "Vendor Darat",
+      jenis_usaha: "EXPRESS DAN LOGISTIK",
+      kepemilikan: "SWASTA NASIONAL",
+      jumlah_armada: "650",
+      jumlah_sdm_operasional: "538",
+      cabang: "Jakarta",
+      jenis_kiriman: "TRUCKING",
+      wilayah: "Indonesia",
+      tujuan: "Indonesia",
+      tahun_awal_kontrak: "2023",
+      awal_kontrak: "2023-05-20",
+      akhir_kontrak: "2025-05-19",
+      kontrak: "2",
+      direktur: "Vivi Noviana",
+      tahun_berdiri: "2019",
+      npwp_id: "01.300.326.4-046.000",
+      npwp_name: "PT. NOO Logistics",
+      npwp_address: "Jl. Raya Cakung Cilincing Km. 1.5 Cakung Barat Cakung",
+      npwp_jalan: "Jl. Raya Cakung Cilincing Km. 1.5 Cakung Barat Cakung",
+      npwp_blok: "-",
+      npwp_nomor: "18",
+      npwp_rt: "17",
+      npwp_rw: "7",
+      npwp_kelurahan: "Cakung Barat",
+      npwp_kecamatan: "Cakung ",
+      npwp_kota: "Jakarta Timur",
+      npwp_provisin: "Dki Jakarta",
+      npwp_kodepos: "13221",
+      is_taxable: "1",
+      telepon: "(021) 460-2278",
+      contact_person: "Noo Putra",
+      telp: " +62 812-8335-9535",
+      fax: "(021) 460-2278",
+      email: "Nopu@gmail.com",
+      alamat: " elief.pratama@puninar.com",
+      homepage: " https://www.puninar.com/",
+      pembayaran: "30",
+      nama_bank: "BANK MANDIRI",
+      nama_akun: "PT. PUNINAR JAYA",
+      no_rek: "156-000-484-7499",
+      currency: "Rupiah (Rp.)",
+      po_legalitas: "ADA",
+      ktp_legalitas: "ADA",
+      akta_pendirian: "ADA",
+      akta_perubahan_dasar: "TIDAK",
+      akta_susunan_direksi: "TIDAK",
+      surat_domisili: "ADA",
+      npwp_legalitas: "ADA",
       skt_legalitas: "",
-      nppkp_legalitas: "",
-      siup_legalitas: "",
-      ijin_pendirian: "",
-      ppmd_legalitas: "",
-      ijin_usaha: "",
-      tdp_legalitas: "",
-      surat_kuasa: "",
+      nppkp_legalitas: "ADA",
+      siup_legalitas: "ADA",
+      ijin_pendirian: "TIDAK",
+      ppmd_legalitas: "TIDAK",
+      ijin_usaha: "TIDAK",
+      tdp_legalitas: "TIDAK",
+      surat_kuasa: "TIDAK",
       lama_bekerja: "1",
-      jenis_kartu_kredit: "",
-      bank_penerbit: "",
-      laporan_keuangan: "",
-      status_usaha: "",
-      lama_usaha: "",
-      omset_bulanan: "",
-      asset_tanah: "",
-      asset_bangunan: "",
-      asset_kendaraan: "",
-      asset_mesin: "",
+      jenis_kartu_kredit: "TIDAK ADA",
+      bank_penerbit: "TIDAK ADA",
+      laporan_keuangan: "TIDAK",
+      status_usaha: "MENENGAH",
+      lama_usaha: "2019",
+      omset_bulanan: "0",
+      asset_tanah: "MILIK SENDIRI",
+      asset_bangunan: "MILIK SENDIRI",
+      asset_kendaraan: "MILIK SENDIRI",
+      asset_mesin: "MILIK SENDIRI",
       affiliasi: "",
-      jumlah_unit: "",
-      periode_sewa: "",
-      nilai_sewa: "",
-      nilai_ruu: "",
-      top: "",
-      metode_pembayaran: "",
-      qty_motor: "",
-      rp_motor: "",
-      qty_grandmax: "",
-      rp_grandmax: "",
-      qty_l300: "",
-      rp_l300: "",
-      qty_traga: "",
-      rp_traga: "",
-      qty_cde: "",
-      rp_cde: "",
-      qty_cdd: "",
-      rp_cdd: "",
-      qty_fuso: "",
-      rp_fuso: "",
-      qty_wingbox: "",
-      rp_wingbox: "",
-      qty_trailer20: "",
-      rp_trailer20: "",
-      qty_trailer40: "",
-      rp_trailer40: "",
-      pic_id: "",
-      type: "",
+      jumlah_unit: "0",
+      periode_sewa: "0",
+      nilai_sewa: "0",
+      nilai_ruu: "0",
+      top: 0,
+      metode_pembayaran: "TRANSFER",
+      qty_motor: 7,
+      rp_motor: 0,
+      qty_grandmax: 0,
+      rp_grandmax: 0,
+      qty_l300: 0,
+      rp_l300: 200,
+      qty_traga: 0,
+      rp_traga: 0,
+      qty_cde: 500,
+      rp_cde: 0,
+      qty_cdd: 100,
+      rp_cdd: 200,
+      qty_fuso: 0,
+      rp_fuso: 0,
+      qty_wingbox: 0,
+      rp_wingbox: 0,
+      qty_trailer20: 0,
+      rp_trailer20: 0,
+      qty_trailer40: 0,
+      rp_trailer40: 0,
+      pic_id: 273,
+      type: "elogs",
       memo: "",
     },
-
     validationSchema: Yup.object({
       id_customer: Yup.string().max(30, "Must be 30 characters or less"),
     }),
@@ -142,6 +137,7 @@ function DataProfile({ mitraId, onSubmit }) {
         });
     },
   });
+
   useEffect(() => {
     const datamitra = async () => {
       try {
@@ -150,44 +146,6 @@ function DataProfile({ mitraId, onSubmit }) {
           .then(({ data }) => {
             if (data.status.code === 200) {
               setDataMitraProfile(data.data);
-              setOrder(data);
-              setTimeout(() => {
-                formik.setFieldValue("nama_mitra", data.data.nama_mitra);
-                formik.setFieldValue("kode_mitra", data.data.kode_mitra);
-                formik.setFieldValue("kota", data.data.alamat_kantor);
-                formik.setFieldValue("jenis_barang", data.data.jenis_barang);
-                formik.setFieldValue("kode_customer", data.data.kode_customer);
-                formik.setFieldValue("officer_number", data.data.telepon);
-                formik.setFieldValue("nama_perusahaan", data.data.nama_perusahaan);
-                formik.setFieldValue("service", data.service);
-                formik.setFieldValue("order_date", data.order_date);
-                formik.setFieldValue("pickupDate", data.pickup_date);
-                formik.setFieldValue("hp", data.hp);
-                formik.setFieldValue("email", data.data.email);
-                formik.setFieldValue("telpon", data.data.telepon);
-                formik.setFieldValue("kota", data.data.alamat_kantor);
-                formik.setFieldValue("jenis_barang", data.data.jenis_barang);
-                formik.setFieldValue("kode_customer", data.data.kode_customer);
-                formik.setFieldValue("officer_number", data.data.officer_number);
-                formik.setFieldValue("nama_perusahaan", data.data.nama_perusahaan);
-                formik.setFieldValue("service", data.service);
-                formik.setFieldValue("paymentoftype", data.paymentoftype);
-                formik.setFieldValue("bankname", data.data.nama_bank);
-                formik.setFieldValue("accountname", data.data.nama_akun);
-                formik.setFieldValue("accountnumber", data.data.no_rek);
-                formik.setFieldValue("alamat_npwp", data.data.alamat_npwp);
-                formik.setFieldValue("mata_uang", data.data.mata_uang);
-                formik.setFieldValue("tahun_berdiri", data.data.tahun_berdiri);
-                formik.setFieldValue("tgl_berdiri", data.data.tgl_berdiri);
-                formik.setFieldValue("npwp", data.data.npwp);
-                formik.setFieldValue("alamat_kantor", data.data.alamat_kantor);
-                formik.setFieldValue("telepon", data.data.telepon);
-                formik.setFieldValue("hp", data.data.hp);
-                formik.setFieldValue("typeof", data.data.typeof);
-                formik.setFieldValue("fax", data.data.fax);
-                formik.setFieldValue("email", data.data.email);
-                setDetailSp(data.detail_sp);
-              }, 1000);
             }
           })
           .catch(function (error) {
@@ -204,90 +162,8 @@ function DataProfile({ mitraId, onSubmit }) {
     console.log("Form submitted");
     onSubmit(formik.values);
   };
-
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    httpClient
-      .post("mitra/create-mitra-pic", values)
-      .then(({ data }) => {
-        notification.success({
-          message: "Success",
-          description: data.message,
-        });
-        // setTimeout(() => router.push("/mastermitraold"), 1000);
-      })
-      .catch(function (error) {
-        notification.error({
-          message: "Error",
-          description: error.message,
-        });
-        console.log(error.message);
-      });
-  };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
     <div>
-      {/* <FormAntd
-        name="basic"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        style={{
-          maxWidth: 600,
-        }}
-        initialValues={{
-          remember: true,
-          namamitra: "",
-          nama_perusahaan:"",
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <FormAntd.Item
-          label="MITRA NAME:"
-          name="namamitra"
-          rules={[
-            {
-              required: true,
-              message: "Please input your MITRA NAME!",
-            },
-          ]}
-        >
-          <Input  value={formik.values.namamitra} />
-        </FormAntd.Item>
-        <Form.Group style={{ marginBottom: "10px" }}>
-                <FormAntd.Item name="nama_perusahaan">Customer Name</FormAntd.Item>
-               
-                  <Input
-                    name="nama_perusahaan"
-                    value={formik.values.nama_perusahaan}
-                    onChange={formik.handleChange}
-                    isInvalid={!!formik.errors.nama_perusahaan}
-                  />
-         
-              </Form.Group>
-
-        <FormAntd.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </FormAntd.Item>
-      
-      </FormAntd> */}
-
       <br />
       <h5>
         NAMA DAN ALAMAT PERUSAHAAN
@@ -296,7 +172,7 @@ function DataProfile({ mitraId, onSubmit }) {
         </span>
       </h5>
       <br />
-      <Row className="align-items-center"> 
+      <Row className="align-items-center">
         <Col sm={2}>
           <Form.Label>
             <b>MITRA CODE</b>
@@ -954,7 +830,7 @@ function DataProfile({ mitraId, onSubmit }) {
       <br />
       <hr />
       <br />
-      <Button variant="primary" onClick={formik.handleSubmit}>
+      <Button variant="primary" onClick={handleSubmit}>
         Save Changes
       </Button>
     </div>
