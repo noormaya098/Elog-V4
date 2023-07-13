@@ -39,7 +39,7 @@ const SamplePage = () => {
   const [customerOptions, setCustomerOptions] = useState([]);
   const [diskon, setDiskon] = useState([]);
   const [diskonType, setDiskonType] = useState([]);
-  const [biayaJalan, setBiayaJalan] = useState([]);
+  const [biayaJalan, setBiayaJalan] = useState(10000);
   const [biayaMuat, setBiayaMuat] = useState([]);
   const [biayaBongkar, setBiayaBongkar] = useState([]);
   const [biayaOvertonase, setBiayaTonase] = useState([]);
@@ -120,6 +120,7 @@ const SamplePage = () => {
           // ritase: Ritase,
           // uang_jalan: UangJalan,
           service_type: serviceType?.value,
+          
         })
         .then(({ data }) => {
           notification.success({
@@ -466,7 +467,7 @@ const SamplePage = () => {
                   <Form.Label>Tarif Katalog</Form.Label>
                   <InputGroup>
                     <Form.Control
-                      name="biaya_jalan"
+                      name="biayajalan"
                       value={formik.values.biaya_jalan}
                       onChange={formik.handleChange}
                       isInvalid={!!formik.errors.biaya_jalan}
@@ -477,7 +478,7 @@ const SamplePage = () => {
                   <Form.Label>Tarif Customer</Form.Label>
                   <InputGroup>
                     <Form.Control
-                      name="biaya_jalan"
+                      name="biayajalan"
                       value={formik.values.biaya_jalan}
                       onChange={formik.handleChange}
                       isInvalid={!!formik.errors.biaya_jalan}

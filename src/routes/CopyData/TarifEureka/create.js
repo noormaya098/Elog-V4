@@ -36,7 +36,7 @@ const SamplePage = () => {
   const [jenisKiriman, setJenisKiriman] = useState("");
   const [via, setVia] = useState("");
   const [IdMitra, setIdMitra] = useState("");
-  const [Tarif, setTarif] = useState("");
+  const [Tarif, setTarif] = useState(10000);
   const [Ritase, setRitase] = useState("");
   const [UangJalan, setUangJalan] = useState("");
   const [viaOptions, setViaOptions] = useState([]);

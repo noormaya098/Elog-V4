@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Space, Card, Input, Pagination, Modal } from "antd";
+import { Button, Space, Card, Input, Pagination, Modal, Tag } from "antd";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
 import { Row, Col } from "react-bootstrap";
@@ -55,10 +55,17 @@ const SamplePage = () => {
     },
     {
       name: "Keterangan",
-      selector: "service_type",
+      selector: (row) =>
+        row.service_type === "Retail" ? (
+          <Tag color="magenta">Retail</Tag>
+        ) : row.service_type === "Charter" ? (
+          <Tag color="gold">Charter</Tag>
+        ) : (
+          ""
+        ),
       key: "service_type",
-      
     },
+
     {
       name: "Action",
       selector: (record) => (
@@ -68,7 +75,6 @@ const SamplePage = () => {
             type="primary"
             onClick={() => handleView(record.id_price_mitra)}
           >
-            
             <span style={{ display: "flex", alignItems: "center" }}>
               <EyeOutlined />
             </span>
@@ -148,6 +154,7 @@ const SamplePage = () => {
                 (item) => item.id_price_mitra !== id
               );
               setListData(newOrder);
+              window.location.reload();
               // Reload the data after successful deletion if necessary
               // fetchData();
             }
@@ -163,9 +170,7 @@ const SamplePage = () => {
   return (
     <div>
       <Card>
-        <h4>
-          Data Tarif Mitra
-        </h4>
+        <h4>Data Tarif Mitra</h4>
         <div>
           <Row>
             <Col sm={12} className="d-flex justify-content-end ">

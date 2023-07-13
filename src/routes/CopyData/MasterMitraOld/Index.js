@@ -1,4 +1,4 @@
-import { Card, Space } from "antd";
+import { Card, Space, Tag } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row, Form } from "react-bootstrap";
@@ -25,8 +25,17 @@ const SamplePage = () => {
     },
     {
       name: "Status",
-      selector: (row) => row.status,
-      width: "80px",
+      selector: (row) =>
+        row.status === "habis kontrak" ? (
+          <Tag color="red">Habis Kontrak</Tag>
+        ) : row.status === "aktif" ? (
+          <Tag color="green">Aktif</Tag>
+        ) : row.status === "tidak aktif" ? (
+          <Tag color="yellow">Tidak Aktif</Tag>
+        ) : (
+          ""
+        ),
+      width: "125px",
     },
     {
       name: "Code",

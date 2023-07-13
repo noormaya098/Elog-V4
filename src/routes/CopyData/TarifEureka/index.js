@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Card, Modal, Col } from "antd";
+import { Table, Button, Space, Card, Modal, Col, Tag, Pagination } from "antd";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
 import {
@@ -11,6 +11,7 @@ import {
 
 
 const SamplePage = () => {
+
   const router = useHistory();
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
@@ -18,6 +19,9 @@ const SamplePage = () => {
   const handleView = (id) => {
     router.push(`/tarif_eureka_edit/${id}`);
   };
+
+  let nomor = 1 
+
   const columns = [
    
     // {
@@ -40,15 +44,44 @@ const SamplePage = () => {
     //   dataIndex: "id_kendaraan_jenis",
     //   key: "id_kendaraan_jenis",
     // },
+    // {
+    //   title: "No.",
+    //   dataIndex: nomor,
+    //   key: nomor,
+    // },
+    
     {
       title: "Jenis Pelayanan",
       dataIndex: "service_type",
       key: "service_type",
+      render: (text) => {
+        let tagColor = "";
+        if (text === "Retail") {
+          tagColor = "lime";
+        } else if (text === "Charter") {
+          tagColor = "magenta";
+        } else if (text === "reguler") {
+          tagColor = "green";
+        }
+        return <Tag color={tagColor}>{text}</Tag>;
+      },
     },
     {
       title: "Jenis Kiriman",
       dataIndex: "jenis_kiriman",
       key: "jenis_kiriman",
+      render: (text) => {
+        let tagColor = "";
+        if (text === "Express") {
+          tagColor = "green";
+        } else if (text === "Reguler") {
+          tagColor = "blue";
+        } else if (text === "Charter") {
+          tagColor = "orange";
+        
+        }
+        return <Tag color={tagColor}>{text}</Tag>;
+      },
     },
     {
       title: "Tarif",
@@ -124,11 +157,11 @@ const SamplePage = () => {
   ];
   const [listData, setListData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
+ 
+    const fetchData = async (limit = 10, pageSize = 1) => {
       try {
         const response = await httpClient.get(
-          `tarif/get-tarifeureka?limit=${limit}&page=${page}&id_muat_kota=&id_tujuan_kota=&id_kendaraan_jenis=`
+          `tarif/get-tarifeureka?limit=${limit}&page=${pageSize}&id_muat_kota=&id_tujuan_kota=&id_kendaraan_jenis=`
       
           
         );
@@ -145,8 +178,11 @@ const SamplePage = () => {
       }
     };
 
+    useEffect(() => {
     fetchData();
   }, []);
+
+
 
   const handleAdd = (id) => {
     router.push(`/tarif_eurekacreate`);
@@ -171,6 +207,8 @@ const SamplePage = () => {
               setListData(newOrder);
               // Reload the data after successful deletion if necessary
               // fetchData();
+              window.location.reload();
+
             }
           })
           .catch(function (error) {
@@ -179,6 +217,10 @@ const SamplePage = () => {
       },
       onCancel() {},
     });
+  };
+
+  const onShowSizeChange = (current, pageSize) => {
+    fetchData(current, pageSize);
   };
 
   return (
@@ -202,15 +244,27 @@ const SamplePage = () => {
         
         {/* <Button type="default">Cari Pricelist</Button> */}
       </div>
+      
       <Table
         dataSource={listData}
         columns={columns}
         scroll={{
           x: 1300,
         }}
-        pagination={{ total, current: page, pageSize: limit }}
-        onChange={(pagination) => setPage(pagination.current)}
+        pagination={{
+          showSizeChanger: true,
+          onChange: onShowSizeChange,
+          defaultCurrent: 3,
+          total: 500,
+        }}
       />
+      
+      {/* <Pagination
+      showSizeChanger
+      onChange={onShowSizeChange}
+      defaultCurrent={3}
+      total={500}
+    /> */}
       </Card>
     </div>
   );

@@ -47,11 +47,11 @@ const SamplePage = () => {
   }))
   const optjenisLayanan = [
     {
-      value: "Retail",
+      value: 1,
       label: "Retail",
     },
     {
-      Value: "charter",
+      Value: 2,
       label: "Charter",
     },
   ];
@@ -94,7 +94,11 @@ const SamplePage = () => {
     }),
     onSubmit: (values) => {
       httpClient
-        .post("tarif/update-tarifMitra", values)
+        .post("tarif/update-tarifMitra",
+        {
+          ...values,
+          service_type: jenisLayanan.label,
+        })
         .then(({ data }) => {
           notification.success({
             message: "Success",
@@ -373,7 +377,9 @@ const SamplePage = () => {
                     options={optjenisLayanan}
                     name="service_type"
                     value={jenisLayanan}
-                    onChange={(e) => setJenisLayanan(e)}
+                    onChange={(e) => {setJenisLayanan(e)
+                    console.log(`ini jenis`,e);
+                    }}
                     isInvalid={!!formik.errors.service_type}
                     styles={customStylesReactSelect}
                   />

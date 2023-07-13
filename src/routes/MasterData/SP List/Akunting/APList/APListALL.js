@@ -1,4 +1,4 @@
-import { Button, Card, Input, Pagination } from "antd";
+import { Button, Card, Input, Pagination, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { Select } from "antd";
@@ -68,7 +68,10 @@ const pindah = useHistory();
     },
     {
       name: "Receive Invoice",
-      selector: (row) => row.receiveInvoice,
+      selector: (row) => (
+        <Tag color="blue">{row.receiveInvoice}</Tag>
+      ),
+      width: "120px" // Atur lebar kolom di sini
     },
     {
       name: "Partner",
@@ -76,7 +79,10 @@ const pindah = useHistory();
     },
     {
       name: "Invoice Date",
-      selector: (row) => row.invoiceDate,
+      selector: (row) => (
+        <Tag color="green">{row.invoiceDate}</Tag>
+      ),
+      
     },
     {
       name: "PPH 23",
