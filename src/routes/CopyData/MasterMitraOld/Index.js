@@ -137,6 +137,7 @@ const SamplePage = () => {
   return (
     <div>
       <Card>
+        <h4>Data Master Mitra</h4>
         <Row>
           <Col>
             <Row className="d-flex justify-content-end">

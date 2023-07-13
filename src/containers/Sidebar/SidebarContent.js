@@ -258,17 +258,22 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <span>Penerimaan INV</span>
                       </Link>
                     </Menu.Item>
-                  </SubMenu><SubMenu key="Masters" title="Masters">
+                  </SubMenu>
+                  <SubMenu key="Masters" title="Masters">
                     <Menu.Item key="Master Mitra">
                       <Link to="/mastermitra">
                         <i className="icon icon-widgets" />
                         <span>Master Mitra</span>
                       </Link>
                     </Menu.Item>
-                    <Menu.Item key="Masters">
+                    
+                  </SubMenu>
+                  
+                  <SubMenu key="Data Wilayah" title="Data Wilayah">
+                  <Menu.Item key="Data Wilayah">
                       <Link to="/masteralamat">
                         <i className="icon icon-widgets" />
-                        <span>Data Customer</span>
+                        <span>Data Alamat All</span>
                       </Link>
                     </Menu.Item>
 
@@ -290,7 +295,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <span>Data Provinsi</span>
                       </Link>
                     </Menu.Item>
+                    
                   </SubMenu>
+                  
 
                   <SubMenu key="AP List" title="AP List">
                     <Menu.Item key="SP_AP_LIST">

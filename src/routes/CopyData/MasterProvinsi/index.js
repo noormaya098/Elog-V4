@@ -32,11 +32,11 @@ const SamplePage = () => {
       key: "no",
       render: (text) => <a>{text}</a>,
     },
-    {
-      title: "Kode",
-      dataIndex: "idProv",
-      key: "idProv",
-    },
+    // {
+    //   title: "Kode",
+    //   dataIndex: "idProv",
+    //   key: "idProv",
+    // },
     {
       title: "Nama Provinsi",
       dataIndex: "provinsi",

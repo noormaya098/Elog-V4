@@ -81,12 +81,12 @@ const SamplePage = () => {
     //   key: "id_user",
     // },
     {
-      title: "Kota Muat",
+      title: "Muat",
       dataIndex: "kotaAsal",
       key: "kotaAsal",
     },
     {
-      title: "Kota Tujuan",
+      title: "Tujuan",
       dataIndex: "kotaTujuan",
       key: "kotaTujuan",
     },
@@ -101,10 +101,13 @@ const SamplePage = () => {
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => handleView(record.id_price)} type="primary">
-          <EyeOutlined />
+          <span style={{ display: "flex", alignItems: "center" }}>
+              <EyeOutlined />
+            </span>
+         
           </Button>
           <Button
-            className="mt-2"
+          
             onClick={() => handleDelete(record.id_price)}
             type="danger"
           >
@@ -182,7 +185,7 @@ const SamplePage = () => {
     <div>
       <Card>
       <h3>
-        Tarif Eureka 
+        Data Tarif Eureka 
         </h3>
       <div
         style={{

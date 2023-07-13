@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { httpClient } from "../../../Api/Api";
 import { InputGroup, Form, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import ZustandStore from "../../../zustand/Store/JenisKepemilikanOptions";
 
 const { RangePicker } = DatePicker;
 
@@ -34,14 +35,21 @@ const SamplePage = () => {
   const [dataCustomer, setDataCustomer] = useState(null);
   const [jenisLayanan, setJenisLayanan] = useState("");
   const [jenisKiriman, setJenisKiriman] = useState("");
+  const {TipeKendaraan, FetchTipeKendaraan} = ZustandStore ((item) => ({
+    TipeKendaraan : item.TipeKendaraan,
+    FetchTipeKendaraan : item.FetchTipeKendaraan
+  }))
+
+  const optionsTipeKendaraan = TipeKendaraan && TipeKendaraan.map((item) => ({
+    label : item.tipe,
+    value : item.FetchTipeKend
+  }))
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      id_price: 
-      dataCustomer && dataCustomer.id_price
-      ? dataCustomer.id_price
-      : "",
+      id_price:
+        dataCustomer && dataCustomer.id_price ? dataCustomer.id_price : "",
       id_muat_kota:
         dataCustomer && dataCustomer.id_muat_kota
           ? dataCustomer.id_muat_kota
@@ -186,6 +194,7 @@ const SamplePage = () => {
     };
 
     fetchData();
+    FetchTipeKendaraan();
   }, [kotaOptions]);
 
   // useEffect(() => {
@@ -364,7 +373,6 @@ const SamplePage = () => {
     }
   };
 
-  
   return (
     <div>
       <Card>
@@ -375,8 +383,10 @@ const SamplePage = () => {
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={3}>
-              <Button onClick={formik.handleSubmit} type="submit">Update Tarif Eureka</Button>
+            <Col span={10} className="d-flex justify-content-end">
+              <Button onClick={formik.handleSubmit} type="submit">
+                Update Tarif Eureka
+              </Button>
             </Col>
           </Row>
           <Row style={{ marginBottom: "10px" }}>
@@ -395,6 +405,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Kota Tujuan</Form.Label>
                 <InputGroup>
@@ -409,11 +421,13 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Kendaraan</Form.Label>
                 <InputGroup>
                   <Select
-                    options={jenisKendaraanOptions}
+                    options={optionsTipeKendaraan}
                     value={jenisKendaraan}
                     isSearchable
                     placeholder="Select Jenis Kendaraan"
@@ -424,7 +438,7 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-            <Col span={9}>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Layanan</Form.Label>
                 <InputGroup>
@@ -437,6 +451,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Kiriman</Form.Label>
                 <InputGroup>
@@ -451,6 +467,14 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+          </Row>
+          <br />
+          <hr />
+
+          <h3>Biaya Penanganan</h3>
+          <Row className="mt-4">
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Tarif</Form.Label>
                 <InputGroup>
@@ -463,8 +487,7 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-
-            <Col span={7}>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Ritase</Form.Label>
                 <InputGroup>
@@ -476,6 +499,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Uang Jalan</Form.Label>
                 <InputGroup>

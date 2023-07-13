@@ -60,12 +60,12 @@ const SamplePage = () => {
       key: "customer",
     },
     {
-      title: "Kota Muat",
+      title: "Muat",
       dataIndex: "kotaAsal",
       key: "kotaAsal",
     },
     {
-      title: "Kota Bongkar",
+      title: "Bongkar",
       dataIndex: "kotaTujuan",
       key: "kotaTujuan",
     },
@@ -75,19 +75,29 @@ const SamplePage = () => {
       key: "kendaraanJenis",
     },
     {
+      title: "Date Created",
+      dataIndex: "date_created",
+      key: "date_created",
+    },
+    {
       title: "Biaya Kirim",
       dataIndex: "biaya_jalan",
       key: "biaya_jalan",
     },
+    // {
+    //   title: "Biaya Muat",
+    //   dataIndex: "-",
+    //   key: "biaya_muat",
+    // },
+    // {
+    //   title: "Biaya Bongkar",
+    //   dataIndex: "biaya_bongkar",
+    //   key: "biaya_bongkar",
+    // },
     {
-      title: "Biaya Muat",
-      dataIndex: "-",
-      key: "biaya_muat",
-    },
-    {
-      title: "Biaya Bongkar",
-      dataIndex: "biaya_bongkar",
-      key: "biaya_bongkar",
+      title: "Biaya Lain",
+      dataIndex: "biaya_lain",
+      key: "biaya_lain",
     },
     {
       title: "Aksi",
@@ -95,7 +105,10 @@ const SamplePage = () => {
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => handleView(record.id_price)} type="primary">
-            <EyeOutlined />
+          <span style={{ display: "flex", alignItems: "center" }}>
+          <EyeOutlined />
+            </span>
+           
           </Button>
            <Button
             
@@ -179,7 +192,7 @@ const SamplePage = () => {
      
      <Card>
      <h3>
-        Tarif Customer 
+         Data Tarif Customer 
         </h3>
      <div
         style={{

@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { httpClient } from "../../../Api/Api";
 import { InputGroup, Form, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import useMitraStore from "../../../zustand/Store/MitraStore";
 
 const { RangePicker } = DatePicker;
 
@@ -36,24 +37,32 @@ const SamplePage = () => {
   const [jenisKiriman, setJenisKiriman] = useState("");
   const [jenisDiskon, setJenisDiskon] = useState("");
   const [dataCustomer, setDataCustomer] = useState("");
+  const {NamaMitra, fetchMitra} = useMitraStore((item)=>({
+    NamaMitra : item.NamaMitra,
+    fetchMitra: item.fetchMitra
+  }))
+  const optionMitra = NamaMitra && NamaMitra.map((item) => ({
+    label : item.NamaMitra,
+    value : item.mitraId
+  }))
   const optjenisLayanan = [
     {
-      value: "charter",
-      label: "retail",
+      value: "Retail",
+      label: "Retail",
     },
     {
       Value: "charter",
-      label: "retail",
+      label: "Charter",
     },
   ];
   const optjenisKiriman = [
     {
       value: "expres",
-      label: "expres",
+      label: "Expres",
     },
     {
       Value: "reguler",
-      label: "reguler",
+      label: "Reguler",
     },
   ];
   const optjenisDiskon = [
@@ -116,13 +125,11 @@ const SamplePage = () => {
         );
 
         if (status.code !== 200) {
-          
-          
           return;
         }
-        console.log(order.id_muat_kota, 'ini');
+        console.log(order, "ini");
         setDataCustomer(order);
-        setKota('ini',order.id_muat_kota);
+        setKota("ini", order.id_muat_kota);
 
         setTimeout(() => {
           const selectedOption = kotaOptions.find(
@@ -201,6 +208,7 @@ const SamplePage = () => {
     fetchData();
     fetchVehicleTypes();
     fetchKotaOptions();
+    fetchMitra()
   }, []);
   // kotaOptions
 
@@ -284,15 +292,31 @@ const SamplePage = () => {
         <Form onSubmit={formik.handleSubmit}>
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
-              <h2>Edit Tarif Mitra</h2>
+              <h3> Detail & Edit Tarif Mitra</h3>
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={3}>
+            <Col span={10} className="d-flex justify-content-end">
               <Button type="submit">Simpan Tarif</Button>
             </Col>
           </Row>
           <Row style={{ marginBottom: "10px" }}>
+            <Col span={8}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Nama Mitra</Form.Label>
+                <InputGroup>
+                  <Select
+                    options={optionMitra}
+                    value={customer}
+                    isSearchable
+                    placeholder="Select Customer"
+                    name="id_mitra"
+                    styles={customStylesReactSelect}
+                    onChange={onSelectChange}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
             <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Kota Muat</Form.Label>
@@ -308,6 +332,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Kota Tujuan</Form.Label>
                 <InputGroup>
@@ -322,22 +348,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>id_mitra</Form.Label>
-                <InputGroup>
-                  <Select
-                    options={customerOptions}
-                    value={customer}
-                    isSearchable
-                    placeholder="Select Customer"
-                    name="id_mitra"
-                    styles={customStylesReactSelect}
-                    onChange={onSelectChange}
-                  />
-                </InputGroup>
-              </Form.Group>
             </Col>
-            <Col span={9}>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Kendaraan</Form.Label>
                 <InputGroup>
@@ -352,6 +364,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Service</Form.Label>
                 <InputGroup>
@@ -365,6 +379,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Kiriman</Form.Label>
                 <InputGroup>
@@ -379,9 +395,16 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-            <Col span={7}>
+          </Row>
+          <br />
+          <hr />
+          <h4>
+            Biaya Penanganan
+          </h4>
+          <Row style={{ marginBottom: "10px",marginTop: "20px" }}>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>tarif</Form.Label>
+                <Form.Label>Tarif</Form.Label>
                 <InputGroup>
                   <Form.Control
                     name="tarif"
@@ -391,9 +414,10 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
-
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>ritase</Form.Label>
+            </Col>
+            <Col span={8}>
+            <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Ritase</Form.Label>
                 <InputGroup>
                   <Form.Control
                     name="ritase"
@@ -404,11 +428,9 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-          </Row>
-          <Row style={{ marginBottom: "10px" }}>
-            <Col span={24}>
+            <Col span={8}>
               <Form.Group>
-                <Form.Label>uang_jalan</Form.Label>
+                <Form.Label>Uang Jalan</Form.Label>
                 <InputGroup>
                   <Form.Control
                     name="uang_jalan"
