@@ -275,44 +275,16 @@ const SamplePage = () => {
         <Form onSubmit={formik.handleSubmit}>
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
-              <h2>Update Tarif Customer </h2>
+              <h3>Update Tarif Customer </h3>
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={3}>
+            <Col span={10} className="d-flex justify-content-end">
               <Button type="submit">Update Tarif Pelanggan</Button>
             </Col>
           </Row>
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>Kota Muat</Form.Label>
-                <InputGroup>
-                  <Select
-                    options={kotaOptions}
-                    value={kota}
-                    isSearchable
-                    placeholder="Select Kota Muat"
-                    name="id_muat_kota"
-                    styles={customStylesReactSelect}
-                    onChange={onSelectChange}
-                  />
-                </InputGroup>
-              </Form.Group>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>Kota Tujuan</Form.Label>
-                <InputGroup>
-                  <Select
-                    options={kotaOptions}
-                    value={kotaTujuan}
-                    isSearchable
-                    placeholder="Select Kota Tujuan"
-                    name="id_tujuan_kota"
-                    styles={customStylesReactSelect}
-                    onChange={onSelectChange}
-                  />
-                </InputGroup>
-              </Form.Group>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Customer</Form.Label>
                 <InputGroup>
@@ -328,7 +300,39 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-            <Col span={9}>
+            <Col span={8}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Kota Muat</Form.Label>
+                <InputGroup>
+                  <Select
+                    options={kotaOptions}
+                    value={kota}
+                    isSearchable
+                    placeholder="Select Kota Muat"
+                    name="id_muat_kota"
+                    styles={customStylesReactSelect}
+                    onChange={onSelectChange}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+            <Col span={8}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Kota Tujuan</Form.Label>
+                <InputGroup>
+                  <Select
+                    options={kotaOptions}
+                    value={kotaTujuan}
+                    isSearchable
+                    placeholder="Select Kota Tujuan"
+                    name="id_tujuan_kota"
+                    styles={customStylesReactSelect}
+                    onChange={onSelectChange}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis kendaraan </Form.Label>
                 <InputGroup>
@@ -343,6 +347,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Layanan</Form.Label>
                 <InputGroup>
@@ -356,6 +362,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Kiriman</Form.Label>
                 <InputGroup>
@@ -370,20 +378,7 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-            <Col span={7}>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>Diskon</Form.Label>
-                <InputGroup>
-                  <Form.Control
-                    name="diskon"
-                    value={formik.values.diskon}
-                    onChange={formik.handleChange}
-                    isInvalid={!!formik.errors.diskon}
-                  />
-                </InputGroup>
-              </Form.Group>
-            </Col>
-            <Col span={7}>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Diskon</Form.Label>
                 <InputGroup>
@@ -397,7 +392,21 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
-
+            </Col>
+            <Col span={8}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Diskon</Form.Label>
+                <InputGroup>
+                  <Form.Control
+                    name="diskon"
+                    value={formik.values.diskon}
+                    onChange={formik.handleChange}
+                    isInvalid={!!formik.errors.diskon}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+            <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Biaya Jalan</Form.Label>
                 <InputGroup>
@@ -411,6 +420,11 @@ const SamplePage = () => {
               </Form.Group>
             </Col>
           </Row>
+          <br />
+          <hr />
+          <h4>
+            Biaya Tambahan
+          </h4>
           <Row style={{ marginBottom: "10px", width: "80%" }}>
             <Col span={6}>
               <Form.Group>
@@ -425,9 +439,7 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-          </Row>
-          <Row style={{ marginBottom: "10px", width: "80%" }}>
-            <Col span={12}>
+            <Col span={6}>
               <Form.Group>
                 <Form.Label>Biaya Bongkar</Form.Label>
                 <InputGroup>
@@ -466,6 +478,11 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
+          </Row>
+          <Row style={{ marginBottom: "10px", width: "80%" }}>
+           
+           
+           
             <Col span={6}>
               <Form.Group>
                 <Form.Label>Biaya Multi Drop</Form.Label>

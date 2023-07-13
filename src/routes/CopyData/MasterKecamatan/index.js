@@ -85,21 +85,21 @@ const SamplePage = () => {
       dataIndex: "no",
       key: "no",
     },
-    {
-      title: "ID Provinsi",
-      dataIndex: "idProv",
-      key: "idProv",
-    },
-    {
-      title: "ID Kota",
-      dataIndex: "idKota",
-      key: "idKota",
-    },
-    {
-      title: "ID Kecamatan",
-      dataIndex: "idKecamatan",
-      key: "idKecamatan",
-    },
+    // {
+    //   title: "ID Provinsi",
+    //   dataIndex: "idProv",
+    //   key: "idProv",
+    // },
+    // {
+    //   title: "ID Kota",
+    //   dataIndex: "idKota",
+    //   key: "idKota",
+    // },
+    // {
+    //   title: "ID Kecamatan",
+    //   dataIndex: "idKecamatan",
+    //   key: "idKecamatan",
+    // },
     {
       title: "Provinsi",
       dataIndex: "provName",

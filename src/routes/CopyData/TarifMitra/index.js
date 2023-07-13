@@ -32,12 +32,12 @@ const SamplePage = () => {
       width: "8%",
     },
     {
-      name: "Kota Muat",
+      name: "Muat",
       selector: (row) => row.kotaAsal,
       key: "kotaAsal",
     },
     {
-      name: "Kota Bongkar",
+      name: "Bongkar",
       selector: (row) => row.kotaTujuan,
       key: "kotaTujuan",
     },
@@ -63,17 +63,12 @@ const SamplePage = () => {
       name: "Action",
       selector: (record) => (
         <>
-          {/* <Button
-            onClick={() => handleView(record.id_price_mitra)}
-            type="primary"
-          >
-            <EditOutlined />
-          </Button> */}
           <Button
             className="mt-2"
             type="primary"
             onClick={() => handleView(record.id_price_mitra)}
           >
+            
             <span style={{ display: "flex", alignItems: "center" }}>
               <EyeOutlined />
             </span>

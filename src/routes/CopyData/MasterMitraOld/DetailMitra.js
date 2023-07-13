@@ -25,7 +25,7 @@ export default function DetailMitra() {
               {/* <Tab  eventKey="home" title="DATA PROFILE">
                 <FormDataDetailMitra mitraId={mitraId} />
               </Tab> */}
-              <Tab eventKey="home" title="DATA BARU">
+              <Tab eventKey="home" title="DATA PROFILE">
                 <DataBaru mitraId={mitraId} />
               </Tab>
               <Tab eventKey="profile" title="DATA REFERENSI">

@@ -122,6 +122,7 @@ const SamplePage = () => {
             formik.setFieldValue("typeof", data.data.typeof);
             formik.setFieldValue("fax", data.data.fax);
             formik.setFieldValue("email", data.data.email);
+            formik.setFieldValue("jenis_usaha", data.data.jenis_usaha);
             setDetailSp(data.detail_sp);
           }, 1000);
         }
@@ -220,10 +221,10 @@ const SamplePage = () => {
                 <Form.Label>Type Of Business</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    name="typeof"
-                    value={formik.values.typeof}
+                    name="jenis_usaha"
+                    value={formik.values.jenis_usaha}
                     onChange={formik.handleChange}
-                    isInvalid={!!formik.errors.typeof}
+                    isInvalid={!!formik.errors.jenis_usaha}
                   />
                 </InputGroup>
               </Form.Group>
@@ -307,10 +308,10 @@ const SamplePage = () => {
                 <Form.Label>Alamat </Form.Label>
                 <InputGroup>
                   <Form.Control
-                    name="alamat_npwp"
-                    value={formik.values.alamat_npwp}
+                    name="alamat_kantor"
+                    value={formik.values.alamat_kantor}
                     onChange={formik.handleChange}
-                    isInvalid={!!formik.errors.alamat_npwp}
+                    isInvalid={!!formik.errors.alamat_kantor}
                   />
                 </InputGroup>
               </Form.Group>

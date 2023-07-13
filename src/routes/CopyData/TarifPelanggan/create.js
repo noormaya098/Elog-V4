@@ -305,12 +305,12 @@ const SamplePage = () => {
       <Card>
         <Form onSubmit={formik.handleSubmit}>
           <Row style={{ marginBottom: "10px" }}>
-            <Col span={8}>
+            <Col span={8} >
               <h4>Buat Tarif Customer Baru</h4>
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={3}>
+            <Col span={10} className="d-flex justify-content-end">
               <Button onClick={formik.handleSubmit} type="submit">
                 Simpan Tarif
               </Button>
@@ -487,9 +487,10 @@ const SamplePage = () => {
 
               </Col>
             </Row>
-          <Row style={{ marginBottom: "10px", borderTop:'solid', borderColor:'#000' }}>
-            <><hr/></> 
-            
+            <br />
+            <hr />
+            <br />
+          <Row >
             <Col span={8} className="mt-2">
               <h5>Biaya Tambahan</h5>
             </Col>
