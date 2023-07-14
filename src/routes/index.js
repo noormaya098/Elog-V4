@@ -317,6 +317,12 @@ const App = ({ match }) => (
       />
 
       <Route
+        path={`${match.url}masterdata/operasional/detailsp/:idmp`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/HalamanDetail")
+        )}
+      />
+      <Route
         path={`${match.url}masterdata/purchasing/detailsp/:idmp`}
         component={asyncComponent(() =>
           import("./MasterData/SP List/HalamanDetail")

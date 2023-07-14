@@ -33,8 +33,8 @@ const SidebarLogo = ({sidebarCollapsed, setSidebarCollapsed}) => {
         {navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR && width >= TAB_SIZE ?
           <img alt="lo" src={(`https://avatars.githubusercontent.com/u/130539563?s=200&v=4`)}/> :
           themeType === THEME_TYPE_LITE ?
-            <img alt="logo1" src={("/assets/images/logo-white.png")}/> :
-            <img alt="logo2" src={("/assets/images/logo.png")}/>}
+            <img alt="logo1" src={("https://elogs.eurekalogistics.co.id/assets/admin/dist/img/logo-eurekalogistics.png")}/> :
+            <img alt="logo2" width="150px" src={("https://elogs.eurekalogistics.co.id/assets/admin/dist/img/logo-eurekalogistics.png")}/>}
       </Link>
     </div>
   );
