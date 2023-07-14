@@ -22,7 +22,7 @@ function SPListlama() {
   // const [Pagginations, setPagginations] = useState(1)
   const history = useHistory();
 
-  const dataapi = async (page = 1 , pageSize = 10) => {
+  const dataapi = async (page = 1, pageSize = 10) => {
     try {
       setLoading(true)
       const isi = await axios.get(
@@ -167,7 +167,7 @@ function SPListlama() {
         let year = date.getFullYear();
         let month = (1 + date.getMonth()).toString().padStart(2, '0');
         let day = date.getDate().toString().padStart(2, '0');
-    
+
         return (
           <Tag color="green">{`${year}-${month}-${day}`}</Tag> // return dalam format yyyy-mm-dd
         );
@@ -200,11 +200,11 @@ function SPListlama() {
         return row?.approveAct === "Y" ? (
           <Tag color="green">Approved <br /> {tanggal}</Tag>
         ) : (row?.approveAct === "N" && tanggal === "Invalid date") ? (
-          <Tag color="yellow">Waiting <br/> {tanggal ? "-" : tanggal}</Tag>
+          <Tag color="yellow">Waiting <br /> {tanggal ? "-" : tanggal}</Tag>
         ) : (row?.approveAct === "N" && tanggal !== "Invalid date") ?
-        (
-          <Tag color="red">Diverted <br/> {tanggal }</Tag>
-        ) : ""
+          (
+            <Tag color="red">Diverted <br /> {tanggal}</Tag>
+          ) : ""
       },
       width: "170px",
     },
@@ -255,7 +255,7 @@ function SPListlama() {
     // },
   ];
 
-  const RowClick = (row)=>{
+  const RowClick = (row) => {
     history.push(`/masterdata/splistdetailakunting/${row.idmp}`);
   }
   const buttonarahin = (idmp) => {
@@ -263,8 +263,8 @@ function SPListlama() {
     history.push(`/masterdata/splistdetailakunting/${idmp}`);
   };
 
-  const handlePageChange = async (page , pageSize) => {
-    dataapi(page ,pageSize)
+  const handlePageChange = async (page, pageSize) => {
+    dataapi(page, pageSize)
     // setPagginations(page)
     // setPagination({ ...pagination, currentPage: page });
     // await dataapi(page, search);
@@ -273,6 +273,8 @@ function SPListlama() {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
+
+
   return (
     <div>
       <Card>
@@ -288,18 +290,21 @@ function SPListlama() {
                 />
               </Form.Group>
             </div>
+            <style>
+              {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+          }
+        `}
+            </style>
+
             {(Loading ? (<img src={ElogLoadingGif}></img>) : (
               <DataTable
                 columns={columns}
                 title="SP List"
                 data={combinedData}
                 onRowClicked={RowClick}
-
-                // pagination
-              // paginationServer
-              // paginationPerPage={pagination.limit}
-              // paginationTotalRows={isiData.length}
-              // onChangePage={handlePageChange}
+                className="myCustomTable"
               />
             ))}
             <div className="mt-3 d-flex justify-content-end">

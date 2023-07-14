@@ -450,7 +450,7 @@ function DriverTableBaru() {
         validationSchema: Yup.object({
             nik: Yup.string()
                 .required('Nik harus diisi')
-                .max(6,"Tidak Boleh Melebihi 6 Karakter")
+                .max(6, "Tidak Boleh Melebihi 6 Karakter")
                 .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
             noktp: Yup.number().required('No KTP harus diisi').integer('Nik harus berupa angka'),
             namadriver: Yup.string().required('Nama Driver harus diisi'),
@@ -845,7 +845,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp1 && formik.errors.notelp1 ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input notelp1"
                                             name="notelp1"
                                             onChange={formik.handleChange}
@@ -859,7 +859,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp2 && formik.errors.notelp2 ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input notelp2"
                                             name="notelp2"
                                             onChange={formik.handleChange}
@@ -956,7 +956,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.norekening && formik.errors.norekening ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input nomor rekening"
                                             name="norekening"
                                             onChange={formik.handleChange}
@@ -985,7 +985,15 @@ function DriverTableBaru() {
                         columns={columns}
                         data={DataAwal}
                         onRowClicked={DetailRow}
+                        className="myCustomTable"
                     />
+                    <style>
+                        {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+          }
+        `}
+                    </style>
                     <div className='d-flex justify-content-end mt-3'>
                         <Pagination
                             showSizeChanger

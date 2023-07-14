@@ -232,6 +232,13 @@ function SPList() {
                 <br />
               </Col>
             </div>
+            <style>
+                    {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+          }
+        `}
+                </style>
             <DataTable
               columns={columns}
               data={combinedData}

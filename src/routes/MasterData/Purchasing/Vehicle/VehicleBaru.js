@@ -202,7 +202,7 @@ function VehicleBaru() {
         }
     };
 
-    
+
     const ModalONVehicle = async (vehicleId) => {
         try {
             Swal.fire({
@@ -243,7 +243,7 @@ function VehicleBaru() {
         {
             name: 'No',
             selector: row => row.no,
-            width:"80px",
+            width: "80px",
         },
         {
             name: 'Image',
@@ -306,7 +306,7 @@ function VehicleBaru() {
             )
         },
     ];
-    const [TotalPage , setTotalPage]=useState("")
+    const [TotalPage, setTotalPage] = useState("")
 
     const ApiAwal = async (page = 1) => {
         try {
@@ -1102,6 +1102,13 @@ function VehicleBaru() {
                     </Modal>
 
                 </>
+                <style>
+                    {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+          }
+        `}
+                </style>
                 <DataTable
                     columns={columns}
                     data={DataAwal}
