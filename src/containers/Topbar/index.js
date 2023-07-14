@@ -54,7 +54,7 @@ const Topbar = () => {
           />
         </div> : null}
       <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer">
-        <img alt="" src={("/assets/images/w-logo.png")}/></Link>
+        <img alt="" width="80px" src={("https://elogs.eurekalogistics.co.id/assets/admin/dist/img/logo-eurekalogistics.png")}/></Link>
 
       <SearchBox styleName="gx-d-none gx-d-lg-block gx-lt-icon-search-bar-lg"
                  placeholder="Search in app..."

@@ -205,7 +205,7 @@ function SPList() {
 
   const RowClick = (row) => {
     console.log("RowClick", row);
-    history.push(`/masterdata/purchasing/detailsp/${row.idmp}`);
+    history.push(`/masterdata/operasional/detailsp/${row.idmp}`);
   }
 
   const buttonarahin = (idmp) => {
@@ -232,6 +232,13 @@ function SPList() {
                 <br />
               </Col>
             </div>
+            <style>
+                    {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+          }
+        `}
+                </style>
             <DataTable
               columns={columns}
               data={combinedData}

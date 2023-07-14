@@ -104,7 +104,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     onClick={() => createap()}
                     variant="warning"
                     >
-                    ADD AP 
+                    ADD AP
                
                   </Button>
                 </div>
@@ -382,14 +382,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <i className="icon icon-widgets" />
                         <span>
                           <IntlMessages id="Master Vehicle" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item key="vehiclepurchs">
-                      <Link to="/purchasing/mastermitra">
-                        <i className="icon icon-widgets" />
-                        <span>
-                          <IntlMessages id="Master Mitra" />
                         </span>
                       </Link>
                     </Menu.Item>
