@@ -1,4 +1,4 @@
-import { Card, Space, Tag } from "antd";
+import { Card, Space, Tag, Pagination } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Row, Form } from "react-bootstrap";
@@ -12,14 +12,21 @@ const SamplePage = () => {
   const [dataapiawal, setDataapiawal] = useState([]);
   const [mitraId, setMitraID] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [DataPagination, setDataPagination] = useState("");
+  const [SearchData, setSearchData] = useState("");
+  const [PilihTahun , setTahun] = useState (""); 
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     totalData: 0,
   });
   const [filter, setFilter] = useState("");
+
+  const ubahHalaman = (page) => {
+    fetchData(page);
+  };
   const columns = [
     {
-      name: "Title",
+      name: "No.",
       selector: (row) => row.no,
       width: "80px",
     },
@@ -37,15 +44,15 @@ const SamplePage = () => {
         ),
       width: "125px",
     },
-    {
-      name: "Code",
-      selector: (row) => row.mitraCode,
-      width: "100px",
-    },
+    // {
+    //   name: "Code",
+    //   selector: (row) => row.mitraCode,
+    //   width: "100px",
+    // },
     {
       name: "Mitra Name",
       selector: (row) => row.mitraName,
-      width: "250px",
+      width: "100px",
     },
     {
       name: "Mitra Address",
@@ -55,11 +62,16 @@ const SamplePage = () => {
     {
       name: "Awal Kontrak",
       selector: (row) => row.awalKontrak,
-      width: "100px",
+      width: "120px",
+    },
+    {
+      name: "Akhir Kontrak",
+      selector: (row) => row.akhirKontrak,
+      width: "120px",
     },
     {
       name: "Kontrak",
-      selector: (row) => `-`,
+      selector: (row) => row.kontrak,
       width: "100px",
     },
     {
@@ -68,17 +80,22 @@ const SamplePage = () => {
       width: "250px",
     },
     {
-      name: " Pic",
+      name: "Pic",
       selector: (row) => row.pic,
       width: "100px",
     },
     {
-      name: " Memo",
-      selector: (row) => `-`,
-      width: "100px",
+      name: "Telepon",
+      selector: (row) => row.mitraTelephone,
+      width: "150px",
     },
+    // {
+    //   name: " Memo",
+    //   selector: (row) => `-`,
+    //   width: "100px",
+    // },
     {
-      name: " Opsii",
+      name: " Opsi",
       width: "100px",
       selector: (row) => (
         <>
@@ -109,11 +126,11 @@ const SamplePage = () => {
     history.push(`/mastermitradetaill/${mitraId}`);
   };
 
-  useEffect(() => {
-    const apiawal = async () => {
+
+    const fetchData = async (page = 1, perhalaman = 10) => {
       setLoading(true);
       httpClient
-        .get("mitra/get-mitra?limit=10&page=1")
+        .get(`mitra/get-mitra?limit=${perhalaman}&page=${page}`)
         .then(({ data }) => {
           if (data.status.code === 200) {
             const dataawal = data.data.order;
@@ -129,7 +146,9 @@ const SamplePage = () => {
           console.log(error.message);
         });
     };
-    apiawal();
+
+    useEffect(() => {
+      fetchData();
   }, [pageInfo.currentPage, filter]);
 
   const handlePageChange = (page) => {
@@ -142,6 +161,8 @@ const SamplePage = () => {
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   };
+
+ 
 
   return (
     <div>
@@ -161,12 +182,19 @@ const SamplePage = () => {
             <DataTable
               columns={columns}
               data={dataapiawal}
-              pagination
-              paginationServer
-              paginationTotalRows={pageInfo.totalData}
-              onChangePage={handlePageChange}
-              progressPending={loading}
+              // pagination
+              // paginationServer
+              // paginationTotalRows={pageInfo.totalData}
+              // onChangePage={handlePageChange}
+              // progressPending={loading}
             />
+              <Pagination
+            onChange={ubahHalaman}
+            showSizeChanger
+            // onShowSizeChange={ubahPerHalaman}
+            defaultCurrent={100}
+            total={DataPagination}
+          />
           </Col>
         </Row>
       </Card>

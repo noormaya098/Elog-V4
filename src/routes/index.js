@@ -168,6 +168,12 @@ const App = ({ match }) => (
         )}
       />
       <Route
+        path={`${match.url}akunting/detailaplist`}
+        component={asyncComponent(() =>
+          import("./MasterData/SP List/Akunting/APList/DetailAPList")
+        )}
+      />
+      <Route
         path={`${match.url}mastermitra`}
         component={asyncComponent(() => import("./CopyData/MasterMitraOld/Index"))}
       />

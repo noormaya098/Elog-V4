@@ -13,7 +13,13 @@ import {
 import IntlMessages from "../../util/IntlMessages";
 import { useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
-import { CarTwoTone, SmileTwoTone, ScheduleTwoTone, ProfileTwoTone, CheckSquareTwoTone } from '@ant-design/icons';
+import {
+  CarTwoTone,
+  SmileTwoTone,
+  ScheduleTwoTone,
+  ProfileTwoTone,
+  CheckSquareTwoTone,
+} from "@ant-design/icons";
 const { SubMenu } = Menu;
 
 const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
@@ -68,7 +74,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
           >
             <MenuItemGroup key="main">
               {jobdesk === "sales" ? (
-
                 <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
                   <Button
                     size="lg"
@@ -85,30 +90,34 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               )}
               {jobdesk === "akunting" ? (
                 <>
-                <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
-                  <Button
-                    size="lg"
-                    style={{ width: 180, backgroundColor: "#00a65a", color: "white", marginTop: "-35px" }}
-                    className="d-flex align-items-center justify-content-center"
-                    onClick={() => createar()}
-                    variant="#00a65a"
+                  <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
+                    <Button
+                      size="lg"
+                      style={{
+                        width: 180,
+                        backgroundColor: "#00a65a",
+                        color: "white",
+                        marginTop: "-35px",
+                      }}
+                      className="d-flex align-items-center justify-content-center"
+                      onClick={() => createar()}
+                      variant="#00a65a"
                     >
-                    ADD AR
-                  </Button>
-                </div>
-                <div className="d-flex justify-content-center gx-sidebar-content w-100 mt-5 text-center ">
-                  <Button
-                    size="lg"
-                    style={{ width: 180,  color: "white", marginTop: "-35px" }}
-                    className="d-flex align-items-center justify-content-center"
-                    onClick={() => createap()}
-                    variant="warning"
+                      ADD AR
+                    </Button>
+                  </div>
+                  <div className="d-flex justify-content-center gx-sidebar-content w-100 mt-5 text-center ">
+                    <Button
+                      size="lg"
+                      style={{ width: 180, color: "white", marginTop: "-35px" }}
+                      className="d-flex align-items-center justify-content-center"
+                      onClick={() => createap()}
+                      variant="warning"
                     >
-                    ADD AP 
-               
-                  </Button>
-                </div>
-                    </>
+                      ADD AP
+                    </Button>
+                  </div>
+                </>
               ) : (
                 <></>
               )}
@@ -266,11 +275,10 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <span>Master Mitra</span>
                       </Link>
                     </Menu.Item>
-                    
                   </SubMenu>
-                  
+
                   <SubMenu key="Data Wilayah" title="Data Wilayah">
-                  <Menu.Item key="Data Wilayah">
+                    <Menu.Item key="Data Wilayah">
                       <Link to="/masteralamat">
                         <i className="icon icon-widgets" />
                         <span>Data Alamat All</span>
@@ -295,11 +303,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <span>Data Provinsi</span>
                       </Link>
                     </Menu.Item>
-                    
                   </SubMenu>
-                  
 
-                  <SubMenu key="AP List" title="AP List">
+                  {/* <SubMenu key="AP List" title="AP List">
                     <Menu.Item key="SP_AP_LIST">
                       <Link to="/akunting/ap/">
                         <i className="icon icon-widgets" />
@@ -308,14 +314,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Menu.Item>
 
 
-
-                    {/* <Menu.Item key="SP_AP_LIST">
-                    <Link to="/akunting/apaddon">
-                      <i className="icon icon-widgets" />
-                      <span>AP AddOn</span>
-                    </Link>
-                  </Menu.Item> */}
-                  </SubMenu>
+                  </SubMenu> */}
                   <SubMenu key="Tarif" title="Tarif">
                     <Menu.Item key="Tarif Mitra">
                       <Link to="/tarifmitra">
@@ -337,7 +336,6 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                     </Menu.Item>
                   </SubMenu>
                 </>
-
               ) : null}
 
               {jobdesk === "purchasing" ? (

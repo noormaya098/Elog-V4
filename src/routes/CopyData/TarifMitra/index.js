@@ -137,6 +137,11 @@ const SamplePage = () => {
     router.push(`/tarifmitradetail/${id}`);
   };
 
+  // const handleTableClick = () => {
+  //   setTableClicked(!isTableClicked);
+  //   history.push(`/akunting/detailaplist/`);
+  // };
+
   const handleDelete = (id) => {
     Modal.confirm({
       title: "Are you sure you want to delete this Tarif?",
@@ -183,7 +188,8 @@ const SamplePage = () => {
             </Col> */}
           </Row>
         </div>
-        <DataTable columns={columns} data={listData} />
+       
+        <DataTable columns={columns} data={listData}/>
         <div className="mt-5 d-flex justify-content-end">
           <Pagination
             onChange={ubahHalaman}

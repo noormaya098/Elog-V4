@@ -610,7 +610,7 @@ function DataBaru({ mitraId, onSubmit }) {
               <Form.Item
                 label="Provinsi :"
                 style={{ fontWeight: "bold" }}
-                name="npwp_provisin"
+                name="npwp_provinsi"
               >
                 <Input />
               </Form.Item>

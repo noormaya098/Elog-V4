@@ -220,6 +220,15 @@ const SamplePage = () => {
           </Col>
           {/* <Button type="default">Cari Daftar Harga</Button> */}
         </div>
+        <style>
+          {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: 	#ADD8E6;
+          }
+          
+        `}
+        </style>
         <Table
           dataSource={listData}
           columns={columns}
