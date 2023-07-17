@@ -238,21 +238,27 @@ function SplistOperasional() {
                 columns={columns}
                 data={combinedData}
                 onRowClicked={buttonarahin}
-                // pagination
-                // paginationServer
-                // paginationTotalRows={totalRows}
-                // onChangePage={setPage}
+              // pagination
+              // paginationServer
+              // paginationTotalRows={totalRows}
+              // onChangePage={setPage}
               />))}
-              <div className="mt-3 d-flex justify-content-end">
-
-            <Pagination
-              showSizeChanger
-              onShowSizeChange={setPage}
-              onChange={setPage}
-              defaultCurrent={1}
-              total={totalRows}
+            <div className="mt-3 d-flex justify-content-end">
+              <style>
+                {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+          }
+        `}
+              </style>
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={setPage}
+                onChange={setPage}
+                defaultCurrent={1}
+                total={totalRows}
               />
-              </div>
+            </div>
           </Col>
         </Row>
       </Card>

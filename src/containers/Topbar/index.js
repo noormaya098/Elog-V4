@@ -10,7 +10,7 @@ import UserInfo from "../../components/UserInfo";
 import AppNotification from "../../components/AppNotification";
 import MailNotification from "../../components/MailNotification";
 import Auxiliary from "util/Auxiliary";
-
+import elogpng from "../Sidebar/elog logo.png"
 
 import {NAV_STYLE_DRAWER, NAV_STYLE_FIXED, NAV_STYLE_MINI_SIDEBAR, TAB_SIZE} from "../../constants/ThemeSetting";
 import {useDispatch, useSelector} from "react-redux";
@@ -54,7 +54,7 @@ const Topbar = () => {
           />
         </div> : null}
       <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer">
-        <img alt="" src={("/assets/images/w-logo.png")}/></Link>
+        <img alt="" width="80px" src={elogpng}/></Link>
 
       <SearchBox styleName="gx-d-none gx-d-lg-block gx-lt-icon-search-bar-lg"
                  placeholder="Search in app..."

@@ -2,7 +2,7 @@ import { Button, Card, Modal, Form, Input, Pagination, Upload, DatePicker, Selec
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Alert } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -18,6 +18,7 @@ function DriverTableBaru() {
     const [DetailId, setDetailId] = useState("")
     const [loading, setLoading] = useState(false);
     const [CariDriver, setCariDriver] = useState("")
+    const [TotalPages, setTotalPages] = useState("")
     const [CariDriverAktif, setCariDriverAktif] = useState("")
     const { jenisKepemilikan, setjenisKepemilikan } = ZustandStore((state) => ({
         jenisKepemilikan: state.jenisKepemilikan,
@@ -183,6 +184,7 @@ function DriverTableBaru() {
             }
             )
             setDataAwal(data.data.data.order)
+            setTotalPages(data.data.data.totalData)
             console.log(data.data.data);
         } catch (error) {
 
@@ -450,7 +452,7 @@ function DriverTableBaru() {
         validationSchema: Yup.object({
             nik: Yup.string()
                 .required('Nik harus diisi')
-                .max(6,"Tidak Boleh Melebihi 6 Karakter")
+                .max(6, "Tidak Boleh Melebihi 6 Karakter")
                 .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
             noktp: Yup.number().required('No KTP harus diisi').integer('Nik harus berupa angka'),
             namadriver: Yup.string().required('Nama Driver harus diisi'),
@@ -513,7 +515,11 @@ function DriverTableBaru() {
 
         <div>
             <Card>
+                <Col>
+                    <h5>Halaman Add Driver</h5>
+                </Col>
                 <Row>
+
                     <Col sm={6}>
                         <Button size='default'
                             onClick={() => {
@@ -845,7 +851,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp1 && formik.errors.notelp1 ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input notelp1"
                                             name="notelp1"
                                             onChange={formik.handleChange}
@@ -859,7 +865,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp2 && formik.errors.notelp2 ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input notelp2"
                                             name="notelp2"
                                             onChange={formik.handleChange}
@@ -956,7 +962,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.norekening && formik.errors.norekening ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input nomor rekening"
                                             name="norekening"
                                             onChange={formik.handleChange}
@@ -986,12 +992,21 @@ function DriverTableBaru() {
                         data={DataAwal}
                         onRowClicked={DetailRow}
                     />
+                    <style>
+                        {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: #E3EAE7;
+          }
+          
+        `}
+                    </style>
                     <div className='d-flex justify-content-end mt-3'>
                         <Pagination
                             showSizeChanger
                             onChange={onShowSizeChange}
                             defaultCurrent={1}
-                            total={500}
+                            total={TotalPages}
                         />
                     </div>
                 </Row>

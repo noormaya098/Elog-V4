@@ -36,7 +36,7 @@ function SJ() {
   const [selectedMitra, setSelectedMitra] = useState([])
   const [BusetApi, setBusetApi] = useState("")
   const [bubrenchApi, setbubrenchApi] = useState("")
-  const dataapi = async (page = 1, size = 10 , value="") => {
+  const dataapi = async (page = 1, size = 10, value = "") => {
     try {
       setLoading(true)
       const isi = await axios.get(
@@ -83,7 +83,7 @@ function SJ() {
     dataapi()
     // dataapi(pagination.currentPage);
     SMFilter()
-  }, [search, KodeCabangValue , BusetApi , bubrenchApi,selectedMitra]);
+  }, [search, KodeCabangValue, BusetApi, bubrenchApi, selectedMitra]);
 
   const columns = [
     {
@@ -227,8 +227,8 @@ function SJ() {
   ];
 
 
-  const buttonarahin = (id) => {
-    history.push(`/masterdata/detailsjlist/${id}`);
+  const buttonarahin = (row) => {
+    history.push(`/masterdata/detailsjlist/${row.id}`);
   };
 
   const handlePageChange = async (page) => {
@@ -271,22 +271,22 @@ function SJ() {
     label: item.NamaMitra,
     name: "mitra"
   }))
-  const BuStateOptions = BuState && [{value: "", label: "-"}].concat(
+  const BuStateOptions = BuState && [{ value: "", label: "-" }].concat(
     BuState.map((item) => ({
       value: item.buId,
       label: item.NamaMitra,
       name: "bu"
     }))
   );
-  
-  const bu_brenchOptions = buBrench && [{value: "", label: "-"}].concat(buBrench.map((item) => ({
+
+  const bu_brenchOptions = buBrench && [{ value: "", label: "-" }].concat(buBrench.map((item) => ({
     value: item.buBrenchId,
     label: item.code,
     name: "bubrench"
   })))
 
 
-  
+
   const handleMitraChange = (e, option) => {
     // console.log(`e`,e);
     // console.log(`option`,option);
@@ -295,22 +295,22 @@ function SJ() {
     } else if (option.name === "bubrench") {
       setbubrenchApi(e)
     } else if (option?.[0]?.name === "mitra") {
-      console.log(`ini mitra 1`,e);
+      console.log(`ini mitra 1`, e);
     } else if (option?.[1]?.name === "mitra") {
-      console.log(`ini mitra 2`,e);
+      console.log(`ini mitra 2`, e);
     } else if (option?.[2]?.name === "mitra") {
-      console.log(`ini mitra 3`,e);
+      console.log(`ini mitra 3`, e);
     } else if (e === "mitra") {
-      console.log(`ini mitra 3`,e);
+      console.log(`ini mitra 3`, e);
     }
   }
- 
+
 
   const handleMitraChanges = (value, option) => {
     if (value.length <= 3) {
       setSelectedMitra(value);
-     
- 
+
+
     }
   };
 
@@ -395,11 +395,21 @@ function SJ() {
         </Row>
         <Row>
           <Col>
+            <style>
+              {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: #C7E1FB;
+          }
+          
+        `}
+            </style>
             {(loading ? (<img src={LoadingElogGif} width="1500px"></img>) : (
               <DataTable
                 columns={columns}
                 data={isiData}
                 title="SJ List"
+                onRowClicked={buttonarahin}
               />
             ))}
             <div className="mt-3 d-flex justify-content-end">
