@@ -211,9 +211,11 @@ const SamplePage = () => {
       <Card>
         <h4>Data Tarif Mitra</h4>
         <div>
-          <Row>
+          <Row className="mt-4 mb-2">
             <Col sm={4}>
+            <label htmlFor="muatKotaSelect">Search :</label>
             <Select
+          
               value={muatKota}
               name="namaKota"
               showSearch
@@ -229,9 +231,9 @@ const SamplePage = () => {
                 </Select.Option>
               ))}
             </Select>
-            
+           
             </Col>
-            <Col sm={12} className="d-flex justify-content-end ">
+            <Col sm={8} className="d-flex justify-content-end ">
               <Button type="primary" onClick={handleAdd}>
                 New Tarif
               </Button>
