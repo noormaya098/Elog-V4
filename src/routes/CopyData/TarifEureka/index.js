@@ -7,11 +7,10 @@ import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  FormOutlined
 } from "@ant-design/icons";
 
-
 const SamplePage = () => {
-
   const router = useHistory();
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
@@ -20,10 +19,9 @@ const SamplePage = () => {
     router.push(`/tarif_eureka_edit/${id}`);
   };
 
-  let nomor = 1 
+  let nomor = 1;
 
   const columns = [
-   
     // {
     //   title: "id_price",
     //   dataIndex: "id_price",
@@ -49,7 +47,7 @@ const SamplePage = () => {
     //   dataIndex: nomor,
     //   key: nomor,
     // },
-    
+
     {
       title: "Jenis Pelayanan",
       dataIndex: "service_type",
@@ -78,7 +76,6 @@ const SamplePage = () => {
           tagColor = "blue";
         } else if (text === "Charter") {
           tagColor = "orange";
-        
         }
         return <Tag color={tagColor}>{text}</Tag>;
       },
@@ -134,55 +131,43 @@ const SamplePage = () => {
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => handleView(record.id_price)} type="primary">
-          <span style={{ display: "flex", alignItems: "center" }}>
-              <EyeOutlined />
+            <span style={{ display: "flex", alignItems: "center" }}>
+            <FormOutlined />
             </span>
-         
           </Button>
-          <Button
-          
-            onClick={() => handleDelete(record.id_price)}
-            type="danger"
-          >
+          <Button danger onClick={() => handleDelete(record.id_price)}>
             <span style={{ display: "flex", alignItems: "center" }}>
               <DeleteOutlined />
             </span>
             {/* <DeleteOutlined /> */}
           </Button>
         </Space>
-        
-        
       ),
     },
   ];
   const [listData, setListData] = useState([]);
 
- 
-    const fetchData = async (limit = 10, pageSize = 1) => {
-      try {
-        const response = await httpClient.get(
-          `tarif/get-tarifeureka?limit=${limit}&page=${pageSize}&id_muat_kota=&id_tujuan_kota=&id_kendaraan_jenis=`
-      
-          
-        );
-        const data = response.data;
+  const fetchData = async (limit = 10, pageSize = 1) => {
+    try {
+      const response = await httpClient.get(
+        `tarif/get-tarifeureka?limit=${limit}&page=${pageSize}&id_muat_kota=&id_tujuan_kota=&id_kendaraan_jenis=`
+      );
+      const data = response.data;
 
-        if (data.status.code === 200) {
-          setListData(data.data.order);
-          setTotal(data.data.totalData);
-        } else {
-          console.log("Error: ", data.status.message);
-        }
-      } catch (error) {
-        console.log("Error: ", error.message);
+      if (data.status.code === 200) {
+        setListData(data.data.order);
+        setTotal(data.data.totalData);
+      } else {
+        console.log("Error: ", data.status.message);
       }
-    };
+    } catch (error) {
+      console.log("Error: ", error.message);
+    }
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, []);
-
-
 
   const handleAdd = (id) => {
     router.push(`/tarif_eurekacreate`);
@@ -201,14 +186,11 @@ const SamplePage = () => {
           .post(`tarif/delete-tarifEureka`, datas)
           .then(({ data }) => {
             if (data.status.code === 200) {
-              const newOrder = listData.filter(
-                (item) => item.id_price !== id
-              );
+              const newOrder = listData.filter((item) => item.id_price !== id);
               setListData(newOrder);
               // Reload the data after successful deletion if necessary
               // fetchData();
               window.location.reload();
-
             }
           })
           .catch(function (error) {
@@ -226,40 +208,38 @@ const SamplePage = () => {
   return (
     <div>
       <Card>
-      <h3>
-        Data Tarif Eureka 
-        </h3>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
-      >
-        <Col sm={24} className="d-flex justify-content-end">
-        <Button type="primary" onClick={handleAdd}>
-          New Tarif
-        </Button>
-        </Col>
-        
-        {/* <Button type="default">Cari Pricelist</Button> */}
-      </div>
-      
-      <Table
-        dataSource={listData}
-        columns={columns}
-        scroll={{
-          x: 1300,
-        }}
-        pagination={{
-          showSizeChanger: true,
-          onChange: onShowSizeChange,
-          defaultCurrent: 3,
-          total: 500,
-        }}
-      />
-      
-      {/* <Pagination
+        <h3>Data Tarif Eureka</h3>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "20px",
+          }}
+        >
+          <Col sm={24} className="d-flex justify-content-end">
+            <Button type="primary" onClick={handleAdd}>
+              New Tarif
+            </Button>
+          </Col>
+
+          {/* <Button type="default">Cari Pricelist</Button> */}
+        </div>
+
+        <Table
+          dataSource={listData}
+          columns={columns}
+          scroll={{
+            x: 1300,
+          }}
+          pagination={{
+            showSizeChanger: true,
+            onChange: onShowSizeChange,
+            defaultCurrent: 3,
+            total: 500,
+          }}
+        />
+
+        {/* <Pagination
       showSizeChanger
       onChange={onShowSizeChange}
       defaultCurrent={3}

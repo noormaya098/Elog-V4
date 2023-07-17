@@ -295,9 +295,7 @@ const SamplePage = () => {
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={10} className="d-flex justify-content-end">
-              <Button type="submit">Simpan Tarif</Button>
-            </Col>
+            
           </Row>
           <Row style={{ marginBottom: "10px" }}>
             <Col span={6}>
@@ -462,6 +460,9 @@ const SamplePage = () => {
             </Col>
           </Row>
         </Form>
+        <Col span={24} className="d-flex justify-content-end">
+              <Button type="submit">Simpan Tarif</Button>
+            </Col>
       </Card>
     </div>
   );

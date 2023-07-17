@@ -177,28 +177,15 @@ const SamplePage = () => {
         <h4>
           Detail Master Alamat
         </h4>
-        <Form onSubmit={formik.handleSubmit}>
-          <Row style={{ marginBottom: "10px" }}>
-            <Col span={8}></Col>
-            <Col span={6}></Col>
-            <Col span={10} className="d-flex justify-content-end">
-              <Button
-                style={{ color: "white" }}
-                onClick={() => handleDelete(idMpFix)}
-                type="danger"
-              >
-                Delete
-              </Button>
-              <Button onClick={formik.handleSubmit} type="primary">Save and load photo customer</Button>
-            </Col>
-           
-          </Row>
+        <Form onSubmit={formik.handleSubmit} className="mt-5">  
+         
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Customer Code</Form.Label>
                 <InputGroup>
                   <Form.Control
+                  disabled
                     name="kode_customer"
                     value={formik.values.kode_customer}
                     onChange={formik.handleChange}
@@ -426,6 +413,22 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
+            
+          </Row>
+          <Row className="mt-5" style={{ marginBottom: "10px" }}>
+            <Col span={8}></Col>
+            <Col span={6}></Col>
+            <Col span={10} className="d-flex justify-content-end">
+              <Button
+                style={{ color: "white" }}
+                onClick={() => handleDelete(idMpFix)}
+                type="danger"
+              >
+                Delete
+              </Button>
+              <Button onClick={formik.handleSubmit} type="primary">Save and load photo customer</Button>
+            </Col>
+           
           </Row>
         </Form>
       </Card>

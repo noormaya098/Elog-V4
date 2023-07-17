@@ -17,6 +17,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  FormOutlined
 } from "@ant-design/icons";
 
 const SamplePage = () => {
@@ -117,10 +118,10 @@ const SamplePage = () => {
         <Space size="middle">
           <Button onClick={() => handleView(record.id_price)} type="primary">
             <span style={{ display: "flex", alignItems: "center" }}>
-              <EyeOutlined />
+            <FormOutlined />
             </span>
           </Button>
-          <Button onClick={() => handleDelete(record.id_price)} type="danger">
+          <Button danger onClick={() => handleDelete(record.id_price)} >
             <span style={{ display: "flex", alignItems: "center" }}>
               <DeleteOutlined />
             </span>
@@ -136,7 +137,10 @@ const SamplePage = () => {
     //   key: "status",
     // },
   ];
+  
   const [listData, setListData] = useState([]);
+   const IniRowClick = (record) => {
+   handleView(record.id_price_mitra)};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -230,6 +234,7 @@ const SamplePage = () => {
         `}
         </style>
         <Table
+        onRowClicked={IniRowClick} 
           dataSource={listData}
           columns={columns}
           pagination={{

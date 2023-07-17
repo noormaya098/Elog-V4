@@ -300,9 +300,6 @@ const SamplePage = () => {
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={10} className="d-flex justify-content-end">
-              <Button type="submit">Simpan Tarif</Button>
-            </Col>
           </Row>
           <Row style={{ marginBottom: "10px" }}>
             <Col span={6}>
@@ -418,9 +415,7 @@ const SamplePage = () => {
           </Row>
           <br />
           <hr />
-          <h3>
-            Biaya Penanganan
-          </h3>
+          <h3>Biaya Penanganan</h3>
           <br />
           <Row>
             <Col span={6}>
@@ -430,6 +425,7 @@ const SamplePage = () => {
                   <Form.Control
                     // name="tarif"
                     type="number"
+                    step="0.01" // Menambahkan desimal dengan step 0.01
                     value={Tarif}
                     onChange={(e) => setTarif(e.target.value)}
                     isInvalid={!!formik.errors.tarif}
@@ -464,6 +460,9 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={24} className="d-flex justify-content-end">
+              <Button type="submit">Simpan Tarif</Button>
             </Col>
           </Row>
         </Form>

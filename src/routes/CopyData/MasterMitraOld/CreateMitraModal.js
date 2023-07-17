@@ -53,10 +53,10 @@ const datatest = () => {
           <DataProfile onSubmit={handleSubmit} />
         </Modal.Body>
        <Modal.Footer>
-          <Button type="submit" onClick={datatest}>
+          {/* <Button type="submit" onClick={datatest}>
             Save
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
+          </Button> */}
+          <Button style={{backgroundColor: "grey"}} onClick={handleClose}>
             Close
           </Button>
         </Modal.Footer> 

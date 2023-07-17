@@ -750,10 +750,14 @@ function DataBaru({ mitraId, onSubmit }) {
           </Row>
           <br />
           <hr />
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
+          <Form.Item wrapperCol={{ offset: 8, span: 24 }}>
+           <Row>
+            <Col sm={24}  className="d-flex justify-content-end">
+            <Button type="primary" htmlType="submit" >
               Submit
             </Button>
+            </Col>
+           </Row>
           </Form.Item>
         </Form>
       </Card>

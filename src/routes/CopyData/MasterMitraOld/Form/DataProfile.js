@@ -296,7 +296,12 @@ const SamplePage = () => {
   return (
     <div>
       <Form onSubmit={formik.handleSubmit}>
-       
+      <Col span={24} className="d-flex justify-content-end">
+            <Button type="submit">Save</Button>
+            {/* <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button> */}
+          </Col>
         <Card>
           <h5>NAMA DAN ALAMAT PERUSAHAAN(Sold to Party )</h5>
           <hr />
@@ -1026,15 +1031,7 @@ const SamplePage = () => {
             </Col>
           </Row>
         </Card>
-        <Row style={{ marginBottom: "10px" }}>
-          <Col span={24} className="d-flex justify-content-end">
-            <Button type="submit">Save</Button>
-            {/* <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button> */}
-          </Col>
-          
-        </Row>
+     
 
         {/* <Row style={{ marginBottom: "10px" }}>
           <Col span={8}>

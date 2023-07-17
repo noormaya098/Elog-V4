@@ -251,17 +251,8 @@ const SamplePage = () => {
         <h4>
           New Master Alamat
         </h4>
-        <Form onSubmit={formik.handleSubmit}>
-          <Row style={{ marginBottom: "10px" }}>
-            <Col span={8}></Col>
-            <Col span={3}></Col>
-            <Col span={3}></Col>
-            <Col span={10} className="d-flex justify-content-end">
-              <Button onClick={formik.handleSubmit} type="primary">
-                Save
-              </Button>
-            </Col>
-          </Row>
+        <Form onSubmit={formik.handleSubmit} className="mt-">
+        
 
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
@@ -819,6 +810,16 @@ const SamplePage = () => {
             </Col>
           </Row> */}
         </Form>
+        <Row className="mt-5" style={{ marginBottom: "10px" }}>
+            <Col span={8}></Col>
+            <Col span={3}></Col>
+            <Col span={3}></Col>
+            <Col span={10} className="d-flex justify-content-end">
+              <Button onClick={formik.handleSubmit} style={{backgroundColor: "green", color: "white"}}>
+                Save
+              </Button>
+            </Col>
+          </Row>
       </Card>
     </div>
   );

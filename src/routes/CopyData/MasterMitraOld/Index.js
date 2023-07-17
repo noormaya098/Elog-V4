@@ -1,11 +1,18 @@
-import { Card, Space, Tag, Pagination } from "antd";
+import { Card, Space, Tag, Pagination, Button } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Row, Form } from "react-bootstrap";
+import {  Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { useHistory } from "react-router-dom";
 import CreateMitraModal from "./CreateMitraModal";
 import { httpClient } from "../../../Api/Api";
+import {
+  ExclamationCircleOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  FormOutlined,
+} from "@ant-design/icons";
 
 const SamplePage = () => {
   const history = useHistory();
@@ -14,7 +21,7 @@ const SamplePage = () => {
   const [loading, setLoading] = useState(false);
   const [DataPagination, setDataPagination] = useState("");
   const [SearchData, setSearchData] = useState("");
-  const [PilihTahun , setTahun] = useState (""); 
+  const [PilihTahun, setTahun] = useState("");
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     totalData: 0,
@@ -87,7 +94,7 @@ const SamplePage = () => {
     {
       name: "Telepon",
       selector: (row) => row.mitraTelephone,
-      width: "140px",
+      width: "151px",
     },
     // {
     //   name: " Memo",
@@ -96,18 +103,24 @@ const SamplePage = () => {
     // },
     {
       name: " Opsi",
-      width: "100px",
+      width: "200px",
       selector: (row) => (
         <>
           <Space size="middle">
             <Button
               onClick={() => buttondetailMitra(row.mitraId)}
-              variant="primary"
+              type="primary"
+              className="mt-2"
+            
             >
-              Detail
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <FormOutlined />
+              </span>
             </Button>
-            <Button onClick={() => handleEdit(row.mitraId)} variant="primary">
-              Edit
+            <Button danger onClick={() => handleEdit(row.mitraId)} className="mt-2" >
+              <span style={{ display: "flex", alignItems: "center"}}>
+                <DeleteOutlined />
+              </span>
             </Button>
           </Space>
         </>
@@ -126,29 +139,28 @@ const SamplePage = () => {
     history.push(`/mastermitradetaill/${mitraId}`);
   };
 
+  const fetchData = async (page = 1, perhalaman = 10) => {
+    setLoading(true);
+    httpClient
+      .get(`mitra/get-mitra?limit=${perhalaman}&page=${page}`)
+      .then(({ data }) => {
+        if (data.status.code === 200) {
+          const dataawal = data.data.order;
+          setDataapiawal(dataawal);
+          setPageInfo({
+            currentPage: data.data.currentPage,
+            totalData: data.data.totalData,
+          });
+          setLoading(false);
+        }
+      })
+      .catch(function (error) {
+        console.log(error.message);
+      });
+  };
 
-    const fetchData = async (page = 1, perhalaman = 10) => {
-      setLoading(true);
-      httpClient
-        .get(`mitra/get-mitra?limit=${perhalaman}&page=${page}`)
-        .then(({ data }) => {
-          if (data.status.code === 200) {
-            const dataawal = data.data.order;
-            setDataapiawal(dataawal);
-            setPageInfo({
-              currentPage: data.data.currentPage,
-              totalData: data.data.totalData,
-            });
-            setLoading(false);
-          }
-        })
-        .catch(function (error) {
-          console.log(error.message);
-        });
-    };
-
-    useEffect(() => {
-      fetchData();
+  useEffect(() => {
+    fetchData();
   }, [pageInfo.currentPage, filter]);
 
   const handlePageChange = (page) => {
@@ -161,8 +173,6 @@ const SamplePage = () => {
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   };
-
- 
 
   return (
     <div>
@@ -188,13 +198,13 @@ const SamplePage = () => {
               // onChangePage={handlePageChange}
               // progressPending={loading}
             />
-              <Pagination
-            onChange={ubahHalaman}
-            showSizeChanger
-            // onShowSizeChange={ubahPerHalaman}
-            defaultCurrent={100}
-            total={DataPagination}
-          />
+            <Pagination
+              onChange={ubahHalaman}
+              showSizeChanger
+              // onShowSizeChange={ubahPerHalaman}
+              defaultCurrent={100}
+              total={DataPagination}
+            />
           </Col>
         </Row>
       </Card>

@@ -12,7 +12,12 @@ import {
   Select,
   Pagination,
 } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  FormOutlined,
+} from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
 import DataTable from "react-data-table-component";
@@ -53,7 +58,9 @@ const SamplePage = () => {
     fetchData();
 
     httpClient
-      .get(`customer/get-customer?limit=${limit}&page=${page}&keyword=${customer}`)
+      .get(
+        `customer/get-customer?limit=${limit}&page=${page}&keyword=${customer}`
+      )
       .then(({ data }) => {
         if (data.status.code === 200) {
           setCustomerAddresses(data.data.order);
@@ -171,10 +178,17 @@ const SamplePage = () => {
             Edit
           </Button> */}
           <Button onClick={() => handleDetail(record.custId)} type="primary">
-            Edit Detail
+            <span style={{ display: "flex", alignItems: "center" }}>
+              <FormOutlined />
+            </span>
           </Button>
-          <Button onClick={() => handleDelete(record.custId)} type="primary">
+          {/* <Button onClick={() => handleDelete(record.custId)} type="danger">
             Delete
+          </Button> */}
+          <Button danger onClick={() => handleDelete(record.custId)}>
+            <span style={{ display: "flex", alignItems: "center" }}>
+              <DeleteOutlined />
+            </span>
           </Button>
         </Space>
       ),
@@ -208,7 +222,7 @@ const SamplePage = () => {
             `customer/get-customer-address?id_customer=${customer}`
           );
           const data = response.data;
-  
+
           if (data.status.code === 200 && data.data) {
             setCustomerAddresses(data.data);
           } else {
@@ -218,7 +232,7 @@ const SamplePage = () => {
           console.log("Error: ", error.message);
         }
       };
-  
+
       fetchData();
     }
   };
@@ -241,7 +255,6 @@ const SamplePage = () => {
               onChange={(e) => setCustomer(e)}
             >
               {customerOptionSelect.map((item, index) => (
-          
                 <Select.Option key={item.id} value={item.id}>
                   {item.customer}
                 </Select.Option>
@@ -254,7 +267,15 @@ const SamplePage = () => {
             </Button>
           </Col>
         </Row>
-
+        <style>
+          {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: #C7E1FB;
+          }
+          
+        `}
+        </style>
         <Table
           style={{ width: "100%", overflow: "auto" }}
           dataSource={customerAddresses}
