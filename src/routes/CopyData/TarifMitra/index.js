@@ -36,12 +36,12 @@ const SamplePage = () => {
       width: "8%",
     },
     {
-      name: "Kota Muat",
+      name: "Muat",
       selector: (row) => row.kotaAsal,
       key: "kotaAsal",
     },
     {
-      name: "Kota Bongkar",
+      name: "Bongkar",
       selector: (row) => row.kotaTujuan,
       key: "kotaTujuan",
     },
@@ -99,6 +99,8 @@ const SamplePage = () => {
   ];
   const [listData, setListData] = useState([]);
   const [muatKota, setMuatKota] = useState("");
+  const [kotaTujuan, setKotaTujuan] = useState("");
+  const [kotaTujuannOptionSelect, setKotaTujuanOpionSelect] = useState("");
   const [muatKotaOptionSelect, setMuatKotaOptionsSelect] = useState("");
 
   const IniRowClick = (record) => {
@@ -107,7 +109,7 @@ const SamplePage = () => {
   const fetchData = async (pages = 1) => {
     try {
       const response = await httpClient.get(
-        `tarif/get-tarifMitra?limit=${limit}&page=${pages}&id_muat_kota=${muatKota}&id_tujuan_kota=&id_kendaraan_jenis=`
+        `tarif/get-tarifMitra?limit=${limit}&page=${pages}&id_muat_kota=${muatKota}&id_tujuan_kota=${kotaTujuan}&id_kendaraan_jenis=`
       );
       const data = response.data;
       console.log(data);
@@ -136,6 +138,7 @@ const SamplePage = () => {
       // setMuatKotaOptionsSelect (response.data);
       console.log(response.data);
       setMuatKotaOptionsSelect(response.data);
+      setKotaTujuanOpionSelect(response.data);
       // Cek apakah permintaan berhasil (kode status 200-299)
       if (response.status >= 200 && response.status < 300) {
         // Mengembalikan data yang diterima dari permintaan
@@ -155,7 +158,7 @@ const SamplePage = () => {
   useEffect(() => {
     fetchData();
     getDataSelectt();
-  }, [muatKota]);
+  }, [muatKota, kotaTujuan]);
 
   const ubahHalaman = (pages) => {
     fetchData(pages);
@@ -212,8 +215,8 @@ const SamplePage = () => {
         <h4>Data Tarif Mitra</h4>
         <div>
           <Row className="mt-4 mb-2">
-            <Col sm={4}>
-            <label htmlFor="muatKotaSelect">Search :</label>
+            <Col sm={3}>
+            <label className="mb-2" htmlFor="muatKotaSelect">Search Kota Muat:</label>
             <Select
           
               value={muatKota}
@@ -233,7 +236,28 @@ const SamplePage = () => {
             </Select>
            
             </Col>
-            <Col sm={8} className="d-flex justify-content-end ">
+            <Col sm={3}>
+            <label className="mb-2" htmlFor="muatKotaSelect">Search Kota Tujuan:</label>
+            <Select
+          
+              value={kotaTujuan}
+              name="kotaTujuan"
+              showSearch
+              optionFilterProp="children"
+              placeholder="Select Muat Kota"
+              style={{ width: "100%" }}
+              onChange={(e, options) => {console.log(options); setKotaTujuan(options.value)}}
+            
+            >
+              {kotaTujuannOptionSelect && kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
+                <Select.Option value={item.idKota} >
+                  {item.namaKota}
+                </Select.Option>
+              ))}
+            </Select>
+           
+            </Col>
+            <Col sm={6} className="d-flex justify-content-end mt-4">
               <Button type="primary" onClick={handleAdd}>
                 New Tarif
               </Button>
