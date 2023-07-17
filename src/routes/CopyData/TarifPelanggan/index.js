@@ -9,6 +9,7 @@ import {
   Card,
   Modal,
   Tag,
+  Select,
 } from "antd";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
@@ -19,6 +20,9 @@ import {
   EyeOutlined,
   FormOutlined
 } from "@ant-design/icons";
+import axios from "axios";
+import Baseurl from "../../../Api/BaseUrl";
+import { Row } from "react-bootstrap";
 
 const SamplePage = () => {
   const router = useHistory();
@@ -51,6 +55,13 @@ const SamplePage = () => {
         setLoadingState(false);
         console.log(error.message);
       });
+  };
+  const formatRupiah = (angka) => {
+    const formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    });
+    return formatter.format(angka);
   };
   const columns = [
     // {
@@ -95,6 +106,7 @@ const SamplePage = () => {
       title: "Biaya Kirim",
       dataIndex: "biaya_jalan",
       key: "biaya_jalan",
+      render: (biaya_jalan) => formatRupiah(biaya_jalan),
     },
     // {
     //   title: "Biaya Muat",
@@ -110,7 +122,10 @@ const SamplePage = () => {
       title: "Biaya Lain",
       dataIndex: "biaya_lain",
       key: "biaya_lain",
+      render: (biaya_lain) => formatRupiah(biaya_lain),
     },
+
+   
     {
       title: "Aksi",
       key: "no",
@@ -139,14 +154,20 @@ const SamplePage = () => {
   ];
   
   const [listData, setListData] = useState([]);
+  const [muatKota, setMuatKota] = useState("");
+  const [kotaTujuan, setKotaTujuan] = useState("");
+  const [kotaTujuannOptionSelect, setKotaTujuanOpionSelect] = useState("");
+  const [muatKotaOptionSelect, setMuatKotaOptionsSelect] = useState("");
+
+
    const IniRowClick = (record) => {
    handleView(record.id_price_mitra)};
 
-  useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await httpClient.get(
-          `tarif/get-tarifCustomer?limit=${limit}&page=${currentPage}&id_muat_kota=&id_tujuan_kota=&id_kendaraan_jenis=&id_price=&id_customer=`
+          `tarif/get-tarifCustomer?limit=${limit}&page=${currentPage}&id_muat_kota=${muatKota}&id_tujuan_kota=${kotaTujuan}&id_kendaraan_jenis=&id_price=&id_customer=`
         );
         const data = response.data;
         console.log(data);
@@ -161,8 +182,41 @@ const SamplePage = () => {
       }
     };
 
+    const getDataSelectt = async () => {
+      try {
+        const response = await axios.get(
+          `${Baseurl}tarif/get-select`, 
+          {
+            headers: { 
+              'Authorization': localStorage.getItem('token'),
+            }
+          },
+          
+        );
+        // setMuatKotaOptionsSelect (response.data);
+        console.log(response.data);
+        setMuatKotaOptionsSelect(response.data);
+        setKotaTujuanOpionSelect(response.data);
+        // Cek apakah permintaan berhasil (kode status 200-299)
+        if (response.status >= 200 && response.status < 300) {
+          // Mengembalikan data yang diterima dari permintaan
+          return response.data;
+        
+        } else {
+          // Menangani situasi ketika permintaan tidak berhasil (status error)
+          throw new Error('Permintaan tidak berhasil.');
+        }
+      } catch (error) {
+        // Menangani kesalahan jaringan atau kesalahan lain yang terjadi selama permintaan
+        console.error('Kesalahan saat mengambil data:', error.message);
+        throw error; // Lanjutkan penanganan kesalahan di tempat lain jika perlu
+      }
+    };
+  
+    useEffect(() => {
     fetchData();
-  }, [currentPage, limit]);
+    getDataSelectt();
+  }, [currentPage, limit, muatKota, kotaTujuan]);
 
   const handleAdd = (id) => {
     router.push(`/pelanggantarifcerate/`);
@@ -208,11 +262,9 @@ const SamplePage = () => {
             marginBottom: "20px",
           }}
         >
-          <Col sm={24} className="d-flex justify-content-end">
-            <Button type="primary" onClick={handleAdd}>
-              Tambah Tarif Baru
-            </Button>
-          </Col>
+
+          
+         
           <Col span={4}>
             {/* <Search
             placeholder="Cari Pelanggan"
@@ -233,7 +285,55 @@ const SamplePage = () => {
           
         `}
         </style>
-        <Table
+        <Row>
+            <Col sm={6}>
+            <label className="mb-2" htmlFor="muatKotaSelect" style={{fontWeight: "bold"}}>Search Muat :</label>
+            <Select
+          
+              value={muatKota}
+              name="namaKota"
+              showSearch
+              optionFilterProp="children"
+              placeholder="Select Muat Kota"
+              style={{ width: "100%" }}
+              onChange={(e, options) => {console.log(options); setMuatKota(options.value)}}
+            
+            >
+              {muatKotaOptionSelect && muatKotaOptionSelect.muatKota.map((item, index) => (
+                <Select.Option value={item.idKota} >
+                  {item.namaKota}
+                </Select.Option>
+              ))}
+            </Select>
+            </Col>
+            <Col sm={6}>
+            <label className="mb-2" htmlFor="muatKotaSelect" style={{fontWeight: "bold"}}>Search Bongkar :</label>
+            <Select
+          
+              value={kotaTujuan}
+              name="kotaTujuan"
+              showSearch
+              optionFilterProp="children"
+              placeholder="Select Muat Kota"
+              style={{ width: "100%" }}
+              onChange={(e, options) => {console.log(options); setKotaTujuan(options.value)}}
+            
+            >
+              {kotaTujuannOptionSelect && kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
+                <Select.Option value={item.idKota} >
+                  {item.namaKota}
+                </Select.Option>
+              ))}
+            </Select>
+           
+            </Col>
+            <Col sm={12} className="d-flex justify-content-end mt-2">
+            <Button type="primary" onClick={handleAdd}>
+              Tambah Tarif Baru
+            </Button>
+          </Col>
+          </Row>
+        <Table className="mt-5"
         onRowClicked={IniRowClick} 
           dataSource={listData}
           columns={columns}

@@ -1,7 +1,8 @@
 import { Card, Space, Tag, Pagination, Button } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {  Col, Row, Form } from "react-bootstrap";
+import { Modal } from "antd";
+import { Col, Row, Form } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { useHistory } from "react-router-dom";
 import CreateMitraModal from "./CreateMitraModal";
@@ -16,21 +17,22 @@ import {
 
 const SamplePage = () => {
   const history = useHistory();
+  const [order, setOrder] = useState([]);
   const [dataapiawal, setDataapiawal] = useState([]);
   const [mitraId, setMitraID] = useState(null);
   const [loading, setLoading] = useState(false);
   const [DataPagination, setDataPagination] = useState("");
   const [SearchData, setSearchData] = useState("");
   const [PilihTahun, setTahun] = useState("");
-  const [pageInfo, setPageInfo] = useState({
-    currentPage: 1,
-    totalData: 0,
-  });
+
   const [filter, setFilter] = useState("");
 
-  const ubahHalaman = (page) => {
-    fetchData(page);
-  };
+ 
+
+  // const ubahPerHalaman = (perhalaman) => {
+  //   fetchData(perhalaman);
+  // };
+
   const columns = [
     {
       name: "No.",
@@ -111,14 +113,17 @@ const SamplePage = () => {
               onClick={() => buttondetailMitra(row.mitraId)}
               type="primary"
               className="mt-2"
-            
             >
               <span style={{ display: "flex", alignItems: "center" }}>
                 <FormOutlined />
               </span>
             </Button>
-            <Button danger onClick={() => handleEdit(row.mitraId)} className="mt-2" >
-              <span style={{ display: "flex", alignItems: "center"}}>
+            <Button
+              danger
+              onClick={() => handleDelete(row.mitraId)}
+              className="mt-2"
+            >
+              <span style={{ display: "flex", alignItems: "center" }}>
                 <DeleteOutlined />
               </span>
             </Button>
@@ -147,10 +152,8 @@ const SamplePage = () => {
         if (data.status.code === 200) {
           const dataawal = data.data.order;
           setDataapiawal(dataawal);
-          setPageInfo({
-            currentPage: data.data.currentPage,
-            totalData: data.data.totalData,
-          });
+          setDataPagination(data.data.totalData);
+        
           setLoading(false);
         }
       })
@@ -159,16 +162,46 @@ const SamplePage = () => {
       });
   };
 
+  const ubahHalaman = (page) => {
+    fetchData(page);
+  };
+
+  const handleDelete = (mitraId) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this customer?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This action cannot be undone.",
+      onOk() {
+        const datas = {
+          id: mitraId,
+        };
+        httpClient
+          .post(`mitra/del-mitra`, datas)
+          .then(({ data }) => {
+            if (data.status.code === 200) {
+              const newOrder = order.filter((item) => item.mitraId !== mitraId);
+              setOrder(newOrder);
+              window.location.reload();
+            }
+          })
+          .catch(function (error) {
+            console.log(error.message);
+          });
+      },
+      onCancel() {},
+    });
+  };
+
   useEffect(() => {
     fetchData();
-  }, [pageInfo.currentPage, filter]);
+  }, [ filter]);
 
-  const handlePageChange = (page) => {
-    setPageInfo((prevPageInfo) => ({
-      ...prevPageInfo,
-      currentPage: page,
-    }));
-  };
+  // const handlePageChange = (page) => {
+  //   setPageInfo((prevPageInfo) => ({
+  //     ...prevPageInfo,
+  //     currentPage: page,
+  //   }));
+  // };
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
@@ -180,15 +213,19 @@ const SamplePage = () => {
         <h4>Data Master Mitra</h4>
         <Row>
           <Col>
-            <Row className="d-flex justify-content-end">
+            {/* <Row className="d-flex justify-content-end">
               <Col sm={3}>
                 <Form.Control
                   placeholder={`Cari kode mitra / Nama Mitra`}
                   onChange={handleFilterChange}
                 />
               </Col>
-            </Row>
+            </Row> */}
+           <Row>
+            <Col sm={12} className="d-flex justify-content-end">
             <CreateMitraModal />
+            </Col>
+           </Row>
             <DataTable
               columns={columns}
               data={dataapiawal}
@@ -198,13 +235,14 @@ const SamplePage = () => {
               // onChangePage={handlePageChange}
               // progressPending={loading}
             />
-            <Pagination
-              onChange={ubahHalaman}
-              showSizeChanger
-              // onShowSizeChange={ubahPerHalaman}
-              defaultCurrent={100}
-              total={DataPagination}
-            />
+            <div className="mt-5 d-flex justify-content-end">
+              <Pagination
+                onChange={ubahHalaman}
+                showSizeChanger
+                defaultCurrent={1} // Change this to your desired default page number
+                total={DataPagination}
+              />
+            </div>
           </Col>
         </Row>
       </Card>

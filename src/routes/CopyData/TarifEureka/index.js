@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Card, Modal, Col, Tag, Pagination } from "antd";
+import { Table, Button, Space, Card, Modal, Col, Tag, Pagination, Select, Row} from "antd";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
 import {
@@ -9,6 +9,8 @@ import {
   EyeOutlined,
   FormOutlined
 } from "@ant-design/icons";
+import Baseurl from "../../../Api/BaseUrl";
+import axios from "axios";
 
 const SamplePage = () => {
   const router = useHistory();
@@ -57,9 +59,9 @@ const SamplePage = () => {
         if (text === "Retail") {
           tagColor = "lime";
         } else if (text === "Charter") {
-          tagColor = "magenta";
+          tagColor = "orange";
         } else if (text === "reguler") {
-          tagColor = "green";
+          tagColor = "blue";
         }
         return <Tag color={tagColor}>{text}</Tag>;
       },
@@ -81,19 +83,22 @@ const SamplePage = () => {
       },
     },
     {
-      title: "Tarif",
-      dataIndex: "tarif",
-      key: "tarif",
+      title: 'Tarif',
+      dataIndex: 'tarif',
+      key: 'tarif',
+      render: (tarif) => formatRupiah(tarif), // Menggunakan fungsi formatRupiah untuk mengubah angka menjadi format Rupiah
     },
     {
       title: "Ritase",
       dataIndex: "ritase",
       key: "ritase",
+     
     },
     {
       title: "Uang Jalan",
       dataIndex: "uang_jalan",
       key: "uang_jalan",
+      render: (uang_jalan) => formatRupiah(uang_jalan),
     },
     // {
     //   title: "Status",
@@ -145,12 +150,26 @@ const SamplePage = () => {
       ),
     },
   ];
+
+  const formatRupiah = (angka) => {
+    const formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    });
+    return formatter.format(angka);
+  };
+  
   const [listData, setListData] = useState([]);
+  const [muatKota, setMuatKota] = useState("");
+  const [kotaTujuan, setKotaTujuan] = useState("");
+  const [kotaTujuannOptionSelect, setKotaTujuanOpionSelect] = useState("");
+  const [muatKotaOptionSelect, setMuatKotaOptionsSelect] = useState("");
+
 
   const fetchData = async (limit = 10, pageSize = 1) => {
     try {
       const response = await httpClient.get(
-        `tarif/get-tarifeureka?limit=${limit}&page=${pageSize}&id_muat_kota=&id_tujuan_kota=&id_kendaraan_jenis=`
+        `tarif/get-tarifeureka?limit=${limit}&page=${pageSize}&id_muat_kota=${muatKota}&id_tujuan_kota=${kotaTujuan}&id_kendaraan_jenis=`
       );
       const data = response.data;
 
@@ -165,9 +184,41 @@ const SamplePage = () => {
     }
   };
 
+  const getDataSelectt = async () => {
+    try {
+      const response = await axios.get(
+        `${Baseurl}tarif/get-select`, 
+        {
+          headers: { 
+            'Authorization': localStorage.getItem('token'),
+          }
+        },
+        
+      );
+      // setMuatKotaOptionsSelect (response.data);
+      console.log(response.data);
+      setMuatKotaOptionsSelect(response.data);
+      setKotaTujuanOpionSelect(response.data);
+      // Cek apakah permintaan berhasil (kode status 200-299)
+      if (response.status >= 200 && response.status < 300) {
+        // Mengembalikan data yang diterima dari permintaan
+        return response.data;
+      
+      } else {
+        // Menangani situasi ketika permintaan tidak berhasil (status error)
+        throw new Error('Permintaan tidak berhasil.');
+      }
+    } catch (error) {
+      // Menangani kesalahan jaringan atau kesalahan lain yang terjadi selama permintaan
+      console.error('Kesalahan saat mengambil data:', error.message);
+      throw error; // Lanjutkan penanganan kesalahan di tempat lain jika perlu
+    }
+  };
+
   useEffect(() => {
     fetchData();
-  }, []);
+    getDataSelectt();
+  }, [muatKota, kotaTujuan]);
 
   const handleAdd = (id) => {
     router.push(`/tarif_eurekacreate`);
@@ -216,12 +267,58 @@ const SamplePage = () => {
             marginBottom: "20px",
           }}
         >
-          <Col sm={24} className="d-flex justify-content-end">
+          <Row className="mt-3">
+          <Col sm={12}>
+            <label className="mb-2" htmlFor="muatKotaSelect" style={{fontWeight: "bold"}}>Search Muat :</label>
+            <Select
+          
+              value={muatKota}
+              name="namaKota"
+              showSearch
+              optionFilterProp="children"
+              placeholder="Select Muat Kota"
+              style={{ width: "100%" }}
+              onChange={(e, options) => {console.log(options); setMuatKota(options.value)}}
+            
+            >
+              {muatKotaOptionSelect && muatKotaOptionSelect.muatKota.map((item, index) => (
+                <Select.Option value={item.idKota} >
+                  {item.namaKota}
+                </Select.Option>
+              ))}
+            </Select>
+           
+            </Col>
+            <Col sm={12}>
+            <label className="mb-2" htmlFor="muatKotaSelect" style={{fontWeight: "bold"}}>Search Tujuan :</label>
+            <Select
+          
+              value={kotaTujuan}
+              name="kotaTujuan"
+              showSearch
+              optionFilterProp="children"
+              placeholder="Select Muat Kota"
+              style={{ width: "100%" }}
+              onChange={(e, options) => {console.log(options); setKotaTujuan(options.value)}}
+            
+            >
+              {kotaTujuannOptionSelect && kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
+                <Select.Option value={item.idKota} >
+                  {item.namaKota}
+                </Select.Option>
+              ))}
+            </Select>
+           
+            </Col>
+          </Row>
+          <Row className="mt-4">
+          <Col sm={12} className="d-flex justify-content-end">
             <Button type="primary" onClick={handleAdd}>
               New Tarif
             </Button>
           </Col>
-
+          </Row>
+         
           {/* <Button type="default">Cari Pricelist</Button> */}
         </div>
 

@@ -24,6 +24,14 @@ const SamplePage = () => {
   const handleView = (id) => {
     router.push(`/tarifmitraedit/${id}`);
   };
+
+  const formatRupiah = (angka) => {
+    const formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    });
+    return formatter.format(angka);
+  };
   const columns = [
     // {
     //   name: "No ID",
@@ -34,6 +42,7 @@ const SamplePage = () => {
       name: "No.",
       selector: (row) => row.no,
       width: "8%",
+      
     },
     {
       name: "Muat",
@@ -52,10 +61,11 @@ const SamplePage = () => {
       width: "200px",
     },
     {
-      name: "Biaya Kirim",
-      selector: "tarif",
-      key: "tarif",
-      width: "100px",
+      name: 'Biaya Kirim',
+      selector: 'tarif',
+      key: 'tarif',
+      width: '130px',
+      cell: (row) => formatRupiah(row.tarif), // Menggunakan fungsi formatRupiah untuk mengubah angka menjadi format Rupiah
     },
     {
       name: "Keterangan",
@@ -102,6 +112,7 @@ const SamplePage = () => {
   const [kotaTujuan, setKotaTujuan] = useState("");
   const [kotaTujuannOptionSelect, setKotaTujuanOpionSelect] = useState("");
   const [muatKotaOptionSelect, setMuatKotaOptionsSelect] = useState("");
+
 
   const IniRowClick = (record) => {
    handleView(record.id_price_mitra)};
