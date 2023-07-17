@@ -139,7 +139,15 @@ function Index() {
 
                     )}
                     <div className='d-flex justify-content-end mt-3'>
-
+                        <style>
+                            {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: #C7E1FB;
+          }
+          
+        `}
+                        </style>
                         <Pagination
                             showSizeChanger
                             // onShowSizeChange={onShowSizeChange}

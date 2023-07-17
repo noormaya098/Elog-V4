@@ -19,7 +19,7 @@ import { useFormik } from 'formik'
 import useMitraStore from "../../../zustand/Store/MitraStore";
 
 
-function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
+function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua,NamaMarketing ,JenisBarang}) {
 
   const [modal1Open, setModal1Open] = useState(false);
   const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
@@ -2018,6 +2018,10 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
               <Form.Label>Customer</Form.Label>
               <Form.Control type="text" disabled value={custumer} />
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Marketing</Form.Label>
+              <Form.Control type="text" disabled value={NamaMarketing} />
+            </Form.Group>
           </Form>
         </Col>
         <Col sm={6}>
@@ -2056,18 +2060,28 @@ function FormTable({ isidata, totalPrice, idmp, IsiDataSPSemua }) {
                 }
               />
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Jenis Barang</Form.Label>
+              <Form.Control
+                type="text"
+                disabled
+                value={
+                  JenisBarang
+                }
+              />
+            </Form.Group>
           </Form>
         </Col>
 
-        <Form.Group>
+        {/* <Form.Group>
           <Form.Label>Pickup Address</Form.Label>
           <Form.Control
-            type="email"
+            type="text"
             disabled
             value={isidata[0] ? isidata[0].pickupAddress : SJKosongModal}
           />
           <Form.Text className="text-muted"></Form.Text>
-        </Form.Group>
+        </Form.Group> */}
       </Row>
       <br />
       <Row>

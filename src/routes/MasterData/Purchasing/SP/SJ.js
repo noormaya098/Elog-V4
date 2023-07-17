@@ -227,8 +227,8 @@ function SJ() {
   ];
 
 
-  const buttonarahin = (id) => {
-    history.push(`/masterdata/detailsjlist/${id}`);
+  const buttonarahin = (row) => {
+    history.push(`/masterdata/detailsjlist/${row.id}`);
   };
 
   const handlePageChange = async (page) => {
@@ -399,7 +399,9 @@ function SJ() {
               {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
+            background-color: #C7E1FB;
           }
+          
         `}
             </style>
             {(loading ? (<img src={LoadingElogGif} width="1500px"></img>) : (
@@ -407,6 +409,7 @@ function SJ() {
                 columns={columns}
                 data={isiData}
                 title="SJ List"
+                onRowClicked={buttonarahin}
               />
             ))}
             <div className="mt-3 d-flex justify-content-end">

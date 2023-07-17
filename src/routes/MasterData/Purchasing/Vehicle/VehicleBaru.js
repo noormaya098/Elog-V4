@@ -487,6 +487,9 @@ function VehicleBaru() {
             <Card>
 
                 <>
+                        <Col>
+                        <h5>Halaman Add Vehicle</h5>
+                        </Col>
                     <Row>
                         <Col sm={6}>
                             <Button
@@ -1102,13 +1105,15 @@ function VehicleBaru() {
                     </Modal>
 
                 </>
-                <style>
-                    {`
+                  <style>
+                            {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
+            background-color: #C7E1FB;
           }
+          
         `}
-                </style>
+                        </style>
                 <DataTable
                     columns={columns}
                     data={DataAwal}
