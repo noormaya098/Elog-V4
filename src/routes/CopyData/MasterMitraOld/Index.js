@@ -87,7 +87,7 @@ const SamplePage = () => {
     {
       name: "Telepon",
       selector: (row) => row.mitraTelephone,
-      width: "150px",
+      width: "140px",
     },
     // {
     //   name: " Memo",
