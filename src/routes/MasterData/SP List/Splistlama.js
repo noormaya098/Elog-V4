@@ -290,13 +290,15 @@ function SPListlama() {
                 />
               </Form.Group>
             </div>
-            <style>
-              {`
+              <style>
+                            {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
+            background-color: #C7E1FB;
           }
+          
         `}
-            </style>
+                        </style>
 
             {(Loading ? (<img src={ElogLoadingGif}></img>) : (
               <DataTable

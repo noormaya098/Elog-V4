@@ -85,30 +85,30 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               )}
               {jobdesk === "akunting" ? (
                 <>
-                <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
-                  <Button
-                    size="lg"
-                    style={{ width: 180, backgroundColor: "#00a65a", color: "white", marginTop: "-35px" }}
-                    className="d-flex align-items-center justify-content-center"
-                    onClick={() => createar()}
-                    variant="#00a65a"
+                  <div className="d-flex justify-content-center gx-sidebar-content w-100  text-center ">
+                    <Button
+                      size="lg"
+                      style={{ width: 180, backgroundColor: "#00a65a", color: "white", marginTop: "-35px" }}
+                      className="d-flex align-items-center justify-content-center"
+                      onClick={() => createar()}
+                      variant="#00a65a"
                     >
-                    ADD AR
-                  </Button>
-                </div>
-                <div className="d-flex justify-content-center gx-sidebar-content w-100 mt-5 text-center ">
-                  <Button
-                    size="lg"
-                    style={{ width: 180,  color: "white", marginTop: "-35px" }}
-                    className="d-flex align-items-center justify-content-center"
-                    onClick={() => createap()}
-                    variant="warning"
+                      ADD AR
+                    </Button>
+                  </div>
+                  <div className="d-flex justify-content-center gx-sidebar-content w-100 mt-5 text-center ">
+                    <Button
+                      size="lg"
+                      style={{ width: 180, color: "white", marginTop: "-35px" }}
+                      className="d-flex align-items-center justify-content-center"
+                      onClick={() => createap()}
+                      variant="warning"
                     >
-                    ADD AP
-               
-                  </Button>
-                </div>
-                    </>
+                      ADD AP
+
+                    </Button>
+                  </div>
+                </>
               ) : (
                 <></>
               )}
@@ -205,7 +205,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               )}
               {jobdesk.toLowerCase() === "akunting" ? (
                 <>
-                  <SubMenu key="monitoring" title="Akunting">
+                  <SubMenu key="akuntingg" title="Akunting">
                     <Menu.Item key="SP Lists All">
                       <Link to="/akunting/splistakuntingbaru">
                         <i className="icon icon-widgets" />
@@ -216,6 +216,14 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       <Link to="/akunting/splistwaitingakunting">
                         <i className="icon icon-widgets" />
                         <span>Waiting SP Akunting</span>
+                      </Link>
+                    </Menu.Item>
+                  </SubMenu>
+                  <SubMenu key="monitoring" title="Monitoring">
+                    <Menu.Item key="Data Pesanan Customer">
+                      <Link to="/akunting/splistakuntingbaru">
+                        <i className="icon icon-widgets" />
+                        <span>Approve SP</span>
                       </Link>
                     </Menu.Item>
                   </SubMenu>
@@ -251,6 +259,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </Link>
                     </Menu.Item>
                   </SubMenu>
+                 
                   <SubMenu key="Payment" title="Payment">
                     <Menu.Item key="Payment">
                       <Link to="/akunting/ar/reportpartners/reportpenerimaaninvoice">

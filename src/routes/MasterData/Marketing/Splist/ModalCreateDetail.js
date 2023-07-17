@@ -303,7 +303,6 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
 
     return (
         <div className='mt-3'>
-            <hr />
             <Button type='primary' onClick={() => {
                 setModal1Open(true);
                 formik.resetForm();

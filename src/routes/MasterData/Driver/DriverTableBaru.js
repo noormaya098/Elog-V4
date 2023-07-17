@@ -2,7 +2,7 @@ import { Button, Card, Modal, Form, Input, Pagination, Upload, DatePicker, Selec
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Alert } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -18,6 +18,7 @@ function DriverTableBaru() {
     const [DetailId, setDetailId] = useState("")
     const [loading, setLoading] = useState(false);
     const [CariDriver, setCariDriver] = useState("")
+    const [TotalPages, setTotalPages] = useState("")
     const [CariDriverAktif, setCariDriverAktif] = useState("")
     const { jenisKepemilikan, setjenisKepemilikan } = ZustandStore((state) => ({
         jenisKepemilikan: state.jenisKepemilikan,
@@ -183,6 +184,7 @@ function DriverTableBaru() {
             }
             )
             setDataAwal(data.data.data.order)
+            setTotalPages(data.data.data.totalData)
             console.log(data.data.data);
         } catch (error) {
 
@@ -513,7 +515,11 @@ function DriverTableBaru() {
 
         <div>
             <Card>
+                <Col>
+                    <h5>Halaman Add Driver</h5>
+                </Col>
                 <Row>
+
                     <Col sm={6}>
                         <Button size='default'
                             onClick={() => {
@@ -985,13 +991,14 @@ function DriverTableBaru() {
                         columns={columns}
                         data={DataAwal}
                         onRowClicked={DetailRow}
-                        className="myCustomTable"
                     />
                     <style>
                         {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
+            background-color: #E3EAE7;
           }
+          
         `}
                     </style>
                     <div className='d-flex justify-content-end mt-3'>
@@ -999,7 +1006,7 @@ function DriverTableBaru() {
                             showSizeChanger
                             onChange={onShowSizeChange}
                             defaultCurrent={1}
-                            total={500}
+                            total={TotalPages}
                         />
                     </div>
                 </Row>
