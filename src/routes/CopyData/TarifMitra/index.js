@@ -76,7 +76,7 @@ const SamplePage = () => {
       name: "Jenis Kendaraan",
       selector: "kendaraanJenis",
       key: "kendaraanJenis",
-      width: "200px",
+      width: "150px",
     },
     {
       name: "Biaya Kirim",

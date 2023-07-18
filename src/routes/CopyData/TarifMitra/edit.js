@@ -422,7 +422,7 @@ const SamplePage = () => {
               </Form.Group>
             </Col>
             <Col span={8}>
-            <Form.Group style={{ marginBottom: "10px" }}>
+            {/* <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Ritase</Form.Label>
                 <InputGroup>
                   <Form.Control
@@ -445,7 +445,7 @@ const SamplePage = () => {
                     isInvalid={!!formik.errors.uang_jalan}
                   />
                 </InputGroup>
-              </Form.Group>
+              </Form.Group> */}
             </Col>
           </Row>
         </Form>
