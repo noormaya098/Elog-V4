@@ -244,14 +244,24 @@ function SplistAkuntingBaru() {
                     type="text"
                     placeholder="No SP "
                     onChange={handleFilterChange}
-                    
+
                   />
                 </Col>
               </div>
             </Row>
+            <style>
+              {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: #C7E1FB;
+          }
+          
+        `}
+            </style>
             {loading ? (
               <img className="d-flex justify-content-center" src={elogGif} width="800px" />
             ) : (
+
               <DataTable
                 columns={columns}
                 data={combinedData}

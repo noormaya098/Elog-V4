@@ -59,16 +59,16 @@ const SamplePage = () => {
       dataIndex: "no",
       key: "no",
     },
-    {
-      title: "ID Provinsi",
-      dataIndex: "idProv",
-      key: "idProv",
-    },
-    {
-      title: "ID Kota",
-      dataIndex: "idKota",
-      key: "idKota",
-    },
+    // {
+    //   title: "ID Provinsi",
+    //   dataIndex: "idProv",
+    //   key: "idProv",
+    // },
+    // {
+    //   title: "ID Kota",
+    //   dataIndex: "idKota",
+    //   key: "idKota",
+    // },
     {
       title: "Provinsi",
       dataIndex: "provName",

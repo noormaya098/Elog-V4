@@ -122,6 +122,7 @@ const SamplePage = () => {
             formik.setFieldValue("typeof", data.data.typeof);
             formik.setFieldValue("fax", data.data.fax);
             formik.setFieldValue("email", data.data.email);
+            formik.setFieldValue("jenis_usaha", data.data.jenis_usaha);
             setDetailSp(data.detail_sp);
           }, 1000);
         }
@@ -176,33 +177,19 @@ const SamplePage = () => {
         <h4>
           Detail Master Alamat
         </h4>
-        <Form onSubmit={formik.handleSubmit}>
-          <Row style={{ marginBottom: "10px" }}>
-            <Col span={8}></Col>
-            <Col span={6}></Col>
-            <Col span={10} className="d-flex justify-content-end">
-              <Button
-                style={{ color: "white" }}
-                onClick={() => handleDelete(idMpFix)}
-                type="danger"
-              >
-                Delete
-              </Button>
-              <Button onClick={formik.handleSubmit} type="primary">Save and load photo customer</Button>
-            </Col>
-           
-          </Row>
+        <Form onSubmit={formik.handleSubmit} className="mt-5">  
+         
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Customer Code</Form.Label>
                 <InputGroup>
                   <Form.Control
+                  disabled
                     name="kode_customer"
                     value={formik.values.kode_customer}
                     onChange={formik.handleChange}
                     isInvalid={!!formik.errors.kode_customer}
-                    
                   />
                 </InputGroup>
               </Form.Group>
@@ -221,10 +208,10 @@ const SamplePage = () => {
                 <Form.Label>Type Of Business</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    name="typeof"
-                    value={formik.values.typeof}
+                    name="jenis_usaha"
+                    value={formik.values.jenis_usaha}
                     onChange={formik.handleChange}
-                    isInvalid={!!formik.errors.typeof}
+                    isInvalid={!!formik.errors.jenis_usaha}
                   />
                 </InputGroup>
               </Form.Group>
@@ -308,10 +295,10 @@ const SamplePage = () => {
                 <Form.Label>Alamat </Form.Label>
                 <InputGroup>
                   <Form.Control
-                    name="alamat_npwp"
-                    value={formik.values.alamat_npwp}
+                    name="alamat_kantor"
+                    value={formik.values.alamat_kantor}
                     onChange={formik.handleChange}
-                    isInvalid={!!formik.errors.alamat_npwp}
+                    isInvalid={!!formik.errors.alamat_kantor}
                   />
                 </InputGroup>
               </Form.Group>
@@ -426,6 +413,22 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
+            
+          </Row>
+          <Row className="mt-5" style={{ marginBottom: "10px" }}>
+            <Col span={8}></Col>
+            <Col span={6}></Col>
+            <Col span={10} className="d-flex justify-content-end">
+              <Button
+                style={{ color: "white" }}
+                onClick={() => handleDelete(idMpFix)}
+                type="danger"
+              >
+                Delete
+              </Button>
+              <Button onClick={formik.handleSubmit} type="primary">Save and load photo customer</Button>
+            </Col>
+           
           </Row>
         </Form>
       </Card>

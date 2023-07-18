@@ -4,18 +4,18 @@ import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import mobil from "../../../redux toolkit/store/ZustandStore";
 import Select from 'react-select';
-import Baseurl from "../../../../Api/BaseUrl";
 import Swal from "sweetalert2";
 import { Formik, Field, Form as FormikForm } from 'formik';
 import { Col, Row, Form, Modal, Button, Table } from "react-bootstrap";
 
 import * as Yup from 'yup';
-import EditSPNew from "./EditSPNew";
+import Baseurl from "../../../../../Api/BaseUrl";
+import mobil from "../../../../redux toolkit/store/ZustandStore";
+import EditSPNewModal from "./EditSpNewModal";
 
 
-function EditSP({ alamatInvoice }) {
+function EditBaru({ alamatInvoice }) {
   const [show, setShow] = useState(false);
   const [showSP, setShowSP] = useState(false);
   const { phZustand, setPHZustand } = mobil((state) => ({
@@ -491,7 +491,7 @@ function EditSP({ alamatInvoice }) {
     const Namakendaraan = data.data.data?.jenisKendaraan?.nama_kendaraan_jenis
     // console.log(`apa ini `,KendaraanValue);
     if (valid == undefined) {
-
+    
       setisiTarif(0)
       Swal.fire({
         icon: 'error',
@@ -500,7 +500,7 @@ function EditSP({ alamatInvoice }) {
       })
 
     } else {
-
+      
       return (
         setisiTarif(valid),
         setNameKendaraan(Namakendaraan)
@@ -515,7 +515,7 @@ function EditSP({ alamatInvoice }) {
   const options = detaildestination.map((item, index) => ({
     value: item.id,
     idKota: item.idKota,
-    label: "Kota." + item.pic + "-" + item.address
+    label:"Kota." + item.pic + "-" + item.address
   }));
 
   const EditSPButton = async () => {
@@ -586,7 +586,7 @@ function EditSP({ alamatInvoice }) {
   }))
   // console.log(`detail data`, detailData.detail?.[0].tujuan);
   // const alamatbongkarscroll  =
-  console.log(`KendaraanModal`, KendaraanModal);
+console.log(`KendaraanModal`,KendaraanModal);
 
   const validationSchema = Yup.object().shape({
     alamatMuat: Yup.string()
@@ -603,9 +603,9 @@ function EditSP({ alamatInvoice }) {
     <div>
       <Card>
         <Row>
-          <EditSPNew />
+            <EditSPNewModal/>
           <div className="d-flex justify-content-end">
-            {jobdesk != "sales" && jobdesk != "operasional" ? (
+            {jobdesk != "sales" && jobdesk != "operasional"? (
               <>
                 <Button size="sm" onClick={() => tombolApprove()}>
                   Approve
@@ -683,7 +683,7 @@ function EditSP({ alamatInvoice }) {
                               onChange={(e) => {
                                 setKendaraanValue(e.value);
                                 setNameKendaraan(e.label);
-                                console.log(`KendaraanValue.value`, e);
+                                console.log(`KendaraanValue.value`,e);
                               }}
                             />
                             <Form.Select
@@ -1215,7 +1215,7 @@ function EditSP({ alamatInvoice }) {
         </Row>
         <Row>
           <Col>
-            {/* <tbody>
+              {/* <tbody>
                 {detailData &&
                   detailData.detail &&
                   detailData.detail.map((data, index) => (
@@ -1310,7 +1310,7 @@ function EditSP({ alamatInvoice }) {
                     </>
                   ))}
               </tbody> */}
-            {/* <tfoot>
+              {/* <tfoot>
                 <tr style={{ fontWeight: "bold" }}>
                   <td colSpan={9} width="150px" className="text-right">
                     Sub Total
@@ -1385,7 +1385,7 @@ function EditSP({ alamatInvoice }) {
                 currency: "IDR",
               })}
             </p>
-            <Form.Group>
+            <Form.Group className="mt-4">
               <Form.Label style={{ fontWeight: "bold" }}>Isi Memo</Form.Label>
               <Form.Control disabled value={memo} />
             </Form.Group>
@@ -1399,15 +1399,11 @@ function EditSP({ alamatInvoice }) {
                   />
                 </Form.Group>
               </Col>
-              <div className='mt-3'>
-                <Col className="text-end">
-                  <Button onClick={tambahkomen} size="sm">
-                    Tambah Komen
-                  </Button>
-                </Col>
-              </div>
-
-
+              <Col className="mt-3" sm={4}>
+                <Button onClick={tambahkomen} size="sm">
+                  Tambah Komen
+                </Button>
+              </Col>
             </Row>
             <br />
             <Table responsive>
@@ -1440,4 +1436,4 @@ function EditSP({ alamatInvoice }) {
   );
 }
 
-export default EditSP;
+export default EditBaru;

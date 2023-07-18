@@ -170,7 +170,8 @@ useEffect(() => {
     return () => clearTimeout(timeoutId);
   }, [komen]);
 
-
+const [NamaMarketing , setNamaMarketing]=useState("")
+const [JenisBarang , setJenisBarang]=useState("")
 
   const memos = async () => {
     const data = await axios.get(
@@ -187,6 +188,10 @@ useEffect(() => {
     const jenisBarangs = data.data.jenisBarang;
     const orderdate = data.data.order_date;
     const asuransis = data.data.asuransi;
+    const marketing = data.data.marketing;
+    const jenisBarang = data.data.jenisBarang;
+    setJenisBarang(jenisBarang)
+    setNamaMarketing(marketing)
     SetisiMemo(datas);
     setCustumer(customer);
     setjenisBarang(jenisBarangs);
@@ -206,7 +211,7 @@ useEffect(() => {
     <div>
       <Card>
         
-        <FormTable IsiDataSPSemua={IsiDataSPSemua} isidata={isidata} idmp={idmp}></FormTable>
+        <FormTable NamaMarketing={NamaMarketing} JenisBarang={JenisBarang} IsiDataSPSemua={IsiDataSPSemua} isidata={isidata} idmp={idmp}></FormTable>
         <Form>
           <Form.Group controlId="inputText">
             <Form.Label style={{ fontWeight: "bold" }}>Isi Memo</Form.Label>

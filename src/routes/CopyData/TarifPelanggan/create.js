@@ -39,7 +39,7 @@ const SamplePage = () => {
   const [customerOptions, setCustomerOptions] = useState([]);
   const [diskon, setDiskon] = useState([]);
   const [diskonType, setDiskonType] = useState([]);
-  const [biayaJalan, setBiayaJalan] = useState([]);
+  const [biayaJalan, setBiayaJalan] = useState(10000);
   const [biayaMuat, setBiayaMuat] = useState([]);
   const [biayaBongkar, setBiayaBongkar] = useState([]);
   const [biayaOvertonase, setBiayaTonase] = useState([]);
@@ -120,6 +120,7 @@ const SamplePage = () => {
           // ritase: Ritase,
           // uang_jalan: UangJalan,
           service_type: serviceType?.value,
+          
         })
         .then(({ data }) => {
           notification.success({
@@ -305,16 +306,12 @@ const SamplePage = () => {
       <Card>
         <Form onSubmit={formik.handleSubmit}>
           <Row style={{ marginBottom: "10px" }}>
-            <Col span={8}>
+            <Col span={8} >
               <h4>Buat Tarif Customer Baru</h4>
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={3}>
-              <Button onClick={formik.handleSubmit} type="submit">
-                Simpan Tarif
-              </Button>
-            </Col>
+           
           </Row>
           <Row style={{ marginBottom: "10px" }}>
 
@@ -466,7 +463,7 @@ const SamplePage = () => {
                   <Form.Label>Tarif Katalog</Form.Label>
                   <InputGroup>
                     <Form.Control
-                      name="biaya_jalan"
+                      name="biayajalan"
                       value={formik.values.biaya_jalan}
                       onChange={formik.handleChange}
                       isInvalid={!!formik.errors.biaya_jalan}
@@ -477,7 +474,7 @@ const SamplePage = () => {
                   <Form.Label>Tarif Customer</Form.Label>
                   <InputGroup>
                     <Form.Control
-                      name="biaya_jalan"
+                      name="biayajalan"
                       value={formik.values.biaya_jalan}
                       onChange={formik.handleChange}
                       isInvalid={!!formik.errors.biaya_jalan}
@@ -487,9 +484,10 @@ const SamplePage = () => {
 
               </Col>
             </Row>
-          <Row style={{ marginBottom: "10px", borderTop:'solid', borderColor:'#000' }}>
-            <><hr/></> 
-            
+            <br />
+            <hr />
+            <br />
+          <Row >
             <Col span={8} className="mt-2">
               <h5>Biaya Tambahan</h5>
             </Col>
@@ -604,6 +602,11 @@ const SamplePage = () => {
             </Col>
           </Row>
         </Form>
+        <Col span={24} className="d-flex justify-content-end mt-4">
+              <Button onClick={formik.handleSubmit} type="submit">
+                Simpan Tarif
+              </Button>
+            </Col>
       </Card>
     </div>
   );

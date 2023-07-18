@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Card, Col, Row, Table } from "antd";
+import {Card, Col, Row, Table, Form, Input } from "antd";
 import Select from "react-select";
 import { httpClient } from "../../../Api/Api";
 
@@ -85,21 +85,21 @@ const SamplePage = () => {
       dataIndex: "no",
       key: "no",
     },
-    {
-      title: "ID Provinsi",
-      dataIndex: "idProv",
-      key: "idProv",
-    },
-    {
-      title: "ID Kota",
-      dataIndex: "idKota",
-      key: "idKota",
-    },
-    {
-      title: "ID Kecamatan",
-      dataIndex: "idKecamatan",
-      key: "idKecamatan",
-    },
+    // {
+    //   title: "ID Provinsi",
+    //   dataIndex: "idProv",
+    //   key: "idProv",
+    // },
+    // {
+    //   title: "ID Kota",
+    //   dataIndex: "idKota",
+    //   key: "idKota",
+    // },
+    // {
+    //   title: "ID Kecamatan",
+    //   dataIndex: "idKecamatan",
+    //   key: "idKecamatan",
+    // },
     {
       title: "Provinsi",
       dataIndex: "provName",
@@ -181,6 +181,13 @@ const SamplePage = () => {
     }
   };
 
+  const onFinish = (values) => {
+    console.log('Success:', values);
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
   return (
     <div>
          <Card>
@@ -188,11 +195,14 @@ const SamplePage = () => {
       </Card>
 
       
+      
       <div style={{ marginBottom: 16 }}>
       <Card>
       <Row>
           <Col span={12}>
+
             <Select
+
               style={{ width: 200, marginRight: 8 }}
               options={provinsiOptions}
               value={provinsi}
@@ -203,6 +213,7 @@ const SamplePage = () => {
               onChange={onSelectChange}
               autoFocus
             />
+            
           </Col>
           <Col span={12}>
             <Select

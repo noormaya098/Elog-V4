@@ -36,9 +36,9 @@ const SamplePage = () => {
   const [jenisKiriman, setJenisKiriman] = useState("");
   const [via, setVia] = useState("");
   const [IdMitra, setIdMitra] = useState("");
-  const [Tarif, setTarif] = useState("");
-  const [Ritase, setRitase] = useState("");
-  const [UangJalan, setUangJalan] = useState("");
+  const [Tarif, setTarif] = useState(10000);
+  const [Ritase, setRitase] = useState(0.1);
+  const [UangJalan, setUangJalan] = useState(10000);
   const [viaOptions, setViaOptions] = useState([]);
   const [jenisDiskon, setJenisDiskon] = useState("");
   const optjenisLayanan = [
@@ -296,16 +296,29 @@ const SamplePage = () => {
         <Form onSubmit={formik.handleSubmit}>
           <Row style={{ marginBottom: "10px" }}>
             <Col span={8}>
-              <h2>Buat Tarif Eureka Baru</h2>
+              <h3>Buat Tarif Eureka Baru</h3>
             </Col>
             <Col span={3}></Col>
             <Col span={3}></Col>
-            <Col span={3}>
-              <Button type="submit">Simpan Tarif</Button>
-            </Col>
           </Row>
           <Row style={{ marginBottom: "10px" }}>
-            <Col span={8}>
+            <Col span={6}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Nama Mitra</Form.Label>
+                <InputGroup>
+                  <Select
+                    options={customerOptions}
+                    value={IdMitra}
+                    isSearchable
+                    placeholder="Select Mitra"
+                    name="id_mitra"
+                    styles={customStylesReactSelect}
+                    onChange={onSelectChange}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+            <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Kota Muat</Form.Label>
                 <InputGroup>
@@ -320,6 +333,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Kota Tujuan</Form.Label>
                 <InputGroup>
@@ -334,49 +349,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>id Mitra</Form.Label>
-                <InputGroup>
-                  <Select
-                    options={customerOptions}
-                    value={IdMitra}
-                    isSearchable
-                    placeholder="Select Mitra"
-                    name="id_mitra"
-                    styles={customStylesReactSelect}
-                    onChange={onSelectChange}
-                  />
-                </InputGroup>
-              </Form.Group>
             </Col>
-            <Col span={9}>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>Jenis kendaraan </Form.Label>
-                <InputGroup>
-                  <Select
-                    options={jenisKendaraanOptions}
-                    value={jenisKendaraan}
-                    isSearchable
-                    placeholder="Select Jenis Kendaraan"
-                    name="id_kendaraan_jenis"
-                    styles={customStylesReactSelect}
-                    onChange={onSelectChange}
-                  />
-                </InputGroup>
-              </Form.Group>
-              <Form.Group style={{ marginBottom: "10px" }}>
-                <Form.Label>Jenis Layanan</Form.Label>
-                <InputGroup>
-                  <Select
-                    options={optjenisLayanan}
-                    name="service_type"
-                    value={jenisLayanan}
-                    onChange={(e) => setJenisLayanan(e.label)}
-                    isInvalid={!!formik.errors.service_type}
-                    styles={customStylesReactSelect}
-                  />
-                </InputGroup>
-              </Form.Group>
+            <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Via</Form.Label>
                 <InputGroup>
@@ -391,6 +365,39 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={6}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Jenis kendaraan </Form.Label>
+                <InputGroup>
+                  <Select
+                    options={jenisKendaraanOptions}
+                    value={jenisKendaraan}
+                    isSearchable
+                    placeholder="Select Jenis Kendaraan"
+                    name="id_kendaraan_jenis"
+                    styles={customStylesReactSelect}
+                    onChange={onSelectChange}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+            <Col span={6}>
+              <Form.Group style={{ marginBottom: "10px" }}>
+                <Form.Label>Jenis Layanan</Form.Label>
+                <InputGroup>
+                  <Select
+                    options={optjenisLayanan}
+                    name="service_type"
+                    value={jenisLayanan}
+                    onChange={(e) => setJenisLayanan(e.label)}
+                    isInvalid={!!formik.errors.service_type}
+                    styles={customStylesReactSelect}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+            <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Jenis Kiriman</Form.Label>
                 <InputGroup>
@@ -405,20 +412,28 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-            <Col span={7}>
+          </Row>
+          <br />
+          <hr />
+          <h3>Biaya Penanganan</h3>
+          <br />
+          <Row>
+            <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Tarif</Form.Label>
                 <InputGroup>
                   <Form.Control
                     // name="tarif"
                     type="number"
+                    step="0.01" // Menambahkan desimal dengan step 0.01
                     value={Tarif}
                     onChange={(e) => setTarif(e.target.value)}
                     isInvalid={!!formik.errors.tarif}
                   />
                 </InputGroup>
               </Form.Group>
-
+            </Col>
+            <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Ritase</Form.Label>
                 <InputGroup>
@@ -431,7 +446,8 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
-
+            </Col>
+            <Col span={6}>
               <Form.Group>
                 <Form.Label>Uang Jalan</Form.Label>
                 <InputGroup>
@@ -444,6 +460,9 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
+            </Col>
+            <Col span={24} className="d-flex justify-content-end">
+              <Button type="submit">Simpan Tarif</Button>
             </Col>
           </Row>
         </Form>

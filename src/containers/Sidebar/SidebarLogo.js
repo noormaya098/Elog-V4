@@ -1,6 +1,7 @@
 import React from "react";
 import {useSelector} from "react-redux";
 import {Link} from "react-router-dom";
+import ElogLogo from "./elog logo.png"
 import {
   NAV_STYLE_DRAWER,
   NAV_STYLE_FIXED,
@@ -33,8 +34,8 @@ const SidebarLogo = ({sidebarCollapsed, setSidebarCollapsed}) => {
         {navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR && width >= TAB_SIZE ?
           <img alt="lo" src={(`https://avatars.githubusercontent.com/u/130539563?s=200&v=4`)}/> :
           themeType === THEME_TYPE_LITE ?
-            <img alt="logo1" src={("/assets/images/logo-white.png")}/> :
-            <img alt="logo2" src={("/assets/images/logo.png")}/>}
+            <img alt="logo1" src={ElogLogo}/> :
+            <img alt="logo2" width="150px" src={ElogLogo}/>}
       </Link>
     </div>
   );

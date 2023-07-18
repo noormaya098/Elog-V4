@@ -111,7 +111,11 @@ function EditSPNew() {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Ya, edit!',
-            cancelButtonText: 'Tidak, batalkan!'
+            cancelButtonText: 'Tidak, batalkan!',
+            customClass: {
+                actions: 'reverse-buttons' 
+            },
+            reverseButtons: true,
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {

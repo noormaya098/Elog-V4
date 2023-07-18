@@ -7,7 +7,7 @@ import Baseurl from '../../../../Api/BaseUrl';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP ,JenisBarangFormik}) {
+function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP, JenisBarangFormik }) {
     const [modal1Open, setModal1Open] = useState(false);
     const [modal2Open, setModal2Open] = useState(false);
     const [selectVia, setSelectVia] = useState("");
@@ -17,7 +17,7 @@ function ModalCreateDetail({ AlamatInvoiceOptions, DetailSemua, idmp, DetailSP ,
     const [Loding, setLoding] = useState(false)
     const [DetailSemuaTemp, setDetailSemuaTemp] = useState("")
     const [DetaillSJall, setDetaillSJall] = useState("")
-console.log(`JenisBarangFormik`,JenisBarangFormik);
+    console.log(`JenisBarangFormik`, JenisBarangFormik);
     const formik = useFormik({
         initialValues: {
             alamatmuat: '',
@@ -63,7 +63,7 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
                     berat: formik.values.berat,
                     qty: formik.values.qyt,
                     koli: formik.values.koli,
-                    harga: HasilTarif  + Hitung()
+                    harga: HasilTarif + Hitung()
                 },
                 {
                     headers: {
@@ -84,15 +84,15 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
 
 
     // cek tarif
-    const [HasilTarif , setasilTarif]= useState("")
+    const [HasilTarif, setasilTarif] = useState("")
     const tarifalamat = async () => {
         try {
             const data = await axios.post(`${Baseurl}sp/get-tarif-alamat`,
                 {
                     id_muat_kota: formik.values.IdKotaMuat,
-                    id_tujuan_kota: parseInt( formik.values.IDKotaBongkar),
+                    id_tujuan_kota: parseInt(formik.values.IDKotaBongkar),
                     id_customer: DetailSemua?.idcustomer,
-                    id_kendaraan_jenis: parseInt (formik.values.idkendaraan),
+                    id_kendaraan_jenis: parseInt(formik.values.idkendaraan),
                     service_type: DetailSemua?.service,
                 },
                 {
@@ -283,7 +283,7 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
         let total = 0;
 
         // Daftar semua field yang ingin dijumlahkan
-        const fields = ['biayamel', 'biayamultidrop', 'biayamultimuat', 'biayamuat', 'bongkar' ];
+        const fields = ['biayamel', 'biayamultidrop', 'biayamultimuat', 'biayamuat', 'bongkar'];
 
         for (let field of fields) {
             let value = formik.values[field];
@@ -303,11 +303,13 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
 
     return (
         <div className='mt-3'>
-            <hr />
-            <Button type='primary' onClick={() => {
-                setModal1Open(true);
-                formik.resetForm();
-            }}>Create Detail SP</Button>
+            <div className='d-flex justify-content-end'>
+                <Button type='primary' onClick={() => {
+                    setModal1Open(true);
+                    formik.resetForm();
+                }}>Create Detail SP</Button>
+            </div>
+
 
             <Modal
                 title="Create Detail SP"
@@ -353,7 +355,7 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
                                         formik.setFieldValue("alamatmuat", option.children); // set alamatmuat state to option's children
                                         formik.setFieldValue("IDalamatmuat", option.key); // set IDalamatmuat state to option's value
                                         formik.setFieldValue("IdKotaMuat", value); // set IDalamatmuat state to option's value
-                                        console.log(`key`,option.key);
+                                        console.log(`key`, option.key);
                                     }}
                                     value={formik.values.alamatmuat}
                                     onBlur={formik.handleBlur}
@@ -800,7 +802,7 @@ console.log(`JenisBarangFormik`,JenisBarangFormik);
                                     name="total"
                                     type="number"
                                     onChange={formik.handleChange}
-                                    value={HasilTarif  + Hitung()}
+                                    value={HasilTarif + Hitung()}
                                     onBlur={formik.handleBlur}
                                 />
                             </Form.Item>

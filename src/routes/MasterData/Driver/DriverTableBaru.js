@@ -2,7 +2,7 @@ import { Button, Card, Modal, Form, Input, Pagination, Upload, DatePicker, Selec
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react'
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Alert } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -18,6 +18,7 @@ function DriverTableBaru() {
     const [DetailId, setDetailId] = useState("")
     const [loading, setLoading] = useState(false);
     const [CariDriver, setCariDriver] = useState("")
+    const [TotalPages, setTotalPages] = useState("")
     const [CariDriverAktif, setCariDriverAktif] = useState("")
     const { jenisKepemilikan, setjenisKepemilikan } = ZustandStore((state) => ({
         jenisKepemilikan: state.jenisKepemilikan,
@@ -183,6 +184,7 @@ function DriverTableBaru() {
             }
             )
             setDataAwal(data.data.data.order)
+            setTotalPages(data.data.data.totalData)
             console.log(data.data.data);
         } catch (error) {
 
@@ -449,11 +451,15 @@ function DriverTableBaru() {
         },
         validationSchema: Yup.object({
             nik: Yup.string()
-                .required('Nik harus diisi')
-                .max(6,"Tidak Boleh Melebihi 6 Karakter")
-                .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
+            .required('Nik harus diisi')
+            .max(6, "Tidak Boleh Melebihi 6 Karakter")
+            .matches(/^\S*$/, 'Nik tidak boleh mengandung spasi')
+            .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
+         
             noktp: Yup.number().required('No KTP harus diisi').integer('Nik harus berupa angka'),
-            namadriver: Yup.string().required('Nama Driver harus diisi'),
+            namadriver: Yup.string()
+            .matches(/^[A-Za-z ]*$/, 'Nama Driver tidak boleh mengandung angka')
+            .required('Nama Driver harus diisi'),
             email: Yup.string().email('Format email tidak valid').required('Email harus diisi'),
             divisi: Yup.string().required('Divisi Driver harus diisi'),
             nosim: Yup.number().required('No SIM harus diisi').integer('Nik harus berupa angka'),
@@ -513,7 +519,11 @@ function DriverTableBaru() {
 
         <div>
             <Card>
+                <Col>
+                    <h5>Halaman Add Driver</h5>
+                </Col>
                 <Row>
+
                     <Col sm={6}>
                         <Button size='default'
                             onClick={() => {
@@ -757,6 +767,7 @@ function DriverTableBaru() {
                                         <Input
                                             placeholder="input no ktp"
                                             name="noktp"
+                                            type='number'
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             value={formik.values.noktp}
@@ -771,6 +782,7 @@ function DriverTableBaru() {
                                         <Input
                                             placeholder="input no sim"
                                             name="nosim"
+                                            type='number'
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             value={formik.values.nosim}
@@ -845,7 +857,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp1 && formik.errors.notelp1 ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input notelp1"
                                             name="notelp1"
                                             onChange={formik.handleChange}
@@ -859,7 +871,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.notelp2 && formik.errors.notelp2 ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input notelp2"
                                             name="notelp2"
                                             onChange={formik.handleChange}
@@ -956,7 +968,7 @@ function DriverTableBaru() {
                                         validateStatus={formik.touched.norekening && formik.errors.norekening ? 'error' : undefined}
                                     >
                                         <Input
-                                        type='number'
+                                            type='number'
                                             placeholder="input nomor rekening"
                                             name="norekening"
                                             onChange={formik.handleChange}
@@ -986,17 +998,26 @@ function DriverTableBaru() {
                         data={DataAwal}
                         onRowClicked={DetailRow}
                     />
-                    <div className='d-flex justify-content-end mt-3'>
-                        <Pagination
-                            showSizeChanger
-                            onChange={onShowSizeChange}
-                            defaultCurrent={1}
-                            total={500}
-                        />
-                    </div>
-                </Row>
-            </Card>
-        </div>
+                    <style>
+                        {`
+          .rdt_TableBody .rdt_TableRow:hover {
+            cursor: pointer;
+            background-color: #C7E1FB;
+          }
+          
+        `}
+                </style>
+                <div className='d-flex justify-content-end mt-3'>
+                    <Pagination
+                        showSizeChanger
+                        onChange={onShowSizeChange}
+                        defaultCurrent={1}
+                        total={TotalPages}
+                    />
+                </div>
+            </Row>
+        </Card>
+        </div >
     )
 }
 
