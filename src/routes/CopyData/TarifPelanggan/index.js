@@ -92,6 +92,7 @@ const SamplePage = () => {
     {
       title: "Aksi",
       key: "no",
+      width: "50%",
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => handleView(record.id_price)} type="primary">
@@ -108,6 +109,7 @@ const SamplePage = () => {
             {/* <DeleteOutlined /> */}
           </Button>
         </Space>
+        
       ),
     },
    
