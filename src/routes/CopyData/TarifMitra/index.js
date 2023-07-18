@@ -308,7 +308,7 @@ const SamplePage = () => {
             </Col>
             <Col sm={3}>
               <label className="mb-2" htmlFor="muatKotaSelect">
-                Search Nama Mitra:
+                Search Nama Mitras:
               </label>
               <Select
                 value={NamaMitranya}
