@@ -318,7 +318,7 @@ function Index() {
                     <Row>
                         <Col sm={4}>
                             <Form.Item
-                                label="Kendaraan Pickup"
+                                label="Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -329,7 +329,7 @@ function Index() {
                                 <Select />
                             </Form.Item>
                             <Form.Item
-                                label="Jenis Kendaraan Pickup"
+                                label="Jenis Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -340,13 +340,13 @@ function Index() {
                             >
                                 <Select
                                 showSearch
-                                placeholder="Jenis Kendaraan PickUp"
+                                placeholder="Jenis Kendaraan Mitra"
                                 optionFilterProp='label'
                                 options={DriverOptions}
                                 />
                             </Form.Item>
                             <Form.Item
-                                label="Kode Kendaraan Pickup"
+                                label="Kode Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -392,7 +392,7 @@ function Index() {
                         </Col>
                         <Col sm={4}>
                             <Form.Item
-                                label="Kendaraan Pickup"
+                                label="Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -403,7 +403,7 @@ function Index() {
                                 <Select />
                             </Form.Item>
                             <Form.Item
-                                label="Jenis Kendaraan Pickup"
+                                label="Jenis Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -413,13 +413,13 @@ function Index() {
                             >
                                 <Select
                                 showSearch
-                                placeholder="Jenis Kendaraan PickUp"
+                                placeholder="Jenis Kendaraan Mitra"
                                 optionFilterProp='label'
                                 options={DriverOptions}
                                 />
                             </Form.Item>
                             <Form.Item
-                                label="Kode Kendaraan Pickup"
+                                label="Kode Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -465,7 +465,7 @@ function Index() {
                         </Col>
                         <Col sm={4}>
                             <Form.Item
-                                label="Kendaraan Pickup"
+                                label="Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {
@@ -476,23 +476,19 @@ function Index() {
                                 <Select />
                             </Form.Item>
                             <Form.Item
-                                label="Jenis Kendaraan Pickup"
+                                label="Jenis Kendaraan Mitra"
                                 name="destinasi"
-                                rules={[
-                                    {
-                                        message: 'Please input your password!',
-                                    },
-                                ]}
+                               
                             >
                                 <Select
                                 showSearch
-                                placeholder="Jenis Kendaraan PickUp"
+                                placeholder="Jenis Kendaraan Mitra"
                                 optionFilterProp='label'
                                 options={DriverOptions}
                                 />
                             </Form.Item>
                             <Form.Item
-                                label="Kode Kendaraan Pickup"
+                                label="Kode Kendaraan Mitra"
                                 name="destinasi"
                                 rules={[
                                     {

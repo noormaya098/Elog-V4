@@ -8,8 +8,12 @@ import axios from "axios";
 import mobil from "../../redux toolkit/store/ZustandStore";
 import Baseurl from "../../../Api/BaseUrl";
 import Swal from "sweetalert2";
+import PrintSP from "../../Print/PrintSP";
+import { Image } from "antd";
+
 function DetailsAkunting() {
   const history = useHistory();
+  const printRef = React.useRef();
   const [detailData, setDetailData] = useState([]);
   const [memo, setMemo] = useState([]);
   const [jobdesk, setJobdesk] = useState(localStorage.getItem("jobdesk"));
@@ -18,34 +22,32 @@ function DetailsAkunting() {
   }));
   const { idmp } = useParams();
   const [comment, setComment] = useState([]);
-  const [ApproveAkuntingStatus, setApproveAkuntingStatus] = useState("")
-  const [ApproveAkuntingTgl, setApproveAkuntingTgl] = useState("")
-  const [Kendaraan_operasional, setkendaraan_operasional] = useState("")
-  const [tgl_act_4, settgl_act_4] = useState("")
-  const [Kendaraan_purchasing, setKendaraan_purchasing] = useState("")
-  const [tgl_act_5, settgl_act_5] = useState("")
+  const [ApproveAkuntingStatus, setApproveAkuntingStatus] = useState("");
+  const [ApproveAkuntingTgl, setApproveAkuntingTgl] = useState("");
+  const [Kendaraan_operasional, setkendaraan_operasional] = useState("");
+  const [tgl_act_4, settgl_act_4] = useState("");
+  const [Kendaraan_purchasing, setKendaraan_purchasing] = useState("");
+  const [tgl_act_5, settgl_act_5] = useState("");
   const [modal1Open, setModal1Open] = useState(false);
-  const [MessageRejectSP, setMessageRejectSP] = useState("")
-  const [IDMessageRejectSP, setIDMessageRejectSP] = useState("")
-  const [KeteranganRejectSP, setKeteranganRejectSP] = useState("")
+  const [MessageRejectSP, setMessageRejectSP] = useState("");
+  const [IDMessageRejectSP, setIDMessageRejectSP] = useState("");
+  const [KeteranganRejectSP, setKeteranganRejectSP] = useState("");
 
   // message reject
   const MessageReject = async () => {
     try {
-      const data = await axios.get(`${Baseurl}sp/get-do-massage?limit=10334&page=1`,
+      const data = await axios.get(
+        `${Baseurl}sp/get-do-massage?limit=10334&page=1`,
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: localStorage.getItem("token"),
           },
         }
-      )
-      setMessageRejectSP(data.data.data.order)
-    } catch (error) {
-
-    }
-  }
-
+      );
+      setMessageRejectSP(data.data.data.order);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     const getDetail = async () => {
@@ -69,7 +71,7 @@ function DetailsAkunting() {
     };
     getDetail();
     comments();
-    MessageReject()
+    MessageReject();
   }, [idmp, memo, Kendaraan_operasional, ApproveAkuntingStatus]);
 
   const columns = [
@@ -89,22 +91,26 @@ function DetailsAkunting() {
     };
 
     Swal.fire({
-      title: 'Apakah yakin untuk approve?',
+      title: "Apakah yakin untuk approve?",
       text: "jika belum, silahkan cek lagi",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, approve!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, approve!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const data = await axios.post(`${Baseurl}sp/approve-SP-akunting`, body, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: localStorage.getItem("token"),
-            },
-          });
+          const data = await axios.post(
+            `${Baseurl}sp/approve-SP-akunting`,
+            body,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: localStorage.getItem("token"),
+              },
+            }
+          );
 
           const approve = data.status;
 
@@ -114,7 +120,6 @@ function DetailsAkunting() {
             text: "Data telah disetujui.",
           });
           window.location.reload();
-
         } catch (error) {
           Swal.fire({
             icon: "error",
@@ -124,33 +129,35 @@ function DetailsAkunting() {
           console.error(error);
         }
       }
-    })
+    });
   };
-
 
   const rejectbutton = () => {
     Swal.fire({
-      title: 'Apakah yakin untuk Reject?',
+      title: "Apakah yakin untuk Reject?",
       text: "jika belum, silahkan cek lagi",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, reject it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, reject it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         const body = {
           id_mp: idmp,
-
         };
 
         try {
-          const data = await axios.post(`${Baseurl}sp/reject-SP-akunting`, body, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: localStorage.getItem("token"),
-            },
-          });
+          const data = await axios.post(
+            `${Baseurl}sp/reject-SP-akunting`,
+            body,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: localStorage.getItem("token"),
+              },
+            }
+          );
 
           Swal.fire({
             icon: "success",
@@ -172,42 +179,35 @@ function DetailsAkunting() {
 
   const RejectSP = async () => {
     try {
-      const data = await axios.post(`${Baseurl}sp/cancel-sp`,
+      const data = await axios.post(
+        `${Baseurl}sp/cancel-sp`,
         {
           id_mp: idmp,
           id_massage_do: IDMessageRejectSP,
-          keterangan: KeteranganRejectSP
+          keterangan: KeteranganRejectSP,
         },
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: localStorage.getItem("token"),
           },
-
-        })
-      Swal.fire(
-        'Berhasil!',
-        'Permintaan berhasil!',
-        'success'
+        }
       );
+      Swal.fire("Berhasil!", "Permintaan berhasil!", "success");
     } catch (error) {
       // Munculkan SweetAlert jika terjadi error
       if (error.response && error.response.status === 402) {
-        const isieror = error.response.data.status.message
+        const isieror = error.response.data.status.message;
         Swal.fire(
-          'Gagal!',
+          "Gagal!",
           `${isieror}`, // Memasukkan response data ke dalam pesan error
-          'error'
+          "error"
         );
       } else {
-        Swal.fire(
-          'Gagal!',
-          'Terjadi kesalahan!',
-          'error'
-        );
+        Swal.fire("Gagal!", "Terjadi kesalahan!", "error");
       }
     }
-  }
+  };
   const comments = async () => {
     const api = await axios.get(`${Baseurl}sp/get-SP-massage?id_mp=${idmp}`, {
       headers: {
@@ -232,7 +232,7 @@ function DetailsAkunting() {
   console.log(jobdesk);
 
   const handlePrint = () => {
-    window.print();
+    history.push(`/printSPKListNih/${idmp}`);
   };
 
   const pindahedit = () => {
@@ -247,55 +247,55 @@ function DetailsAkunting() {
   });
 
   // console.log(`TOTAL KESELURUHAN : ${rupiah}`);
-  const [actSalesStatus, setactSalesStatus] = useState("")
+  const [actSalesStatus, setactSalesStatus] = useState("");
   const StausApprove = async () => {
     try {
-      const data = await axios.get(`${Baseurl}sp/get-status-approve?id_mp=${idmp}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const data = await axios.get(
+        `${Baseurl}sp/get-status-approve?id_mp=${idmp}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       console.log(data.data.status.message);
-      setactSalesStatus(data.data.status.message.act_sales)
-      setApproveAkuntingStatus(data.data.status.message.act_akunting)
-      setApproveAkuntingTgl(data.data.status.message.tgl_act_3)
-      setkendaraan_operasional(data.data.status.message.kendaraan_operasional)
-      settgl_act_4(data.data.status.message.tgl_act_4)
-      setKendaraan_purchasing(data.data.status.message.kendaraan_purchasing)
-      settgl_act_5(data.data.status.message.tgl_act_5)
-    } catch (error) {
-
-    }
-  }
-
+      setactSalesStatus(data.data.status.message.act_sales);
+      setApproveAkuntingStatus(data.data.status.message.act_akunting);
+      setApproveAkuntingTgl(data.data.status.message.tgl_act_3);
+      setkendaraan_operasional(data.data.status.message.kendaraan_operasional);
+      settgl_act_4(data.data.status.message.tgl_act_4);
+      setKendaraan_purchasing(data.data.status.message.kendaraan_purchasing);
+      settgl_act_5(data.data.status.message.tgl_act_5);
+    } catch (error) {}
+  };
 
   useEffect(() => {
-    StausApprove()
-  }, [])
+    StausApprove();
+  }, []);
 
-  console.log(`statusnya adalah`, actSalesStatus)
+  console.log(`statusnya adalah`, actSalesStatus);
 
   const [showCommentInput, setShowCommentInput] = useState(false);
-  const [commentReject, setCommentReject] = useState('')
+  const [commentReject, setCommentReject] = useState("");
 
   const BuatMessage = async () => {
     try {
-      const data = await axios.post(`${Baseurl}sp/create-massage-do`,
+      const data = await axios.post(
+        `${Baseurl}sp/create-massage-do`,
         {
-          massage: commentReject
+          massage: commentReject,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token")
+            Authorization: localStorage.getItem("token"),
           },
-
         }
-      )
+      );
       message.success(`${data.data.status.message}`);
       MessageReject();
-      setCommentReject(''); // Mengatur ulang nilai commentReject menjadi string kosong
+      setCommentReject(""); // Mengatur ulang nilai commentReject menjadi string kosong
       setIDMessageRejectSP(null); // Mengatur ulang nilai IDMessageRejectSP menjadi null
       setKeteranganRejectSP(null); // Mengatur ulang nilai KeteranganRejectSP menjadi null
       setShowCommentInput(false);
@@ -305,10 +305,62 @@ function DetailsAkunting() {
         // Pesan khusus untuk error 402
         message.error(`${error.response.data.status.message}`);
       } else {
-        message.error('Terjadi kesalahan!');
+        message.error("Terjadi kesalahan!");
       }
     }
-  }
+  };
+
+
+  const columnsss = [
+    
+         
+    {
+      title: 'SURAT PESANAN',
+      children: [
+        {
+          title: 'Street',
+          dataIndex: 'street',
+          key: 'street',
+          width: 100,
+        },
+        
+            {
+              title: 'Building',
+              dataIndex: 'building',
+              key: 'building',
+              width: 100,
+            },
+            {
+              title: 'Door No.',
+              dataIndex: 'number',
+              key: 'number',
+              width: 100,
+            },
+          ],
+        },
+      ];
+  
+const dataaaa = [
+{
+key: "1",
+name: "John Brown",
+money: "￥300,000.00",
+address: "New York No. 1 Lake Park",
+},
+{
+key: "2",
+name: "Jim Green",
+money: "￥1,256,000.00",
+address: "London No. 1 Lake Park",
+},
+{
+key: "3",
+name: "Joe Black",
+money: "￥120,000.00",
+address: "Sydney No. 1 Lake Park",
+},
+];
+
   return (
     <div>
       <Card>
@@ -331,7 +383,7 @@ function DetailsAkunting() {
                 <Select
                   showSearch
                   optionFilterProp="children"
-                  style={{ width: '100%', }}
+                  style={{ width: "100%" }}
                   placeholder="Pilih Alasan Reject"
                   onChange={(e, options) => {
                     setIDMessageRejectSP(e);
@@ -340,13 +392,22 @@ function DetailsAkunting() {
                     console.log(options.children);
                   }}
                 >
-                  {MessageRejectSP && MessageRejectSP.map((item) => (
-                    <Select.Option key={item.message} value={item.id} >{item.no + " - " + item.massage}</Select.Option>
-                  ))}
+                  {MessageRejectSP &&
+                    MessageRejectSP.map((item) => (
+                      <Select.Option key={item.message} value={item.id}>
+                        {item.no + " - " + item.massage}
+                      </Select.Option>
+                    ))}
                 </Select>
               </Col>
               <div className="mt-3" onClick={() => setShowCommentInput(true)}>
-                <i>Tidak ada Comment?<span><a style={{ color: 'blue' }}>Klik di sini</a></span> untuk menambahkan</i>
+                <i>
+                  Tidak ada Comment?
+                  <span>
+                    <a style={{ color: "blue" }}>Klik di sini</a>
+                  </span>{" "}
+                  untuk menambahkan
+                </i>
               </div>
               {showCommentInput && (
                 <Col sm={12} className="mt-2">
@@ -356,85 +417,84 @@ function DetailsAkunting() {
                     onChange={(e) => setCommentReject(e.target.value)}
                     placeholder="Tambahkan komentar baru di sini"
                   />
-                  <Button className="mt-2" size="sm" onClick={BuatMessage}>Tambahkan</Button>
+                  <Button className="mt-2" size="sm" onClick={BuatMessage}>
+                    Tambahkan
+                  </Button>
                 </Col>
               )}
             </Row>
           </Modal>
 
-
-
           <div className="d-flex justify-content-end">
-            {
-              (jobdesk !== "operasional" && jobdesk !== "sales" && jobdesk !== "purchasing" && ApproveAkuntingStatus !== "Y") ? (
-                <>
-                  <Button size="sm" onClick={() => tombolApprove()}>
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
-                    onClick={() => rejectbutton()}
-                  >
-                    Reject SP
-                  </Button>
+            {jobdesk !== "operasional" &&
+            jobdesk !== "sales" &&
+            jobdesk !== "purchasing" &&
+            ApproveAkuntingStatus !== "Y" ? (
+              <>
+                <Button size="sm" onClick={() => tombolApprove()}>
+                  Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => rejectbutton()}
+                >
+                  Reject SP
+                </Button>
+              </>
+            ) : (
+              <>
+                {ApproveAkuntingStatus === "Y" &&
+                ApproveAkuntingTgl !== null ? (
+                  <Alert type="success" message="Approve Akunting" banner />
+                ) : ApproveAkuntingStatus === "N" &&
+                  ApproveAkuntingTgl !== null ? (
+                  <Alert type="error" message="Diverted Akunting" banner />
+                ) : ApproveAkuntingStatus === "N" &&
+                  ApproveAkuntingTgl === null ? (
+                  <Alert type="info" message="Waiting Operasional" banner />
+                ) : null}
 
-                </>
-              ) : (
-                <>
-                  {(ApproveAkuntingStatus === "Y" && ApproveAkuntingTgl !== null) ?
-                    <Alert type="success" message="Approve Akunting" banner /> :
-                    (ApproveAkuntingStatus === "N" && ApproveAkuntingTgl !== null) ?
-                      <Alert type="error" message="Diverted Akunting" banner /> :
-                      (ApproveAkuntingStatus === "N" && ApproveAkuntingTgl === null) ?
-                        <Alert type="info" message="Waiting Operasional" banner /> : null
+                {Kendaraan_operasional === "Y" && tgl_act_4 != null ? (
+                  <Alert type="success" message="Approve Operasional" banner />
+                ) : Kendaraan_operasional === "N" && tgl_act_4 != null ? (
+                  <Alert type="error" message="Diverted Operasional" banner />
+                ) : Kendaraan_operasional === "N" && tgl_act_4 === null ? (
+                  <Alert type="info" message="Waiting Operasional" banner />
+                ) : null}
 
+                {Kendaraan_purchasing === "Y" && tgl_act_5 !== null ? (
+                  <Alert type="success" message="Approve Purchasing" banner />
+                ) : Kendaraan_purchasing === "N" && tgl_act_5 !== null ? (
+                  <Alert type="error" message="Diverted Purchasing" banner />
+                ) : Kendaraan_purchasing === "N" && tgl_act_5 === null ? (
+                  <Alert type="info" message="Waiting Purchasing" banner />
+                ) : null}
+              </>
+            )}
 
-
-                  }
-
-                  {(Kendaraan_operasional === "Y" && tgl_act_4 != null) ?
-                    <Alert type="success" message="Approve Operasional" banner /> :
-                    (Kendaraan_operasional === "N" && tgl_act_4 != null) ?
-                      <Alert type="error" message="Diverted Operasional" banner /> :
-                      (Kendaraan_operasional === "N" && tgl_act_4 === null) ?
-                        <Alert type="info" message="Waiting Operasional" banner />
-                        : null
-                  }
-
-                  {(Kendaraan_purchasing === "Y" && tgl_act_5 !== null) ?
-                    <Alert type="success" message="Approve Purchasing" banner /> :
-                    (Kendaraan_purchasing === "N" && tgl_act_5 !== null) ?
-                      <Alert type="error" message="Diverted Purchasing" banner /> :
-                      (Kendaraan_purchasing === "N" && tgl_act_5 === null) ?
-                        <Alert type="info" message="Waiting Purchasing" banner /> :
-                        null
-
-                  }
-
-
-                </>
-
-
-              )
-            }
-
-
-            <Button size="sm" onClick={() => handlePrint()} variant="primary">
-              Print
-            </Button>
-
+            <div class="mx-2">
+              <Button size="sm" onClick={() => handlePrint()} variant="primary">
+                Print
+              </Button>
+            </div>
 
             {jobdesk === "sales" && actSalesStatus === "N" ? (
               <>
-                <Button size="sm" onClick={() => setModal1Open(true)} variant="danger">
+                <Button
+                  size="sm"
+                  onClick={() => setModal1Open(true)}
+                  variant="danger"
+                >
                   Reject SP Sales
                 </Button>
                 <Button size="sm" onClick={pindahedit} variant="primary">
                   Edit SJ
                 </Button>
               </>
-            ) : ""}
+            ) : (
+              ""
+            )}
             {/* ? jobdesk === "sales" && actSalesStatus === "Y" : <>
               <Button size="sm" disabled onClick={() => setModal1Open(true)} variant="danger">
                 Reject SP Sales
@@ -484,7 +544,6 @@ function DetailsAkunting() {
                 <Form.Label>Marketing</Form.Label>
                 <Form.Control disabled value={detailData?.marketing} />
               </Form.Group>
-
             </Form>
           </Col>
           <Col sm={6}>
@@ -530,7 +589,6 @@ function DetailsAkunting() {
         <Row>
           <Col>
             <Table responsive>
-
               <thead></thead>
               <tbody>
                 {detailData &&
@@ -545,14 +603,11 @@ function DetailsAkunting() {
                       </tr>
 
                       <tr
-
                         style={{
                           fontWeight: "bold",
                           backgroundColor: "#dff0d8",
                         }}
-
                       >
-
                         <td>{index + 1}</td>
                         <td colSpan={9}>Alamat Muat</td>
                       </tr>
@@ -594,7 +649,8 @@ function DetailsAkunting() {
                                 <>
                                   <td width="150px">Biaya Kirim</td>
                                   <td width="150px">Total</td>
-                                </>)}
+                                </>
+                              )}
                             </tr>
 
                             <tr key={index}>
@@ -621,15 +677,20 @@ function DetailsAkunting() {
                               <td>{data.qty}</td>
                               {jobdesk !== "operasional" && (
                                 <>
-                                  <td>{data.Price?.toLocaleString("id-ID", {
-                                    style: "currency",
-                                    currency: "IDR",
-                                  })}</td>
-                                  <td>{data.Price?.toLocaleString("id-ID", {
-                                    style: "currency",
-                                    currency: "IDR",
-                                  })}</td>
-                                </>)}
+                                  <td>
+                                    {data.Price?.toLocaleString("id-ID", {
+                                      style: "currency",
+                                      currency: "IDR",
+                                    })}
+                                  </td>
+                                  <td>
+                                    {data.Price?.toLocaleString("id-ID", {
+                                      style: "currency",
+                                      currency: "IDR",
+                                    })}
+                                  </td>
+                                </>
+                              )}
                             </tr>
                           </>
                         ))}
@@ -644,14 +705,17 @@ function DetailsAkunting() {
                       <td colSpan={9} width="150px" className="text-right">
                         Sub Total
                       </td>
-                    </>)}
+                    </>
+                  )}
                   {jobdesk !== "operasional" && (
                     <>
-
-                      <td width="150px">Rp {detailData?.subTotal?.toLocaleString("id-ID", {
-                        style: "currency",
-                        currency: "IDR",
-                      })}</td>
+                      <td width="150px">
+                        Rp{" "}
+                        {detailData?.subTotal?.toLocaleString("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                        })}
+                      </td>
                     </>
                   )}
                 </tr>
@@ -663,7 +727,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  Biaya Muat :{detailData?.totalMuat?.toLocaleString("id-ID", {
+                  Biaya Muat :
+                  {detailData?.totalMuat?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -672,7 +737,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  Biaya Bongkar :{detailData?.totalBongkar?.toLocaleString("id-ID", {
+                  Biaya Bongkar :
+                  {detailData?.totalBongkar?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -681,7 +747,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  Biaya MultiDrop :{detailData?.biaya_multidrop?.toLocaleString("id-ID", {
+                  Biaya MultiDrop :
+                  {detailData?.biaya_multidrop?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -690,7 +757,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  Biaya Overtonase :{detailData?.biaya_overtonase?.toLocaleString("id-ID", {
+                  Biaya Overtonase :
+                  {detailData?.biaya_overtonase?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -699,7 +767,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  Biaya Mel :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                  Biaya Mel :
+                  {detailData?.Totalprice?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -708,7 +777,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  Biaya Inap :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                  Biaya Inap :
+                  {detailData?.Totalprice?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -718,7 +788,8 @@ function DetailsAkunting() {
                   className="d-flex justify-content-end"
                   style={{ fontWeight: "bold" }}
                 >
-                  TOTAL KESELURUHAN :{detailData?.Totalprice?.toLocaleString("id-ID", {
+                  TOTAL KESELURUHAN :
+                  {detailData?.Totalprice?.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -790,7 +861,7 @@ function DetailsAkunting() {
                       <td>{index + 1}</td>
                       <td>{data?.chat}</td>
                       <td>{data?.user}</td>
-                      <td >{data.tgl_chat.substring(0, 10)}</td>
+                      <td>{data.tgl_chat.substring(0, 10)}</td>
                     </tr>
                   ))}
               </tbody>
@@ -798,6 +869,8 @@ function DetailsAkunting() {
           </Col>
         </Row>
       </Card>
+
+     
     </div>
   );
 }

@@ -85,13 +85,21 @@ const SamplePage = () => {
     },
     {
       name: " Berlaku Perpanjangan Otomatis",
-      selector: (row) => row.perpanjangOtomatis,
+      // selector: (row) => row.perpanjangOtomatis
       width: "250px",
+      selector: (row) =>
+      row.perpanjangOtomatis === "iya" ? (
+        <Tag color="green">Iya</Tag>
+      ) : row.perpanjangOtomatis === "tidak" ? (
+        <Tag color="red">Tidak</Tag>
+      )  : (
+        ""
+      ),
     },
     {
       name: "Pic",
       selector: (row) => row.pic,
-      width: "100px",
+      width: "150px",
     },
     {
       name: "Telepon",

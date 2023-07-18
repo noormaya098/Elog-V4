@@ -123,8 +123,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
               ) : (
                 <></>
               )}
+              
               {jobdesk == "sales" && (
-                <SubMenu key="master" title="Marketing">
+               <MenuItemGroup key="main">
                   <Menu.Item key="SP List">
                     <Link to="/masterdata/marketing/splist">
                       <i className="icon icon-widgets" />
@@ -141,6 +142,25 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
+                  <Menu.Item key="Data Wilayah">
+                      <Link to="/masteralamat">
+                        <i className="icon icon-widgets" />
+                        <span>Customer</span>
+                      </Link>
+                    </Menu.Item>
+                  <Menu.Item key="Alamat Customer">
+                      <Link to="/alamatcustomer">
+                        <i className="icon icon-widgets" />
+                        <span>Alamat Customer</span>
+                      </Link>
+                    </Menu.Item>
+                  <Menu.Item key="Tarif Customer">
+                      <Link to="/pelanggantarif">
+                        <i className="icon icon-widgets" />
+                        <span>Tarif Customer</span>
+                      </Link>
+                    </Menu.Item>
+                    
                   <Menu.Item key="monitoringVehicle">
                     <Link to="/masterdata/monitoring">
                       <i className="icon icon-widgets" />
@@ -149,7 +169,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </span>
                     </Link>
                   </Menu.Item>
-                </SubMenu>
+                  </MenuItemGroup>
               )}
               {jobdesk == "operasional" && (
                 <SubMenu key="master" title="Operasional">
@@ -232,9 +252,9 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                   </SubMenu>
                   <SubMenu key="monitoring" title="Monitoring">
                     <Menu.Item key="Data Pesanan Customer">
-                      <Link to="/akunting/splistakuntingbaru">
+                      <Link to="/akunting/detaildatacustomer">
                         <i className="icon icon-widgets" />
-                        <span>Approve SP</span>
+                        <span>Data Customer</span>
                       </Link>
                     </Menu.Item>
                   </SubMenu>
@@ -270,7 +290,7 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </Link>
                     </Menu.Item>
                   </SubMenu>
-                 
+
                   <SubMenu key="Payment" title="Payment">
                     <Menu.Item key="Payment">
                       <Link to="/akunting/ar/reportpartners/reportpenerimaaninvoice">
@@ -279,22 +299,10 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                       </Link>
                     </Menu.Item>
                   </SubMenu>
-                  <SubMenu key="Masters" title="Masters">
-                    <Menu.Item key="Master Mitra">
-                      <Link to="/mastermitra">
-                        <i className="icon icon-widgets" />
-                        <span>Master Mitra</span>
-                      </Link>
-                    </Menu.Item>
-                  </SubMenu>
+                
 
                   <SubMenu key="Data Wilayah" title="Data Wilayah">
-                    <Menu.Item key="Data Wilayah">
-                      <Link to="/masteralamat">
-                        <i className="icon icon-widgets" />
-                        <span>Data Alamat All</span>
-                      </Link>
-                    </Menu.Item>
+                    
 
                     <Menu.Item key="Master Kecamatan">
                       <Link to="/masterkecamatan">
@@ -327,24 +335,14 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
 
                   </SubMenu> */}
                   <SubMenu key="Tarif" title="Tarif">
-                    <Menu.Item key="Tarif Mitra">
-                      <Link to="/tarifmitra">
-                        <i className="icon icon-widgets" />
-                        <span>Tarif Mitra</span>
-                      </Link>
-                    </Menu.Item>
+                   
                     <Menu.Item key="Tarif Eureka">
                       <Link to="/tarif_eureka">
                         <i className="icon icon-widgets" />
                         <span>Tarif Eureka</span>
                       </Link>
                     </Menu.Item>
-                    <Menu.Item key="Tarif Customer">
-                      <Link to="/pelanggantarif">
-                        <i className="icon icon-widgets" />
-                        <span>Tarif Customer</span>
-                      </Link>
-                    </Menu.Item>
+                  
                   </SubMenu>
                 </>
               ) : null}
@@ -384,6 +382,18 @@ const SidebarContent = ({ sidebarCollapsed, setSidebarCollapsed }) => {
                         <span>
                           <IntlMessages id="Master Driver" />
                         </span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Master Mitra">
+                      <Link to="/mastermitra">
+                        <i className="icon icon-widgets" />
+                        <span>Master Mitra</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="Tarif Mitra">
+                      <Link to="/tarifmitra">
+                        <i className="icon icon-widgets" />
+                        <span>Tarif Mitra</span>
                       </Link>
                     </Menu.Item>
                     <Menu.Item key="vehiclepurch">

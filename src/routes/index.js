@@ -67,6 +67,12 @@ const App = ({ match }) => {
         )}
       />
       <Route
+        path={`${match.url}alamatcustomer`}
+        component={asyncComponent(() =>
+          import("./CopyData/MasterAlamat/alamatcustomer")
+        )}
+      />
+      <Route
         path={`${match.url}masteralamatadd`}
         component={asyncComponent(() =>
           import("./CopyData/MasterAlamat/add")
@@ -158,6 +164,12 @@ const App = ({ match }) => {
           path={`${match.url}masterdata/splistdetailakunting/:idmp`}
           component={asyncComponent(() =>
             import("./MasterData/Monitoring SP List Akunting/DetailsAkunting")
+          )}
+        />
+        <Route
+          path={`${match.url}printSPKListNih`}
+          component={asyncComponent(() =>
+            import("./Print/PrintSP")
           )}
         />
         <Route
@@ -395,6 +407,12 @@ const App = ({ match }) => {
           path={`${match.url}akunting/splistakuntingbaru`}
           component={asyncComponent(() =>
             import("./MasterData/Monitoring SP List Akunting/SplistAkuntingBaru")
+          )}
+        />
+        <Route
+          path={`${match.url}akunting/detaildatacustomer`}
+          component={asyncComponent(() =>
+            import("./MasterData/SP List/MonitoringDataCustomer/index")
           )}
         />
         <Route

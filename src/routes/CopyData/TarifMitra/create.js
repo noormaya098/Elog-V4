@@ -430,7 +430,7 @@ const SamplePage = () => {
                 </InputGroup>
               </Form.Group>
             </Col>
-            <Col span={6}>
+            {/* <Col span={6}>
               <Form.Group style={{ marginBottom: "10px" }}>
                 <Form.Label>Ritase</Form.Label>
                 <InputGroup>
@@ -457,7 +457,7 @@ const SamplePage = () => {
                   />
                 </InputGroup>
               </Form.Group>
-            </Col>
+            </Col> */}
           </Row>
         </Form>
         <Col span={24} className="d-flex justify-content-end">

@@ -491,7 +491,7 @@ function EditSP({ alamatInvoice }) {
     const Namakendaraan = data.data.data?.jenisKendaraan?.nama_kendaraan_jenis
     // console.log(`apa ini `,KendaraanValue);
     if (valid == undefined) {
-    
+
       setisiTarif(0)
       Swal.fire({
         icon: 'error',
@@ -500,7 +500,7 @@ function EditSP({ alamatInvoice }) {
       })
 
     } else {
-      
+
       return (
         setisiTarif(valid),
         setNameKendaraan(Namakendaraan)
@@ -515,7 +515,7 @@ function EditSP({ alamatInvoice }) {
   const options = detaildestination.map((item, index) => ({
     value: item.id,
     idKota: item.idKota,
-    label:"Kota." + item.pic + "-" + item.address
+    label: "Kota." + item.pic + "-" + item.address
   }));
 
   const EditSPButton = async () => {
@@ -586,7 +586,7 @@ function EditSP({ alamatInvoice }) {
   }))
   // console.log(`detail data`, detailData.detail?.[0].tujuan);
   // const alamatbongkarscroll  =
-console.log(`KendaraanModal`,KendaraanModal);
+  console.log(`KendaraanModal`, KendaraanModal);
 
   const validationSchema = Yup.object().shape({
     alamatMuat: Yup.string()
@@ -605,7 +605,7 @@ console.log(`KendaraanModal`,KendaraanModal);
         <Row>
           <EditSPNew />
           <div className="d-flex justify-content-end">
-            {jobdesk != "sales" && jobdesk != "operasional"? (
+            {jobdesk != "sales" && jobdesk != "operasional" ? (
               <>
                 <Button size="sm" onClick={() => tombolApprove()}>
                   Approve
@@ -683,7 +683,7 @@ console.log(`KendaraanModal`,KendaraanModal);
                               onChange={(e) => {
                                 setKendaraanValue(e.value);
                                 setNameKendaraan(e.label);
-                                console.log(`KendaraanValue.value`,e);
+                                console.log(`KendaraanValue.value`, e);
                               }}
                             />
                             <Form.Select
@@ -1215,7 +1215,7 @@ console.log(`KendaraanModal`,KendaraanModal);
         </Row>
         <Row>
           <Col>
-              {/* <tbody>
+            {/* <tbody>
                 {detailData &&
                   detailData.detail &&
                   detailData.detail.map((data, index) => (
@@ -1310,7 +1310,7 @@ console.log(`KendaraanModal`,KendaraanModal);
                     </>
                   ))}
               </tbody> */}
-              {/* <tfoot>
+            {/* <tfoot>
                 <tr style={{ fontWeight: "bold" }}>
                   <td colSpan={9} width="150px" className="text-right">
                     Sub Total
@@ -1399,11 +1399,15 @@ console.log(`KendaraanModal`,KendaraanModal);
                   />
                 </Form.Group>
               </Col>
-              <Col className="mt-3" sm={4}>
-                <Button onClick={tambahkomen} size="sm">
-                  Tambah Komen
-                </Button>
-              </Col>
+              <div className='mt-3'>
+                <Col className="text-end">
+                  <Button onClick={tambahkomen} size="sm">
+                    Tambah Komen
+                  </Button>
+                </Col>
+              </div>
+
+
             </Row>
             <br />
             <Table responsive>

@@ -451,11 +451,15 @@ function DriverTableBaru() {
         },
         validationSchema: Yup.object({
             nik: Yup.string()
-                .required('Nik harus diisi')
-                .max(6, "Tidak Boleh Melebihi 6 Karakter")
-                .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
+            .required('Nik harus diisi')
+            .max(6, "Tidak Boleh Melebihi 6 Karakter")
+            .matches(/^\S*$/, 'Nik tidak boleh mengandung spasi')
+            .transform(value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '')),
+         
             noktp: Yup.number().required('No KTP harus diisi').integer('Nik harus berupa angka'),
-            namadriver: Yup.string().required('Nama Driver harus diisi'),
+            namadriver: Yup.string()
+            .matches(/^[A-Za-z ]*$/, 'Nama Driver tidak boleh mengandung angka')
+            .required('Nama Driver harus diisi'),
             email: Yup.string().email('Format email tidak valid').required('Email harus diisi'),
             divisi: Yup.string().required('Divisi Driver harus diisi'),
             nosim: Yup.number().required('No SIM harus diisi').integer('Nik harus berupa angka'),
@@ -763,6 +767,7 @@ function DriverTableBaru() {
                                         <Input
                                             placeholder="input no ktp"
                                             name="noktp"
+                                            type='number'
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             value={formik.values.noktp}
@@ -777,6 +782,7 @@ function DriverTableBaru() {
                                         <Input
                                             placeholder="input no sim"
                                             name="nosim"
+                                            type='number'
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             value={formik.values.nosim}
@@ -996,22 +1002,22 @@ function DriverTableBaru() {
                         {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
-            background-color: #E3EAE7;
+            background-color: #C7E1FB;
           }
           
         `}
-                    </style>
-                    <div className='d-flex justify-content-end mt-3'>
-                        <Pagination
-                            showSizeChanger
-                            onChange={onShowSizeChange}
-                            defaultCurrent={1}
-                            total={TotalPages}
-                        />
-                    </div>
-                </Row>
-            </Card>
-        </div>
+                </style>
+                <div className='d-flex justify-content-end mt-3'>
+                    <Pagination
+                        showSizeChanger
+                        onChange={onShowSizeChange}
+                        defaultCurrent={1}
+                        total={TotalPages}
+                    />
+                </div>
+            </Row>
+        </Card>
+        </div >
     )
 }
 

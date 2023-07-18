@@ -6,12 +6,12 @@ import axios from "axios";
 import Baseurl from "../../../Api/BaseUrl";
 import Token from "../../../Api/Token";
 import { useHistory } from "react-router-dom";
-import { Pagination } from 'antd';
+import { Pagination } from "antd";
 function SPList() {
   const [isiData, setIsiData] = useState([]);
   const [destinationData, setDestinationData] = useState([]);
   const [pagination, setPagination] = useState("");
-  const [TotalPage, setTotalPage] = useState("")
+  const [TotalPage, setTotalPage] = useState("");
   const history = useHistory();
   const [spId, setSpId] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -28,7 +28,7 @@ function SPList() {
     );
 
     const isidata = isi.data.data.order;
-    setTotalPage(isi.data.data.totalData)
+    setTotalPage(isi.data.data.totalData);
     setPagination({
       currentPage: isi.data.data.currentPage,
       limit: isi.data.data.limit,
@@ -41,19 +41,15 @@ function SPList() {
   }, [spId, pageSize]);
 
   const onPaginationChange = (page) => {
-    console.log(page,);
+    console.log(page);
     // Perbarui state pageSize dengan nilai baru
     // Panggil dataapi dengan page baru
     dataapi(page);
   };
 
-
   useEffect(() => {
     dataapi(pagination.currentPage, spId);
   }, [pagination.currentPage, spId, TotalPage]);
-
-
-
 
   // useEffect(() => {
   //   if (isiData && isiData.length > 0) {
@@ -112,7 +108,7 @@ function SPList() {
   //   }
   // }, [isiData, destinationData]);
 
-  let counter = 1
+  let counter = 1;
 
   const columns = [
     {
@@ -153,7 +149,7 @@ function SPList() {
     },
     {
       name: "Pickup Date",
-      selector: (row) => new Date(row.pickupDate).toLocaleDateString('en-CA'),
+      selector: (row) => new Date(row.pickupDate).toLocaleDateString("en-CA"),
       width: "100px",
       wrap: true,
     },
@@ -168,7 +164,11 @@ function SPList() {
       name: "Approved/Decline Act",
       selector: (row) => {
         const date = new Date(row.dateApproveAct);
-        return isNaN(date.getTime()) ? "-" : <Tag color="green">{date.toLocaleDateString('en-CA')}</Tag>;
+        return isNaN(date.getTime()) ? (
+          "-"
+        ) : (
+          <Tag color="green">{date.toLocaleDateString("en-CA")}</Tag>
+        );
       },
       width: "160px",
       wrap: true,
@@ -178,16 +178,22 @@ function SPList() {
       name: "OPS",
       selector: (row) => {
         return row.approveOps === "Y" ? (
-          <Tag color="green">Approved  <br />{row.dateApproveOps}</Tag>
+          <Tag color="green">
+            Approved <br />
+            {row.dateApproveOps}
+          </Tag>
         ) : row.dateApproveOps === "Invalid date" ? (
-          <Tag color="orange">Waiting <br /> {row.dateApproveOps}</Tag>
+          <Tag color="orange">
+            Waiting <br /> {row.dateApproveOps}
+          </Tag>
         ) : (
-          <Tag color="red">Reject <br /> {row.dateApproveOps}</Tag>
+          <Tag color="red">
+            Reject <br /> {row.dateApproveOps}
+          </Tag>
         );
       },
-      width: "150px"
+      width: "150px",
     },
-
 
     // {
     //   name: "Opsi",
@@ -206,10 +212,10 @@ function SPList() {
   const RowClick = (row) => {
     console.log("RowClick", row);
     history.push(`/masterdata/operasional/detailsp/${row.idmp}`);
-  }
+  };
 
   const buttonarahin = (page) => {
-    dataapi(page)
+    dataapi(page);
     // history.push(`/masterdata/splistdetailakunting/${idmp}`);
   };
 
@@ -232,30 +238,29 @@ function SPList() {
                 <br />
               </Col>
             </div>
-              <style>
-                            {`
+            <style>
+              {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
             background-color: #C7E1FB;
           }
           
         `}
-                        </style>
+            </style>
             <DataTable
               columns={columns}
               data={isiData}
               onRowClicked={RowClick}
-            // pagination
-            // paginationServer
-            // paginationPerPage={pagination.limit}
-            // paginationTotalRows={isiData.length}
-            // onChangePage={handlePageChange}
+              // pagination
+              // paginationServer
+              // paginationPerPage={pagination.limit}
+              // paginationTotalRows={isiData.length}
+              // onChangePage={handlePageChange}
             />
             <div className="d-flex justify-content-end mt-3">
               <Pagination
                 showSizeChanger
                 onChange={buttonarahin}
-
                 // defaultPageSize={10}
                 size="default"
                 total={TotalPage}

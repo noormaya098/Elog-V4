@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Card, Modal, Col, Tag, Pagination, Select, Row} from "antd";
+import {
+  Table,
+  Button,
+  Space,
+  Card,
+  Modal,
+  Col,
+  Tag,
+  Pagination,
+  Select,
+  Row,
+} from "antd";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
 import {
@@ -7,7 +18,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-  FormOutlined
+  FormOutlined,
 } from "@ant-design/icons";
 import Baseurl from "../../../Api/BaseUrl";
 import axios from "axios";
@@ -70,29 +81,28 @@ const SamplePage = () => {
       title: "Jenis Kiriman",
       dataIndex: "jenis_kiriman",
       key: "jenis_kiriman",
-      render: (text) => {
+      render: (jenis_kiriman) => {
         let tagColor = "";
-        if (text === "Express") {
+        if (jenis_kiriman === "Reguler") {
           tagColor = "green";
-        } else if (text === "Reguler") {
+        } else if (jenis_kiriman === "Reguler") {
+          tagColor = "green";
+        } else if (jenis_kiriman === "Charter") {
           tagColor = "blue";
-        } else if (text === "Charter") {
-          tagColor = "orange";
         }
-        return <Tag color={tagColor}>{text}</Tag>;
+        return <Tag color={tagColor}>{jenis_kiriman}</Tag>;
       },
     },
     {
-      title: 'Tarif',
-      dataIndex: 'tarif',
-      key: 'tarif',
+      title: "Tarif",
+      dataIndex: "tarif",
+      key: "tarif",
       render: (tarif) => formatRupiah(tarif), // Menggunakan fungsi formatRupiah untuk mengubah angka menjadi format Rupiah
     },
     {
       title: "Ritase",
       dataIndex: "ritase",
       key: "ritase",
-     
     },
     {
       title: "Uang Jalan",
@@ -137,7 +147,7 @@ const SamplePage = () => {
         <Space size="middle">
           <Button onClick={() => handleView(record.id_price)} type="primary">
             <span style={{ display: "flex", alignItems: "center" }}>
-            <FormOutlined />
+              <FormOutlined />
             </span>
           </Button>
           <Button danger onClick={() => handleDelete(record.id_price)}>
@@ -152,19 +162,18 @@ const SamplePage = () => {
   ];
 
   const formatRupiah = (angka) => {
-    const formatter = new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    const formatter = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
     });
     return formatter.format(angka);
   };
-  
+
   const [listData, setListData] = useState([]);
   const [muatKota, setMuatKota] = useState("");
   const [kotaTujuan, setKotaTujuan] = useState("");
   const [kotaTujuannOptionSelect, setKotaTujuanOpionSelect] = useState("");
   const [muatKotaOptionSelect, setMuatKotaOptionsSelect] = useState("");
-
 
   const fetchData = async (limit = 10, pageSize = 1) => {
     try {
@@ -186,15 +195,11 @@ const SamplePage = () => {
 
   const getDataSelectt = async () => {
     try {
-      const response = await axios.get(
-        `${Baseurl}tarif/get-select`, 
-        {
-          headers: { 
-            'Authorization': localStorage.getItem('token'),
-          }
+      const response = await axios.get(`${Baseurl}tarif/get-select`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
         },
-        
-      );
+      });
       // setMuatKotaOptionsSelect (response.data);
       console.log(response.data);
       setMuatKotaOptionsSelect(response.data);
@@ -203,14 +208,13 @@ const SamplePage = () => {
       if (response.status >= 200 && response.status < 300) {
         // Mengembalikan data yang diterima dari permintaan
         return response.data;
-      
       } else {
         // Menangani situasi ketika permintaan tidak berhasil (status error)
-        throw new Error('Permintaan tidak berhasil.');
+        throw new Error("Permintaan tidak berhasil.");
       }
     } catch (error) {
       // Menangani kesalahan jaringan atau kesalahan lain yang terjadi selama permintaan
-      console.error('Kesalahan saat mengambil data:', error.message);
+      console.error("Kesalahan saat mengambil data:", error.message);
       throw error; // Lanjutkan penanganan kesalahan di tempat lain jika perlu
     }
   };
@@ -267,60 +271,74 @@ const SamplePage = () => {
             marginBottom: "20px",
           }}
         >
-          <Row className="mt-3">
-          <Col sm={12}>
-            <label className="mb-2" htmlFor="muatKotaSelect" style={{fontWeight: "bold"}}>Search Muat :</label>
+          {/* <Button type="default">Cari Pricelist</Button> */}
+        </div>
+        <Row className="mt-3 mb-4">
+          <Col sm={6}>
+            <label
+              className="mb-2"
+              htmlFor="muatKotaSelect"
+              style={{ fontWeight: "bold" }}
+            >
+              Search Muat :
+            </label>
             <Select
-          
               value={muatKota}
               name="namaKota"
               showSearch
               optionFilterProp="children"
               placeholder="Select Muat Kota"
               style={{ width: "100%" }}
-              onChange={(e, options) => {console.log(options); setMuatKota(options.value)}}
-            
+              onChange={(e, options) => {
+                console.log(options);
+                setMuatKota(options.value);
+              }}
             >
-              {muatKotaOptionSelect && muatKotaOptionSelect.muatKota.map((item, index) => (
-                <Select.Option value={item.idKota} >
-                  {item.namaKota}
-                </Select.Option>
-              ))}
+              <Select.Option value="">-</Select.Option>
+              {muatKotaOptionSelect &&
+                muatKotaOptionSelect.muatKota.map((item, index) => (
+                  <Select.Option value={item.idKota}>
+                    {item.namaKota}
+                  </Select.Option>
+                ))}
             </Select>
-           
-            </Col>
-            <Col sm={12}>
-            <label className="mb-2" htmlFor="muatKotaSelect" style={{fontWeight: "bold"}}>Search Tujuan :</label>
+          </Col>
+          <Col sm={6}>
+            <label
+              className="mb-2"
+              htmlFor="muatKotaSelect"
+              style={{ fontWeight: "bold" }}
+            >
+              Search Tujuan :
+            </label>
             <Select
-          
               value={kotaTujuan}
               name="kotaTujuan"
               showSearch
               optionFilterProp="children"
               placeholder="Select Muat Kota"
               style={{ width: "100%" }}
-              onChange={(e, options) => {console.log(options); setKotaTujuan(options.value)}}
-            
+              onChange={(e, options) => {
+                console.log(options);
+                setKotaTujuan(options.value);
+              }}
             >
-              {kotaTujuannOptionSelect && kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
-                <Select.Option value={item.idKota} >
-                  {item.namaKota}
-                </Select.Option>
-              ))}
+              <Select.Option value="">-</Select.Option>
+              {kotaTujuannOptionSelect &&
+                kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
+                  <Select.Option value={item.idKota}>
+                    {item.namaKota}
+                  </Select.Option>
+                ))}
             </Select>
-           
-            </Col>
-          </Row>
-          <Row className="mt-4">
-          <Col sm={12} className="d-flex justify-content-end">
+          </Col>
+
+          <Col sm={12} className="d-flex justify-content-end mt-4">
             <Button type="primary" onClick={handleAdd}>
               New Tarif
             </Button>
           </Col>
-          </Row>
-         
-          {/* <Button type="default">Cari Pricelist</Button> */}
-        </div>
+        </Row>
 
         <Table
           dataSource={listData}

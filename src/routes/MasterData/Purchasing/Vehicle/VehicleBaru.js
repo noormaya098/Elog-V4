@@ -60,7 +60,7 @@ function VehicleBaru() {
     const validationSchema = Yup.object().shape({
         kode_kendaraan: Yup.string()
             .required('Kode Kendaraan wajib diisi')
-            .max(10, 'Kode Kendaraan tidak boleh lebih dari 10 karakter'),
+            .max(6, 'Kode Kendaraan tidak boleh lebih dari 10 karakter'),
         no_polisi: Yup.string().required('No Polisi wajib diisi')
             .max(10, 'No Polisi tidak boleh lebih dari 10 karakter'),
         // tgl_stnk: Yup.date().required('Tanggal STNK wajib diisi'),
@@ -75,6 +75,8 @@ function VehicleBaru() {
         tahun_mobil: Yup.string()
             .required('Tahun Mobil wajib diisi')
             .max(4, 'Tahun Mobil Tidak Boleh Lebih dari 4 Digit'),
+        kendaraan: Yup.string()
+            .required('Foto Kendaraan wajib diisi'),
         // panjang: Yup.number().required('Panjang Kendaraan wajib diisi').integer('Panjang Kendaraan harus berupa angka'),
         // lebar: Yup.number().required('Lebar Kendaraan wajib diisi').integer('Lebar Kendaraan harus berupa angka'),
         // tinggi: Yup.number().required('Tinggi Kendaraan wajib diisi').integer('Tinggi Kendaraan harus berupa angka'),
@@ -487,9 +489,9 @@ function VehicleBaru() {
             <Card>
 
                 <>
-                        <Col>
+                    <Col>
                         <h5>Halaman Add Vehicle</h5>
-                        </Col>
+                    </Col>
                     <Row>
                         <Col sm={6}>
                             <Button
@@ -557,23 +559,34 @@ function VehicleBaru() {
                                         <img src={FotoDriver}></img>
 
                                     </Card>
-                                    <Upload
-                                        beforeUpload={file => {
-                                            // Mencegah upload default
-                                            return false;
-                                        }}
-                                        onChange={({ fileList }) => {
-                                            // Ambil file asli dari fileList terakhir dan simpan dalam state
-                                            if (fileList.length > 0) {
-                                                const { originFileObj } = fileList[fileList.length - 1];
-                                                setFotoDriver(originFileObj);
-                                            } else {
-                                                setFotoDriver(null);
-                                            }
-                                        }}
+                                    <AntForm.Item
+                                        label="Upload Foto Kendaraan"
+                                        required
+                                        name="kendaraan"
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        help={formik.touched.tgl_stnk && formik.errors.tgl_stnk}
+                                        validateStatus={formik.touched.tgl_stnk && formik.errors.tgl_stnk ? 'error' : 'success'}
+                                        style={{ marginBottom: 2 }}
                                     >
-                                        <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                                    </Upload>
+                                        <Upload
+                                            beforeUpload={file => {
+                                                // Mencegah upload default
+                                                return false;
+                                            }}
+                                            onChange={({ fileList }) => {
+                                                // Ambil file asli dari fileList terakhir dan simpan dalam state
+                                                if (fileList.length > 0) {
+                                                    const { originFileObj } = fileList[fileList.length - 1];
+                                                    setFotoDriver(originFileObj);
+                                                } else {
+                                                    setFotoDriver(null);
+                                                }
+                                            }}
+                                        >
+                                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                        </Upload>
+                                    </AntForm.Item>
                                     <AntForm.Item
                                         label="Tgl EXP STNK"
                                         required
@@ -1105,15 +1118,15 @@ function VehicleBaru() {
                     </Modal>
 
                 </>
-                  <style>
-                            {`
+                <style>
+                    {`
           .rdt_TableBody .rdt_TableRow:hover {
             cursor: pointer;
             background-color: #C7E1FB;
           }
           
         `}
-                        </style>
+                </style>
                 <DataTable
                     columns={columns}
                     data={DataAwal}

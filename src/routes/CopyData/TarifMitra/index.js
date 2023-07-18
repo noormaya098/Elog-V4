@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Space, Card, Input, Pagination, Modal,Select } from "antd";
+import {
+  Button,
+  Space,
+  Card,
+  Input,
+  Pagination,
+  Modal,
+  Select,
+  Tag,
+} from "antd";
 import { useHistory } from "react-router-dom";
 import { httpClient } from "../../../Api/Api";
 import { Row, Col } from "react-bootstrap";
@@ -26,9 +35,9 @@ const SamplePage = () => {
   };
 
   const formatRupiah = (angka) => {
-    const formatter = new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    const formatter = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
     });
     return formatter.format(angka);
   };
@@ -42,7 +51,16 @@ const SamplePage = () => {
       name: "No.",
       selector: (row) => row.no,
       width: "8%",
-      
+    },
+    {
+      name: "Kode Mitra",
+      selector: (row) => row.id_mitra,
+      width: "10%",
+    },
+    {
+      name: "Nama Mitra",
+      selector: (row) => row.mitra,
+      width: "10%",
     },
     {
       name: "Muat",
@@ -61,17 +79,31 @@ const SamplePage = () => {
       width: "200px",
     },
     {
-      name: 'Biaya Kirim',
-      selector: 'tarif',
-      key: 'tarif',
-      width: '130px',
+      name: "Biaya Kirim",
+      selector: "tarif",
+      key: "tarif",
+      width: "130px",
       cell: (row) => formatRupiah(row.tarif), // Menggunakan fungsi formatRupiah untuk mengubah angka menjadi format Rupiah
     },
     {
       name: "Keterangan",
-      selector: "service_type",
-      key: "service_type",
+      // selector: (row) => row.perpanjangOtomatis
+      width: "150px",
+      selector: (row) =>
+        row.service_type === "Retail" ? (
+          <Tag color="green">Retail</Tag>
+        ) : row.service_type === "Charter" ? (
+          <Tag color="red">Charter</Tag>
+        ) : (
+          ""
+        ),
     },
+    // {
+    //   name: "Keterangan",
+    //   selector: "service_type",
+    //   key: "service_type",
+
+    // },
     {
       name: "Action",
       selector: (record) => (
@@ -109,18 +141,20 @@ const SamplePage = () => {
   ];
   const [listData, setListData] = useState([]);
   const [muatKota, setMuatKota] = useState("");
+  const [NamaMitranya, setNamaMitranya] = useState("");
   const [kotaTujuan, setKotaTujuan] = useState("");
   const [kotaTujuannOptionSelect, setKotaTujuanOpionSelect] = useState("");
   const [muatKotaOptionSelect, setMuatKotaOptionsSelect] = useState("");
-
+  const [namaMitranyaoptionSelect, setnamaMitranyaoptionSelect] = useState("");
 
   const IniRowClick = (record) => {
-   handleView(record.id_price_mitra)};
+    handleView(record.id_price_mitra);
+  };
 
   const fetchData = async (pages = 1) => {
     try {
       const response = await httpClient.get(
-        `tarif/get-tarifMitra?limit=${limit}&page=${pages}&id_muat_kota=${muatKota}&id_tujuan_kota=${kotaTujuan}&id_kendaraan_jenis=`
+        `tarif/get-tarifMitra?limit=${limit}&page=${pages}&id_muat_kota=${muatKota}&id_tujuan_kota=${kotaTujuan}&id_kendaraan_jenis=&id_mitra=${NamaMitranya}&id_price_mitra=`
       );
       const data = response.data;
       console.log(data);
@@ -137,31 +171,27 @@ const SamplePage = () => {
 
   const getDataSelectt = async () => {
     try {
-      const response = await axios.get(
-        `${Baseurl}tarif/get-select`, 
-        {
-          headers: { 
-            'Authorization': localStorage.getItem('token'),
-          }
+      const response = await axios.get(`${Baseurl}tarif/get-select`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
         },
-        
-      );
+      });
       // setMuatKotaOptionsSelect (response.data);
       console.log(response.data);
       setMuatKotaOptionsSelect(response.data);
       setKotaTujuanOpionSelect(response.data);
+      setnamaMitranyaoptionSelect(response.data);
       // Cek apakah permintaan berhasil (kode status 200-299)
       if (response.status >= 200 && response.status < 300) {
         // Mengembalikan data yang diterima dari permintaan
         return response.data;
-      
       } else {
         // Menangani situasi ketika permintaan tidak berhasil (status error)
-        throw new Error('Permintaan tidak berhasil.');
+        throw new Error("Permintaan tidak berhasil.");
       }
     } catch (error) {
       // Menangani kesalahan jaringan atau kesalahan lain yang terjadi selama permintaan
-      console.error('Kesalahan saat mengambil data:', error.message);
+      console.error("Kesalahan saat mengambil data:", error.message);
       throw error; // Lanjutkan penanganan kesalahan di tempat lain jika perlu
     }
   };
@@ -169,7 +199,7 @@ const SamplePage = () => {
   useEffect(() => {
     fetchData();
     getDataSelectt();
-  }, [muatKota, kotaTujuan]);
+  }, [muatKota, kotaTujuan, NamaMitranya]);
 
   const ubahHalaman = (pages) => {
     fetchData(pages);
@@ -227,48 +257,81 @@ const SamplePage = () => {
         <div>
           <Row className="mt-4 mb-2">
             <Col sm={3}>
-            <label className="mb-2" htmlFor="muatKotaSelect">Search Kota Muat:</label>
-            <Select
-          
-              value={muatKota}
-              name="namaKota"
-              showSearch
-              optionFilterProp="children"
-              placeholder="Select Muat Kota"
-              style={{ width: "100%" }}
-              onChange={(e, options) => {console.log(options); setMuatKota(options.value)}}
-            
-            >
-              {muatKotaOptionSelect && muatKotaOptionSelect.muatKota.map((item, index) => (
-                <Select.Option value={item.idKota} >
-                  {item.namaKota}
-                </Select.Option>
-              ))}
-            </Select>
-           
+              <label className="mb-2" htmlFor="muatKotaSelect">
+                Search Kota Muat:
+              </label>
+              <Select
+                value={muatKota}
+                name="namaKota"
+                showSearch
+                optionFilterProp="children"
+                placeholder="Select Muat Kota"
+                style={{ width: "100%" }}
+                onChange={(e, options) => {
+                  console.log(options);
+                  setMuatKota(options.value);
+                }}
+              >
+                <Select.Option value="">-</Select.Option>
+                {muatKotaOptionSelect &&
+                  muatKotaOptionSelect.muatKota.map((item, index) => (
+                    <Select.Option value={item.idKota}>
+                      {item.namaKota}
+                    </Select.Option>
+                  ))}
+              </Select>
             </Col>
             <Col sm={3}>
-            <label className="mb-2" htmlFor="muatKotaSelect">Search Kota Tujuan:</label>
-            <Select
-          
-              value={kotaTujuan}
-              name="kotaTujuan"
-              showSearch
-              optionFilterProp="children"
-              placeholder="Select Muat Kota"
-              style={{ width: "100%" }}
-              onChange={(e, options) => {console.log(options); setKotaTujuan(options.value)}}
-            
-            >
-              {kotaTujuannOptionSelect && kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
-                <Select.Option value={item.idKota} >
-                  {item.namaKota}
-                </Select.Option>
-              ))}
-            </Select>
-           
+              <label className="mb-2" htmlFor="muatKotaSelect">
+                Search Kota Tujuan:
+              </label>
+              <Select
+                value={kotaTujuan}
+                name="kotaTujuan"
+                showSearch
+                optionFilterProp="children"
+                placeholder="Select Muat Kota"
+                style={{ width: "100%" }}
+                onChange={(e, options) => {
+                  console.log(options);
+                  setKotaTujuan(options.value);
+                }}
+              >
+                <Select.Option value="">-</Select.Option>
+                {kotaTujuannOptionSelect &&
+                  kotaTujuannOptionSelect.tujuanKota.map((item, index) => (
+                    <Select.Option value={item.idKota}>
+                      {item.namaKota}
+                    </Select.Option>
+                  ))}
+              </Select>
             </Col>
-            <Col sm={6} className="d-flex justify-content-end mt-4">
+            <Col sm={3}>
+              <label className="mb-2" htmlFor="muatKotaSelect">
+                Search Nama Mitra:
+              </label>
+              <Select
+                value={NamaMitranya}
+                name="customer"
+                showSearch
+                optionFilterProp="children"
+                placeholder="Select Nama Mitra"
+                style={{ width: "100%" }}
+                onChange={(e, options) => {
+                  console.log(options);
+                  setNamaMitranya(options.value);
+                }}
+              >
+                <Select.Option value="">-</Select.Option>
+                {namaMitranyaoptionSelect &&
+                  namaMitranyaoptionSelect.customer.map((item, index) => (
+                    <Select.Option value={item.idCustomer}>
+                      {item.Customer}
+                    </Select.Option>
+                  ))}
+              </Select>
+            </Col>
+            <Col sm={3} className="d-flex justify-content-end mt-4">
               <Button type="primary" onClick={handleAdd}>
                 New Tarif
               </Button>
@@ -287,8 +350,12 @@ const SamplePage = () => {
           
         `}
         </style>
-     
-        <DataTable onRowClicked={IniRowClick} columns={columns} data={listData} />
+
+        <DataTable
+          onRowClicked={IniRowClick}
+          columns={columns}
+          data={listData}
+        />
         <div className="mt-5 d-flex justify-content-end">
           <Pagination
             onChange={ubahHalaman}
