@@ -64,11 +64,11 @@ const SamplePage = () => {
     return formatter.format(angka);
   };
   const columns = [
-    // {
-    //   title: "No ID",
-    //   dataIndex: "id_customer",
-    //   key: "id_customer",
-    // },
+    {
+      title: "No.",
+      dataIndex: "no",
+      key: "no",
+    },
     {
       title: "Kode Tarif",
       dataIndex: "kode_tarif",
