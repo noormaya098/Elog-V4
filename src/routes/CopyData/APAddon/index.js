@@ -49,7 +49,7 @@ const SamplePage = () => {
             Edit
           </Button>
           <Button onClick={() => handleView(record.idmp)} type="primary">
-            Print
+            Prints
           </Button>
         </Space>
       ),
